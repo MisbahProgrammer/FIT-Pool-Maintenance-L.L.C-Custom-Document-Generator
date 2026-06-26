@@ -1,0 +1,470 @@
+// Document States and Defaults
+let currentDocType = "Quotation";
+let items = [
+    { desc: "Standard Swimming pool maintenance chemical and cleaning service", qty: "1 No's", amount: 1500.00 }
+];
+
+// Default configurations
+const docPresets = {
+    Quotation: {
+        title: "QUOTATION",
+        refNo: "FP/QT-2026/0402",
+        validity: "1 month",
+        city: "Abu Dhabi",
+        subject: "Quotation for swimming pool maintenance work",
+        intro: "With reference to your inquiry for the swimming pool maintenance work. We are pleased to submit our best competitive offer for your kind consideration.",
+        terms: "75% Advance payment\n25% Payment after completion of work",
+        account: "Ijaz Hussain\nMeshruq Bank\nIBAN: AE 660330000019200061112\nContact No: +971564378296",
+        footerText: "Thanks and Regards: Fit Pool Building Maintenance L.L.C",
+        footerColor: "#0d05fa"
+    },
+    Invoice: {
+        title: "INVOICE",
+        refNo: "FP/INV-2026/0402",
+        validity: "1 month",
+        city: "Abu Dhabi",
+        subject: "Invoice for swimming pool maintenance work",
+        intro: "With reference to the completed swimming pool maintenance work. We are pleased to submit our invoice for your kind payment.",
+        terms: "Payment is due within 7 days of invoice date.\nLate payments may incur additional processing fees.",
+        account: "Ijaz Hussain\nMeshruq Bank\nIBAN: AE 660330000019200061112\nContact No: +971564378296",
+        footerText: "Thanks and Regards: Fit Pool Building Maintenance L.L.C",
+        footerColor: "#0d05fa"
+    },
+    Receipt: {
+        title: "PAYMENT RECEIPT",
+        refNo: "FP/REC-2026/0402",
+        validity: "1 month",
+        city: "Abu Dhabi",
+        subject: "Payment Receipt for swimming pool maintenance work",
+        intro: "We are pleased to acknowledge receipt of payment for the swimming pool maintenance work as detailed below.",
+        terms: "Paid in full. Thank you for your business!",
+        account: "", // Receipts don't necessarily need to demand payment details
+        footerText: "Thanks and Regards: Fit Pool Building Maintenance L.L.C",
+        footerColor: "#0d05fa"
+    }
+};
+
+// Initialize Application
+document.addEventListener("DOMContentLoaded", () => {
+    // Set date field to today
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0
+    const yyyy = today.getFullYear();
+    document.getElementById("doc-date").value = `${dd}/${mm}/${yyyy}`;
+
+    // Load defaults
+    loadPreset(currentDocType);
+    renderItemsTable();
+    onVersionChange();
+    updatePreview();
+});
+
+// Load Presets when changing Document Type
+function loadPreset(docType) {
+    const preset = docPresets[docType];
+    
+    document.getElementById("main-heading").innerText = `Generate ${docType}`;
+    document.getElementById("doc-ref").value = preset.refNo;
+    document.getElementById("doc-subject").value = preset.subject;
+    document.getElementById("doc-intro").value = preset.intro;
+    document.getElementById("doc-validity").value = preset.validity;
+    document.getElementById("doc-city").value = preset.city;
+    document.getElementById("doc-custom-city").value = "";
+    document.getElementById("custom-city-group").style.display = "none";
+    document.getElementById("doc-terms").value = preset.terms;
+    document.getElementById("doc-account").value = preset.account;
+    document.getElementById("doc-footer-text").value = preset.footerText;
+    document.getElementById("doc-footer-color").value = preset.footerColor;
+    document.getElementById("color-hex-val").innerText = preset.footerColor;
+
+    updatePreview();
+}
+
+function onCityChange() {
+    const citySelect = document.getElementById("doc-city").value;
+    const customCityGroup = document.getElementById("custom-city-group");
+    if (citySelect === "Other") {
+        customCityGroup.style.display = "flex";
+    } else {
+        customCityGroup.style.display = "none";
+    }
+}
+
+function onVersionChange() {
+    const version = document.getElementById("template-version").value;
+    const a4Page = document.getElementById("document-preview");
+    if (version === "1.0") {
+        a4Page.classList.add("version-classic");
+    } else {
+        a4Page.classList.remove("version-classic");
+    }
+}
+
+// Set Document Type Handler
+function setDocumentType(docType) {
+    currentDocType = docType;
+    
+    // Update button active states
+    document.querySelectorAll(".doc-btn").forEach(btn => btn.classList.remove("active"));
+    if (docType === "Quotation") document.getElementById("btn-quotation").classList.add("active");
+    if (docType === "Invoice") document.getElementById("btn-invoice").classList.add("active");
+    if (docType === "Receipt") document.getElementById("btn-receipt").classList.add("active");
+
+    loadPreset(docType);
+}
+
+// Render dynamic items in input form
+function renderItemsTable() {
+    const tbody = document.getElementById("items-tbody");
+    tbody.innerHTML = "";
+
+    items.forEach((item, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>
+                <input type="text" value="${item.desc}" oninput="updateItemField(${idx}, 'desc', this.value)" placeholder="Item Description">
+            </td>
+            <td>
+                <input type="text" value="${item.qty}" oninput="updateItemField(${idx}, 'qty', this.value)" placeholder="Qty (e.g. 1 No's)">
+            </td>
+            <td>
+                <input type="number" step="0.01" value="${item.amount}" oninput="updateItemField(${idx}, 'amount', this.value)" placeholder="Amount (AED)">
+            </td>
+            <td>
+                <button type="button" class="btn-delete-row" onclick="removeItemRow(${idx})">×</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// Add row item
+function addItemRow() {
+    items.push({ desc: "", qty: "1 No's", amount: 0.00 });
+    renderItemsTable();
+    updatePreview();
+}
+
+// Remove row item
+function removeItemRow(idx) {
+    if (items.length > 1) {
+        items.splice(idx, 1);
+    } else {
+        items[0] = { desc: "", qty: "1 No's", amount: 0.00 };
+    }
+    renderItemsTable();
+    updatePreview();
+}
+
+// Update Item Field Handler
+function updateItemField(idx, field, val) {
+    if (field === 'amount') {
+        items[idx][field] = parseFloat(val) || 0;
+    } else {
+        items[idx][field] = val;
+    }
+    updatePreview();
+}
+
+// Toggle VAT Handler
+function toggleVat() {
+    updatePreview();
+}
+
+// Live Update Preview Section
+function updatePreview() {
+    // Client info
+    const clientName = document.getElementById("client-name").value;
+    const clientAddress = document.getElementById("client-address").value;
+
+    const nameEl = document.getElementById("prev-client-name");
+    const addrEl = document.getElementById("prev-client-address");
+
+    if (clientName.trim()) {
+        nameEl.innerText = clientName;
+        nameEl.classList.remove("empty-field");
+    } else {
+        nameEl.innerText = "Client Name";
+        nameEl.classList.add("empty-field");
+    }
+
+    if (clientAddress.trim()) {
+        addrEl.innerText = clientAddress;
+        addrEl.classList.remove("empty-field");
+    } else {
+        addrEl.innerText = "Client Address";
+        addrEl.classList.add("empty-field");
+    }
+
+    // City logic in preview
+    const citySelect = document.getElementById("doc-city").value;
+    const customCity = document.getElementById("doc-custom-city").value;
+    const cityVal = citySelect === "Other" ? (customCity || "UAE City") : citySelect;
+    document.getElementById("prev-city").innerText = cityVal;
+
+    // Metadata
+    const refNo = document.getElementById("doc-ref").value;
+    const dateVal = document.getElementById("doc-date").value || "25/06/2026";
+    const validityVal = document.getElementById("doc-validity").value || "1 month";
+    
+    document.getElementById("prev-date").innerText = dateVal;
+    document.getElementById("prev-date-type").innerText = currentDocType;
+    
+    const refContainer = document.getElementById("prev-ref-container");
+    const refVal = document.getElementById("prev-ref");
+    if (refNo.trim()) {
+        refContainer.style.display = "block";
+        refVal.innerText = refNo.trim();
+    } else {
+        refContainer.style.display = "none";
+    }
+    document.getElementById("prev-validity").innerText = validityVal;
+    
+    document.getElementById("prev-doc-title").innerText = currentDocType.toUpperCase();
+    
+    // Subject and Intro
+    const subject = document.getElementById("doc-subject").value || "";
+    document.getElementById("prev-subject").innerText = subject;
+    document.getElementById("prev-intro").innerText = document.getElementById("doc-intro").value || "";
+
+    // Calculate totals
+    let subtotal = 0;
+    items.forEach(item => {
+        subtotal += item.amount;
+    });
+
+    const isVat = document.getElementById("vat-toggle").checked;
+    let grandTotal = subtotal;
+    
+    if (isVat) {
+        const vatAmount = subtotal * 0.05;
+        grandTotal = subtotal + vatAmount;
+        
+        document.getElementById("prev-row-subtotal").style.display = "table-row";
+        document.getElementById("prev-row-vat").style.display = "table-row";
+        
+        document.getElementById("prev-subtotal-val").innerText = subtotal.toFixed(2);
+        document.getElementById("prev-vat-val").innerText = vatAmount.toFixed(2);
+        document.getElementById("prev-total-label").innerText = "Grand Total:";
+    } else {
+        document.getElementById("prev-row-subtotal").style.display = "none";
+        document.getElementById("prev-row-vat").style.display = "none";
+        document.getElementById("prev-total-label").innerText = "Total Amount:";
+    }
+
+    document.getElementById("prev-total-val").innerText = grandTotal.toFixed(2);
+
+    // Update Amount in Words
+    const words = convertNumberToWords(grandTotal);
+    document.getElementById("prev-words-val").innerText = words;
+
+    // Render Preview Table Items
+    const prevTbody = document.getElementById("prev-table-tbody");
+    prevTbody.innerHTML = "";
+    items.forEach((item, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${String(idx + 1).padStart(2, '0')}</td>
+            <td style="white-space: pre-wrap;">${item.desc || "Item Description"}</td>
+            <td>${item.qty}</td>
+            <td>${item.amount.toFixed(2)}</td>
+        `;
+        prevTbody.appendChild(tr);
+    });
+
+    // Terms & Conditions section
+    const termsVal = document.getElementById("doc-terms").value;
+    const termsSection = document.getElementById("prev-terms-section");
+    if (termsVal.trim()) {
+        termsSection.style.display = "block";
+        document.getElementById("prev-terms").innerText = termsVal;
+    } else {
+        termsSection.style.display = "none";
+    }
+
+    // Account details section
+    const accVal = document.getElementById("doc-account").value;
+    const accSection = document.getElementById("prev-account-section");
+    if (accVal.trim()) {
+        accSection.style.display = "block";
+        document.getElementById("prev-account").innerText = accVal;
+    } else {
+        accSection.style.display = "none";
+    }
+
+    // Footer Banner
+    const footerText = document.getElementById("doc-footer-text").value;
+    const footerColor = document.getElementById("doc-footer-color").value;
+    const prevFooter = document.getElementById("prev-footer-banner");
+
+    prevFooter.innerText = footerText;
+    prevFooter.style.backgroundColor = footerColor;
+    document.getElementById("color-hex-val").innerText = footerColor.toUpperCase();
+}
+
+// Submit data to backend and download document
+function generateDocument(format) {
+    const clientName = document.getElementById("client-name").value;
+    if (!clientName.trim()) {
+        alert("Please enter a Client / Company Name before exporting!");
+        document.getElementById("client-name").focus();
+        return;
+    }
+
+    // Calculate totals
+    let subtotal = 0;
+    items.forEach(item => {
+        subtotal += item.amount;
+    });
+
+    const isVat = document.getElementById("vat-toggle").checked;
+    const grandTotal = isVat ? subtotal * 1.05 : subtotal;
+    const wordsTotal = convertNumberToWords(grandTotal);
+
+    const citySelect = document.getElementById("doc-city").value;
+    const customCity = document.getElementById("doc-custom-city").value;
+    const cityVal = citySelect === "Other" ? (customCity || "Abu Dhabi") : citySelect;
+
+    // Assemble payload
+    const payload = {
+        doc_type: currentDocType,
+        client_name: clientName,
+        client_address: document.getElementById("client-address").value,
+        contact_no: document.getElementById("client-contact").value,
+        date: document.getElementById("doc-date").value,
+        ref_no: document.getElementById("doc-ref").value,
+        validity: document.getElementById("doc-validity").value,
+        city: cityVal,
+        subject: document.getElementById("doc-subject").value,
+        intro_text: document.getElementById("doc-intro").value,
+        items: items,
+        vat_enabled: isVat,
+        vat_rate: 5,
+        words_total: wordsTotal,
+        terms: document.getElementById("doc-terms").value,
+        account_details: document.getElementById("doc-account").value,
+        footer_text: document.getElementById("doc-footer-text").value,
+        footer_color: document.getElementById("doc-footer-color").value,
+        format: format,
+        version: document.getElementById("template-version").value
+    };
+
+    // Show loading spinner
+    document.getElementById("loading-overlay").style.display = "flex";
+
+    // Call /generate endpoint with JSON payload and receive the download URL
+    fetch("/generate", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => {
+                throw new Error(err.error || "Failed to generate document");
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        document.getElementById("loading-overlay").style.display = "none";
+        if (data.success && data.download_url) {
+            // Trigger native download via GET request which guarantees clean filename handling
+            window.location.href = data.download_url;
+        } else {
+            alert("Error: " + (data.error || "Failed to generate document"));
+        }
+    })
+    .catch(error => {
+        document.getElementById("loading-overlay").style.display = "none";
+        alert("Error: " + error.message);
+    });
+}
+
+// Helper: Convert numbers to English words (AED / Fils currency format)
+function convertNumberToWords(amount) {
+    const units = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 
+                   'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+    const scales = ['', 'Thousand', 'Million', 'Billion'];
+
+    function convertGroup(n) {
+        let groupText = '';
+        if (n >= 100) {
+            groupText += units[Math.floor(n / 100)] + ' Hundred ';
+            n %= 100;
+        }
+        if (n >= 20) {
+            groupText += tens[Math.floor(n / 10)] + ' ';
+            n %= 10;
+        }
+        if (n > 0) {
+            groupText += units[n] + ' ';
+        }
+        return groupText.trim();
+    }
+
+    // Ensure double-digit accuracy
+    let parts = parseFloat(amount).toFixed(2).split('.');
+    let dirhamsVal = parseInt(parts[0]);
+    let filsVal = parseInt(parts[1]);
+
+    if (dirhamsVal === 0 && filsVal === 0) return 'Zero AED Only';
+
+    let dirhamWords = '';
+    if (dirhamsVal === 0) {
+        dirhamWords = 'Zero';
+    } else {
+        let groups = [];
+        while (dirhamsVal > 0) {
+            groups.push(dirhamsVal % 1000);
+            dirhamsVal = Math.floor(dirhamsVal / 1000);
+        }
+        
+        let wordsArr = [];
+        for (let i = 0; i < groups.length; i++) {
+            if (groups[i] !== 0) {
+                let groupWord = convertGroup(groups[i]);
+                if (scales[i]) {
+                    groupWord += ' ' + scales[i];
+                }
+                wordsArr.unshift(groupWord);
+            }
+        }
+        dirhamWords = wordsArr.join(' ').trim();
+    }
+
+    let result = dirhamWords + ' AED';
+    
+    if (filsVal > 0) {
+        let filsWords = convertGroup(filsVal);
+        result += ' and ' + filsWords + ' Fils';
+    }
+    
+    return result + ' Only';
+}
+
+// Mobile Responsiveness Handlers
+function toggleSidebar() {
+    const sidebar = document.querySelector(".sidebar");
+    sidebar.classList.toggle("active");
+}
+
+function switchMobileTab(tab) {
+    const workspace = document.querySelector(".workspace-main");
+    const tabForm = document.getElementById("tab-btn-form");
+    const tabPreview = document.getElementById("tab-btn-preview");
+
+    if (tab === 'form') {
+        workspace.classList.remove("show-preview");
+        tabForm.classList.add("active");
+        tabPreview.classList.remove("active");
+    } else {
+        workspace.classList.add("show-preview");
+        tabForm.classList.remove("active");
+        tabPreview.classList.add("active");
+    }
+}

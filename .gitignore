@@ -1,0 +1,39 @@
+# Python virtual environment
+.venv/
+venv/
+ENV/
+env/
+
+# Python cache & compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Generated Documents (contains user-generated invoices/quotations/receipts with customer data)
+Generated_Documents/
+
+# Temporary files
+temp_render.docx
+temp.docx
+*.log
+.system_generated/
+scratch/
+browser/
+*.webp
+*.png
+*.jpg
+*.jpeg
+
+# IDE configurations
+.vscode/
+.idea/
+.agents/
+AGENTS.md
+task.md
+implementation_plan.md
+walkthrough.md

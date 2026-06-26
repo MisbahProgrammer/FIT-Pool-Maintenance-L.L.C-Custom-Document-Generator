@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fit Pool Document Generator</title>
+    <meta name="description" content="Generate high-quality invoices, quotations, and receipts dynamically for Fit Pool Building Maintenance L.L.C">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Mobile App Header -->
+    <header class="mobile-app-header">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <span class="mobile-brand">FIT POOL</span>
+        <div style="width: 32px;"></div> <!-- Spacer to balance layout -->
+    </header>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-circle">FP</div>
+                <h2>FIT POOL</h2>
+                <button class="sidebar-close-btn" id="sidebar-close-btn" onclick="toggleSidebar()">×</button>
+            </div>
+            
+            <div class="nav-section">
+                <h3>Document Type</h3>
+                <div class="doc-selector-group">
+                    <button class="doc-btn active" id="btn-quotation" onclick="setDocumentType('Quotation')">
+                        <span class="icon">📄</span> Quotation
+                    </button>
+                    <button class="doc-btn" id="btn-invoice" onclick="setDocumentType('Invoice')">
+                        <span class="icon">💼</span> Invoice
+                    </button>
+                    <button class="doc-btn" id="btn-receipt" onclick="setDocumentType('Receipt')">
+                        <span class="icon">💸</span> Payment Receipt
+                    </button>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <h3>Options</h3>
+                <div class="option-card" style="display: flex; flex-direction: column; gap: 14px;">
+                    <label class="switch-container">
+                        <input type="checkbox" id="vat-toggle" onchange="toggleVat()">
+                        <span class="checkmark"></span>
+                        Enable VAT (5%)
+                    </label>
+                    <div class="version-select-wrapper" style="border-top: 1px solid var(--border-dark); padding-top: 12px; display: flex; flex-direction: column; gap: 6px;">
+                        <label for="template-version" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 700;">Template Layout</label>
+                        <select id="template-version" onchange="onVersionChange()" style="background-color: #0f172a; border: 1px solid var(--border-dark); border-radius: 8px; color: var(--text-main); padding: 8px 12px; font-family: var(--font-body); font-size: 0.9rem; outline: none; width: 100%; cursor: pointer;">
+                            <option value="1.0">Original (Classic)</option>
+                            <option value="2.0" selected>Version 2.0 (Modern)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <p>Fit Pool Document Automation</p>
+                <span class="version">v2.0 (Dynamic)</span>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="workspace-main">
+            <!-- Mobile Tabs Navigation -->
+            <div class="mobile-tabs" id="mobile-tabs">
+                <button class="tab-btn active" id="tab-btn-form" onclick="switchMobileTab('form')">
+                    <span class="icon">📝</span> Form
+                </button>
+                <button class="tab-btn" id="tab-btn-preview" onclick="switchMobileTab('preview')">
+                    <span class="icon">👁️</span> Preview
+                </button>
+            </div>
+
+            <!-- Left Panel: Form Control Panel -->
+            <section class="control-panel">
+                <div class="panel-header">
+                    <h1 id="main-heading">Generate Quotation</h1>
+                    <p class="subtitle">Fill in the fields below to update the document dynamically.</p>
+                </div>
+
+                <div class="form-scroll-container">
+                    <!-- Section 1: Client Info -->
+                    <div class="form-section-card">
+                        <h3>Client Information</h3>
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label for="client-name">Client / Company Name</label>
+                                <input type="text" id="client-name" placeholder="Enter Client or Company Name" required oninput="updatePreview()">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="client-address">Address / Apt Details</label>
+                                <input type="text" id="client-address" placeholder="e.g. Al Raha Loft 1, Apt 601, Dubai" oninput="updatePreview()">
+                            </div>
+                            <div class="form-group">
+                                <label for="client-contact">Contact No</label>
+                                <input type="text" id="client-contact" placeholder="e.g. +971 50 123 4567" oninput="updatePreview()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Document Metadata -->
+                    <div class="form-section-card">
+                        <h3>Document Metadata</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="doc-ref">Reference Number</label>
+                                <input type="text" id="doc-ref" placeholder="e.g. FP/QT-2026/0402" oninput="updatePreview()">
+                            </div>
+                            <div class="form-group">
+                                <label for="doc-date">Date</label>
+                                <input type="text" id="doc-date" placeholder="DD/MM/YYYY" oninput="updatePreview()">
+                            </div>
+                            <div class="form-group">
+                                <label for="doc-validity">Document Validity</label>
+                                <input type="text" id="doc-validity" placeholder="e.g. 1 month" oninput="updatePreview()">
+                            </div>
+                            <div class="form-group">
+                                <label for="doc-city">UAE City</label>
+                                <select id="doc-city" onchange="onCityChange(); updatePreview();">
+                                    <option value="Abu Dhabi">Abu Dhabi</option>
+                                    <option value="Dubai">Dubai</option>
+                                    <option value="Other">Other (Type below)</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width" id="custom-city-group" style="display: none;">
+                                <label for="doc-custom-city">Custom UAE City</label>
+                                <input type="text" id="doc-custom-city" placeholder="e.g. Sharjah, Al Ain" oninput="updatePreview()">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="doc-subject">Subject Line</label>
+                                <input type="text" id="doc-subject" placeholder="Subject of the document" oninput="updatePreview()">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="doc-intro">Introductory Paragraph</label>
+                                <textarea id="doc-intro" rows="3" placeholder="Introductory paragraph text..." oninput="updatePreview()"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Line Items -->
+                    <div class="form-section-card">
+                        <div class="section-title-action">
+                            <h3>Line Items</h3>
+                            <button type="button" class="btn-action-small" onclick="addItemRow()">+ Add Item</button>
+                        </div>
+                        
+                        <div class="items-list-container">
+                            <table class="form-items-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50%;">Description</th>
+                                        <th style="width: 20%;">Qty</th>
+                                        <th style="width: 20%;">Amount (AED)</th>
+                                        <th style="width: 10%;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="items-tbody">
+                                    <!-- Row will be added dynamically by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Terms & Bank Info -->
+                    <div class="form-section-card">
+                        <h3>Terms, Account & Footer Settings</h3>
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label for="doc-terms">Payment Terms & Conditions</label>
+                                <textarea id="doc-terms" rows="3" placeholder="Enter payment terms..." oninput="updatePreview()"></textarea>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="doc-account">Bank Account Details</label>
+                                <textarea id="doc-account" rows="4" placeholder="Enter bank account details..." oninput="updatePreview()"></textarea>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="doc-footer-text">Footer Banner Text</label>
+                                <input type="text" id="doc-footer-text" placeholder="Thanks and Regards: ..." oninput="updatePreview()">
+                            </div>
+                            <div class="form-group">
+                                <label for="doc-footer-color">Footer Banner Color</label>
+                                <div class="color-picker-wrapper">
+                                    <input type="color" id="doc-footer-color" value="#0d05fa" oninput="updatePreview()">
+                                    <span id="color-hex-val">#0d05fa</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floating Footer with Download Actions -->
+                <div class="control-actions">
+                    <button type="button" class="btn-download btn-primary" id="btn-download-pdf" onclick="generateDocument('pdf')">
+                        <span class="icon">📥</span> Download PDF
+                    </button>
+                    <button type="button" class="btn-download btn-secondary" id="btn-download-docx" onclick="generateDocument('docx')">
+                        <span class="icon">📝</span> Download Word
+                    </button>
+                </div>
+            </section>
+
+            <!-- Right Panel: Live Document Preview -->
+            <section class="preview-panel">
+                <div class="preview-header">
+                    <h3>Live Document Preview</h3>
+                    <span class="preview-badge">Visual Draft</span>
+                </div>
+                
+                <div class="preview-scroll-container">
+                    <div class="a4-page" id="document-preview">
+                        <!-- Real Company Header representing Word document layout -->
+                        <div class="company-header-real">
+                            <div class="header-left">
+                                <img src="/static/new_logo.png" alt="Fit Pool Logo" class="header-logo-img">
+                                <div class="header-title-text">
+                                    <h2>FIT POOL</h2>
+                                    <h2>BUILDING</h2>
+                                    <h2>MAINTENANCE L.L.C</h2>
+                                </div>
+                            </div>
+                            <div class="header-right-shape">
+                                <span class="arabic-text">فيت بول جنرال لصيانة المباني ذ.م.م</span>
+                            </div>
+                        </div>
+
+                        <!-- Meta Info Row (Date & Validity on Right) -->
+                        <div class="preview-meta-grid">
+                            <div>
+                                <!-- Spacer for layout -->
+                            </div>
+                            <div style="text-align: right; line-height: 1.5; font-size: 0.95rem; color: #111827;">
+                                <p><strong style="font-weight: bold; color: #111827;">Date:</strong> <span id="prev-date">25/06/2026</span>&nbsp;&nbsp;<span id="prev-date-type" style="font-weight: 500;">Invoice</span></p>
+                                <p id="prev-ref-container"><strong style="font-weight: bold; color: #111827;">Ref:</strong> <span id="prev-ref">FP/QT-2026/0402</span></p>
+                                <p><strong style="font-weight: bold; color: #111827;">Validity:</strong> <span id="prev-validity">1 month</span></p>
+                            </div>
+                        </div>
+
+                        <!-- Centered Doc Title Badge -->
+                        <div class="preview-doc-title-badge">
+                            <span id="prev-doc-title">PAYMENT RECEIPT</span>
+                        </div>
+
+                        <!-- Client details (To The Manager City format) -->
+                        <div class="preview-client-box">
+                            <p style="margin-bottom: 2px;">To</p>
+                            <p style="margin-bottom: 2px; font-weight: bold;">The Manager</p>
+                            <p style="margin-bottom: 8px; font-weight: bold;"><span id="prev-city">Abu Dhabi</span>, UAE.</p>
+                            <p style="margin-bottom: 2px; font-weight: bold; font-size: 0.95rem;"><span id="prev-client-name" class="empty-field">Client Name</span></p>
+                            <p style="margin-bottom: 2px; color: #4b5563;"><span id="prev-client-address" class="empty-field">Client Address</span></p>
+                        </div>
+
+                        <!-- Subject -->
+                        <div class="preview-subject-line">
+                            <p><strong>Sub:</strong> <span id="prev-subject">Quotation for swimming pool maintenance work</span></p>
+                        </div>
+
+                        <!-- Salutation & Intro -->
+                        <p class="preview-salutation">Dear Sir/ Madam,</p>
+                        <p class="preview-intro" id="prev-intro">With reference to your inquiry for the swimming pool maintenance work. We are pleased to submit our best competitive offer for your kind consideration.</p>
+
+                        <!-- Preview Table -->
+                        <table class="preview-items-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 8%;">No</th>
+                                    <th style="width: 57%;">Description</th>
+                                    <th style="width: 13%;">Qty</th>
+                                    <th style="width: 22%;">Total Amount /AED</th>
+                                </tr>
+                            </thead>
+                            <tbody id="prev-table-tbody">
+                                <!-- Generated by JS -->
+                            </tbody>
+                            <tfoot>
+                                <tr id="prev-row-subtotal" style="display: none;">
+                                    <td colspan="3" class="text-right"><strong>Subtotal Amount:</strong></td>
+                                    <td id="prev-subtotal-val">0.00</td>
+                                </tr>
+                                <tr id="prev-row-vat" style="display: none;">
+                                    <td colspan="3" class="text-right"><strong>VAT (5%):</strong></td>
+                                    <td id="prev-vat-val">0.00</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-right"><strong id="prev-total-label">Total Amount:</strong></td>
+                                    <td id="prev-total-val" style="font-weight: bold;">0.00</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" class="words-cell">
+                                        <strong>Amount in words AED:</strong> <span id="prev-words-val">Zero AED Only</span>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <!-- Terms and bank details -->
+                        <div class="preview-terms-section" id="prev-terms-section">
+                            <p class="section-title">Payment term and condition</p>
+                            <p class="section-content" id="prev-terms">75% Advance payment<br>25% Payment after completion of work</p>
+                        </div>
+
+                        <div class="preview-account-section" id="prev-account-section">
+                            <p class="section-title">Account details</p>
+                            <p class="section-content" id="prev-account">Ijaz Hussain<br>Meshruq Bank<br>IBAN: AE 660330000019200061112<br>Contact No: +971564378296</p>
+                        </div>
+
+                        <!-- Footer Banner -->
+                        <div class="preview-footer-banner" id="prev-footer-banner">
+                            Thanks and Regards: Fit Pool Building Maintenance L.L.C
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile-only download actions at the bottom of preview panel -->
+                <div class="control-actions mobile-only-actions">
+                    <button type="button" class="btn-download btn-primary" onclick="generateDocument('pdf')">
+                        <span class="icon">📥</span> Download PDF
+                    </button>
+                    <button type="button" class="btn-download btn-secondary" onclick="generateDocument('docx')">
+                        <span class="icon">📝</span> Download Word
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Spinner Overlay for PDF generation -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner-box">
+            <div class="double-bounce1"></div>
+            <div class="double-bounce2"></div>
+            <p>Generating and converting document... Please wait.</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
