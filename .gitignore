@@ -29,6 +29,10 @@ browser/
 *.jpg
 *.jpeg
 
+# Do not ignore static folder assets
+!static/
+!static/**
+
 # IDE configurations
 .vscode/
 .idea/
