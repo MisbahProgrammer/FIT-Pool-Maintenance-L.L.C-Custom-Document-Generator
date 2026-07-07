@@ -353,7 +353,110 @@ function generateDocument(format) {
     // Show loading spinner
     document.getElementById("loading-overlay").style.display = "flex";
 
-    // Call /generate endpoint with JSON payload to download the file directly
+    if (format === 'pdf') {
+        // Clone the preview element to force standard desktop A4 dimensions during PDF capture
+        const sourceElement = document.getElementById("document-preview");
+        const element = sourceElement.cloneNode(true);
+        
+        // Apply inline styles to force correct desktop print sizing on the clone
+        element.style.width = "794px"; // 210mm at 96 DPI
+        element.style.minHeight = "1123px"; // 297mm at 96 DPI
+        element.style.padding = "50px";
+        element.style.fontSize = "11pt";
+        element.style.transform = "none";
+        element.style.borderRadius = "0";
+        element.style.boxShadow = "none";
+        
+        // Ensure child elements inside the clone match their correct desktop dimensions
+        element.querySelectorAll(".company-header-real").forEach(header => {
+            header.style.height = "85px";
+            header.style.marginBottom = "25px";
+            header.style.display = "flex";
+        });
+        element.querySelectorAll(".header-logo-img").forEach(img => {
+            img.style.height = "65px";
+            img.style.width = "auto";
+        });
+        element.querySelectorAll(".header-title-text h2").forEach(h2 => {
+            h2.style.fontSize = "0.95rem";
+            h2.style.display = "block";
+        });
+        element.querySelectorAll(".header-right-shape").forEach(shape => {
+            shape.style.paddingLeft = "55px";
+            shape.style.paddingRight = "20px";
+            shape.style.display = "flex";
+            shape.style.maxWidth = "58%";
+        });
+        element.querySelectorAll(".header-right-shape .arabic-text").forEach(txt => {
+            txt.style.fontSize = "1rem";
+            txt.style.whiteSpace = "nowrap";
+            txt.style.display = "inline";
+        });
+        element.querySelectorAll("#prev-doc-title").forEach(title => {
+            title.style.fontSize = "1.2rem";
+            title.style.display = "inline-block";
+        });
+        element.querySelectorAll(".preview-items-table").forEach(tbl => {
+            tbl.style.fontSize = "0.9rem";
+            tbl.style.width = "100%";
+        });
+        element.querySelectorAll(".preview-meta-grid").forEach(grid => {
+            grid.style.fontSize = "0.9rem";
+            grid.style.display = "grid";
+        });
+        element.querySelectorAll(".preview-client-box").forEach(box => {
+            box.style.fontSize = "0.95rem";
+        });
+        element.querySelectorAll(".preview-subject-line").forEach(sub => {
+            sub.style.fontSize = "0.95rem";
+        });
+        element.querySelectorAll(".preview-salutation, .preview-intro").forEach(el => {
+            el.style.fontSize = "0.95rem";
+        });
+        element.querySelectorAll(".preview-terms-section, .preview-account-section").forEach(sec => {
+            sec.style.fontSize = "0.85rem";
+        });
+        element.querySelectorAll(".preview-footer-banner").forEach(footer => {
+            footer.style.fontSize = "0.9rem";
+            footer.style.borderRadius = "4px";
+            footer.style.padding = "8px";
+        });
+
+        // Create an off-screen container to mount the styled clone
+        const container = document.createElement("div");
+        container.style.position = "absolute";
+        container.style.left = "-9999px";
+        container.style.top = "-9999px";
+        container.appendChild(element);
+        document.body.appendChild(container);
+
+        const safeClientName = clientName.replace(/[^a-zA-Z0-9]/g, "_");
+        const formattedDate = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
+        const filename = `${currentDocType}_${safeClientName}_${formattedDate}.pdf`;
+
+        const opt = {
+            margin:       0,
+            filename:     filename,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'px', format: [794, 1123], hotfixes: ['px_scaling'] }
+        };
+
+        // Render the clone to PDF and save
+        html2pdf().set(opt).from(element).save().then(() => {
+            document.body.removeChild(container);
+            document.getElementById("loading-overlay").style.display = "none";
+        }).catch(err => {
+            if (document.body.contains(container)) {
+                document.body.removeChild(container);
+            }
+            document.getElementById("loading-overlay").style.display = "none";
+            alert("PDF generation failed: " + err.message);
+        });
+        return;
+    }
+
+    // Call /generate endpoint with JSON payload to download the DOCX file directly from backend
     fetch("/generate", {
         method: "POST",
         headers: {
