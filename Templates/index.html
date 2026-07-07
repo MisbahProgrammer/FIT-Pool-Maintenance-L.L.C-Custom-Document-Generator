@@ -136,8 +136,20 @@
                                 <input type="text" id="doc-custom-city" placeholder="e.g. Sharjah, Al Ain" oninput="updatePreview()">
                             </div>
                             <div class="form-group full-width">
-                                <label for="doc-subject">Subject Line</label>
-                                <input type="text" id="doc-subject" placeholder="Subject of the document" oninput="updatePreview()">
+                                <label for="doc-subject">Subject Line Option</label>
+                                <select id="doc-subject" onchange="onSubjectChange(); updatePreview();">
+                                    <option value="swimming pool maintenance work">Swimming Pool Maintenance Work</option>
+                                    <option value="MEP maintenance work">MEP Maintenance Work</option>
+                                    <option value="building maintenance work">Building Maintenance Work</option>
+                                    <option value="electrical maintenance work">Electrical Maintenance Work</option>
+                                    <option value="plumbing maintenance work">Plumbing Maintenance Work</option>
+                                    <option value="AC maintenance work">AC Maintenance Work</option>
+                                    <option value="Other">Other (Type below)</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width" id="custom-subject-group" style="display: none;">
+                                <label for="doc-custom-subject">Custom Subject Line</label>
+                                <input type="text" id="doc-custom-subject" placeholder="e.g. general civil works, painting work" oninput="onCustomSubjectInput(); updatePreview();">
                             </div>
                             <div class="form-group full-width">
                                 <label for="doc-intro">Introductory Paragraph</label>
@@ -274,7 +286,7 @@
                                     <th style="width: 8%;">No</th>
                                     <th style="width: 57%;">Description</th>
                                     <th style="width: 13%;">Qty</th>
-                                    <th style="width: 22%;">Total Amount /AED</th>
+                                    <th style="width: 22%;">Total (AED)</th>
                                 </tr>
                             </thead>
                             <tbody id="prev-table-tbody">

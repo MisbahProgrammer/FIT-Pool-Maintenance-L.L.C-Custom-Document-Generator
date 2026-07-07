@@ -192,7 +192,7 @@ def generate():
         set_table_borders(table)
 
         # Style header row (grey background, bold text)
-        headers = ['No', 'Description', 'Qty', 'Total Amount /AED']
+        headers = ['No', 'Description', 'Qty', 'Total (AED)']
         hdr_cells = table.rows[0].cells
         set_row_cell_widths(table.rows[0])
         for i in range(4):

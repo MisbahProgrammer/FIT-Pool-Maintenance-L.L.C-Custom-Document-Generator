@@ -593,8 +593,7 @@ body {
 }
 
 .header-right-shape {
-    background: linear-gradient(135deg, #1e3a8a, #0d05fa);
-    clip-path: polygon(18% 0%, 100% 0%, 100% 100%, 0% 100%);
+    background: linear-gradient(115deg, transparent 18%, #1e3a8a 18.2%, #0d05fa 100%);
     display: flex;
     align-items: center;
     justify-content: center; /* Centered the text within the block */
@@ -604,6 +603,7 @@ body {
     flex-grow: 1;
     max-width: 58%;
     direction: rtl; /* Set RTL context for Arabic */
+    border-radius: 12px; /* Rounded borders */
 }
 
 .header-right-shape .arabic-text {

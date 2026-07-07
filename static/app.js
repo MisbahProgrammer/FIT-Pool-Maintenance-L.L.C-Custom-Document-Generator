@@ -66,8 +66,15 @@ function loadPreset(docType) {
     
     document.getElementById("main-heading").innerText = `Generate ${docType}`;
     document.getElementById("doc-ref").value = preset.refNo;
-    document.getElementById("doc-subject").value = preset.subject;
-    document.getElementById("doc-intro").value = preset.intro;
+    
+    // Reset subject select to default first option
+    document.getElementById("doc-subject").value = "swimming pool maintenance work";
+    document.getElementById("doc-custom-subject").value = "";
+    document.getElementById("custom-subject-group").style.display = "none";
+    
+    // Update intro text automatically based on subject
+    updateIntroText();
+
     document.getElementById("doc-validity").value = preset.validity;
     document.getElementById("doc-city").value = preset.city;
     document.getElementById("doc-custom-city").value = "";
@@ -89,6 +96,40 @@ function onCityChange() {
     } else {
         customCityGroup.style.display = "none";
     }
+}
+
+function onSubjectChange() {
+    const subjectSelect = document.getElementById("doc-subject").value;
+    const customSubjectGroup = document.getElementById("custom-subject-group");
+    
+    if (subjectSelect === "Other") {
+        customSubjectGroup.style.display = "flex";
+    } else {
+        customSubjectGroup.style.display = "none";
+    }
+    
+    updateIntroText();
+}
+
+function onCustomSubjectInput() {
+    updateIntroText();
+}
+
+function updateIntroText() {
+    const subjectSelect = document.getElementById("doc-subject").value;
+    const customSubject = document.getElementById("doc-custom-subject").value;
+    const subjectVal = subjectSelect === "Other" ? (customSubject || "maintenance work") : subjectSelect;
+    
+    let introText = "";
+    if (currentDocType === "Quotation") {
+        introText = `With reference to your inquiry for the ${subjectVal}. We are pleased to submit our best competitive offer for your kind consideration.`;
+    } else if (currentDocType === "Invoice") {
+        introText = `With reference to the completed ${subjectVal}. We are pleased to submit our invoice for your kind payment.`;
+    } else if (currentDocType === "Receipt") {
+        introText = `We are pleased to acknowledge receipt of payment for the ${subjectVal} as detailed below.`;
+    }
+    
+    document.getElementById("doc-intro").value = introText;
 }
 
 function onVersionChange() {
@@ -224,8 +265,13 @@ function updatePreview() {
     document.getElementById("prev-doc-title").innerText = currentDocType.toUpperCase();
     
     // Subject and Intro
-    const subject = document.getElementById("doc-subject").value || "";
-    document.getElementById("prev-subject").innerText = subject;
+    const subjectSelect = document.getElementById("doc-subject").value;
+    const customSubject = document.getElementById("doc-custom-subject").value;
+    const subjectVal = subjectSelect === "Other" ? (customSubject || "maintenance work") : subjectSelect;
+    
+    // Dynamic subject text in preview
+    const fullSubjectText = `${currentDocType} for ${subjectVal}`;
+    document.getElementById("prev-subject").innerText = fullSubjectText;
     document.getElementById("prev-intro").innerText = document.getElementById("doc-intro").value || "";
 
     // Calculate totals
@@ -326,6 +372,11 @@ function generateDocument(format) {
     const customCity = document.getElementById("doc-custom-city").value;
     const cityVal = citySelect === "Other" ? (customCity || "Abu Dhabi") : citySelect;
 
+    const subjectSelect = document.getElementById("doc-subject").value;
+    const customSubject = document.getElementById("doc-custom-subject").value;
+    const subjectVal = subjectSelect === "Other" ? (customSubject || "maintenance work") : subjectSelect;
+    const subjectLine = `${currentDocType} for ${subjectVal}`;
+
     // Assemble payload
     const payload = {
         doc_type: currentDocType,
@@ -336,7 +387,7 @@ function generateDocument(format) {
         ref_no: document.getElementById("doc-ref").value,
         validity: document.getElementById("doc-validity").value,
         city: cityVal,
-        subject: document.getElementById("doc-subject").value,
+        subject: subjectLine,
         intro_text: document.getElementById("doc-intro").value,
         items: items,
         vat_enabled: isVat,
@@ -374,6 +425,7 @@ function generateDocument(format) {
             header.style.display = "flex";
         });
         element.querySelectorAll(".header-logo-img").forEach(img => {
+            img.src = window.location.origin + "/static/new_logo.png";
             img.style.height = "65px";
             img.style.width = "auto";
         });
@@ -386,6 +438,10 @@ function generateDocument(format) {
             shape.style.paddingRight = "20px";
             shape.style.display = "flex";
             shape.style.maxWidth = "58%";
+            shape.style.background = "linear-gradient(115deg, transparent 18%, #1e3a8a 18.2%, #0d05fa 100%)";
+            shape.style.borderRadius = "12px";
+            shape.style.clipPath = "none";
+            shape.style.webkitClipPath = "none";
         });
         element.querySelectorAll(".header-right-shape .arabic-text").forEach(txt => {
             txt.style.fontSize = "1rem";

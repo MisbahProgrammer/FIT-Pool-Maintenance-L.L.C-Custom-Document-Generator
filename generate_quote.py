@@ -103,7 +103,7 @@ def create_quotation():
     set_table_borders(table)
 
     # 2. Style the Header Row (Grey background, Bold Black text)
-    headers = ['No', 'Description', 'Qty', 'Total Amount /AED']
+    headers = ['No', 'Description', 'Qty', 'Total (AED)']
     hdr_cells = table.rows[0].cells
     
     for i in range(4):
