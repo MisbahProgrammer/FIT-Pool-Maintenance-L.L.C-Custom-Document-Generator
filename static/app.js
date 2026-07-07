@@ -433,15 +433,23 @@ function generateDocument(format) {
             h2.style.fontSize = "0.95rem";
             h2.style.display = "block";
         });
+        element.querySelectorAll(".header-right-wrapper").forEach(wrapper => {
+            wrapper.style.display = "flex";
+            wrapper.style.flexGrow = "1";
+            wrapper.style.maxWidth = "58%";
+            wrapper.style.borderRadius = "0 12px 12px 0";
+            wrapper.style.overflow = "hidden";
+            wrapper.style.background = "transparent";
+        });
         element.querySelectorAll(".header-right-shape").forEach(shape => {
             shape.style.paddingLeft = "55px";
             shape.style.paddingRight = "20px";
             shape.style.display = "flex";
-            shape.style.maxWidth = "58%";
-            shape.style.background = "linear-gradient(115deg, transparent 18%, #1e3a8a 18.2%, #0d05fa 100%)";
-            shape.style.borderRadius = "12px";
-            shape.style.clipPath = "none";
-            shape.style.webkitClipPath = "none";
+            shape.style.width = "100%";
+            shape.style.background = "linear-gradient(135deg, #1e3a8a, #0d05fa)";
+            shape.style.clipPath = "polygon(18% 0%, 100% 0%, 100% 100%, 0% 100%)";
+            shape.style.webkitClipPath = "polygon(18% 0%, 100% 0%, 100% 100%, 0% 100%)";
+            shape.style.borderRadius = "0";
         });
         element.querySelectorAll(".header-right-shape .arabic-text").forEach(txt => {
             txt.style.fontSize = "1rem";

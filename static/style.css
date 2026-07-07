@@ -592,18 +592,26 @@ body {
     margin: 0;
 }
 
+.header-right-wrapper {
+    display: flex;
+    flex-grow: 1;
+    max-width: 58%;
+    border-radius: 0 12px 12px 0; /* Rounded right corners */
+    overflow: hidden;
+    background: transparent;
+}
+
 .header-right-shape {
-    background: linear-gradient(115deg, transparent 18%, #1e3a8a 18.2%, #0d05fa 100%);
+    background: linear-gradient(135deg, #1e3a8a, #0d05fa);
+    clip-path: polygon(18% 0%, 100% 0%, 100% 100%, 0% 100%);
     display: flex;
     align-items: center;
     justify-content: center; /* Centered the text within the block */
     padding-right: 20px; /* Clearance on the right edge */
     padding-left: 55px; /* Clearance for the left slant */
     color: var(--white);
-    flex-grow: 1;
-    max-width: 58%;
+    width: 100%;
     direction: rtl; /* Set RTL context for Arabic */
-    border-radius: 12px; /* Rounded borders */
 }
 
 .header-right-shape .arabic-text {
