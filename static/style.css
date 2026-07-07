@@ -975,9 +975,10 @@ body {
     .control-panel,
     .preview-panel {
         width: 100%;
-        height: 100%;
+        height: calc(100vh - 108px) !important; /* 100vh - 60px header - 48px tabs */
         border-right: none;
         position: relative; /* Position context for floating actions button */
+        overflow: hidden !important; /* Prevent outer container overflow */
     }
 
     /* Form Grid stacked on mobile */
@@ -993,12 +994,16 @@ body {
     .form-scroll-container {
         padding: 16px;
         padding-bottom: 100px; /* Space for download buttons at the bottom */
+        height: calc(100% - 90px) !important;
+        overflow-y: auto !important;
     }
 
     .preview-scroll-container {
         padding: 16px;
         padding-bottom: 100px; /* Space for download buttons at the bottom */
         background-color: #06090f;
+        height: calc(100% - 90px) !important;
+        overflow-y: auto !important;
     }
 
     /* Floating / fixed action buttons at the bottom */
