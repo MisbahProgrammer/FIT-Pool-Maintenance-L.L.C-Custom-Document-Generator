@@ -9,11 +9,17 @@ import os
 from datetime import datetime
 from docx2pdf import convert
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='Templates')
 
 # Workspace path
-WORKSPACE = r"h:\FIT POOL L.L.C PDF AUTOMATION"
+WORKSPACE = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_PATH = os.path.join(WORKSPACE, "Templates", "Dynamic_Quotation_Template.docx")
+
+# Base directory for generated documents (use writable /tmp/ folder on Vercel)
+if os.environ.get('VERCEL'):
+    GENERATED_DIR = os.path.join("/tmp", "Generated_Documents")
+else:
+    GENERATED_DIR = os.path.join(WORKSPACE, "Generated_Documents")
 
 # --- HELPER FUNCTIONS FOR WORD STYLING ---
 def set_cell_background(cell, hex_color):
@@ -137,7 +143,8 @@ def generate():
         }
         doc_tpl.render(context)
         
-        temp_filename = os.path.join(WORKSPACE, "temp_render.docx")
+        temp_dir = "/tmp" if os.environ.get('VERCEL') else WORKSPACE
+        temp_filename = os.path.join(temp_dir, "temp_render.docx")
         doc_tpl.save(temp_filename)
 
         # Step 2: Open and apply edits to paragraphs and add table
@@ -294,13 +301,13 @@ def generate():
         date_str = datetime.today().strftime('%d-%m-%Y')
         
         if doc_type.lower() == "invoice":
-            folder = os.path.join(WORKSPACE, "Generated_Documents", "Invoices")
+            folder = os.path.join(GENERATED_DIR, "Invoices")
             prefix = "Invoice"
         elif doc_type.lower() == "receipt":
-            folder = os.path.join(WORKSPACE, "Generated_Documents", "Receipts")
+            folder = os.path.join(GENERATED_DIR, "Receipts")
             prefix = "Payment_Receipt"
         else:
-            folder = os.path.join(WORKSPACE, "Generated_Documents", "Quotations")
+            folder = os.path.join(GENERATED_DIR, "Quotations")
             prefix = "Quotation"
             
         os.makedirs(folder, exist_ok=True)
@@ -322,12 +329,21 @@ def generate():
 
         # If PDF is requested
         if format_type == "pdf":
-            import pythoncom
-            pythoncom.CoInitialize()
-            try:
-                convert(docx_path, pdf_path)
-            finally:
-                pythoncom.CoUninitialize()
+            if os.name == 'nt':
+                import pythoncom
+                pythoncom.CoInitialize()
+                try:
+                    convert(docx_path, pdf_path)
+                finally:
+                    pythoncom.CoUninitialize()
+            else:
+                try:
+                    convert(docx_path, pdf_path)
+                except Exception as e:
+                    raise RuntimeError(
+                        "PDF conversion failed. This is likely because LibreOffice/MS Word is not installed on the server (Vercel). "
+                        "Please download the document in DOCX format instead."
+                    ) from e
 
         # Determine relative paths/endpoints for downloading
         folder_name = ""
@@ -360,10 +376,10 @@ def download_file(folder_name, filename):
             return jsonify({"error": "Invalid folder"}), 400
         
         safe_filename = os.path.basename(filename)
-        file_path = os.path.abspath(os.path.join(WORKSPACE, "Generated_Documents", folder_name, safe_filename))
+        file_path = os.path.abspath(os.path.join(GENERATED_DIR, folder_name, safe_filename))
         
         # Verify it stays within the expected directory
-        expected_dir = os.path.abspath(os.path.join(WORKSPACE, "Generated_Documents", folder_name))
+        expected_dir = os.path.abspath(os.path.join(GENERATED_DIR, folder_name))
         if not file_path.startswith(expected_dir):
             return jsonify({"error": "Access denied"}), 403
             
