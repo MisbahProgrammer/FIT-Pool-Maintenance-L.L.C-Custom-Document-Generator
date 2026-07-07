@@ -838,11 +838,13 @@ body {
     html, body {
         overflow: hidden !important; /* Lock viewport scrolling on mobile */
         height: 100vh !important;
+        height: 100dvh !important;
     }
 
     .app-container {
         flex-direction: column;
         height: 100vh !important;
+        height: 100dvh !important;
         width: 100vw;
         overflow: hidden;
     }
@@ -920,6 +922,7 @@ body {
     .workspace-main {
         flex-direction: column;
         height: calc(100vh - 60px);
+        height: calc(100dvh - 60px);
         width: 100%;
         position: relative;
     }
@@ -976,6 +979,7 @@ body {
     .preview-panel {
         width: 100%;
         height: calc(100vh - 108px) !important; /* 100vh - 60px header - 48px tabs */
+        height: calc(100dvh - 108px) !important;
         border-right: none;
         position: relative; /* Position context for floating actions button */
         overflow: hidden !important; /* Prevent outer container overflow */
