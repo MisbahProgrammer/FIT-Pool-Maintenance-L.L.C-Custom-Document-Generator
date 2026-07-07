@@ -345,23 +345,13 @@ def generate():
                         "Please download the document in DOCX format instead."
                     ) from e
 
-        # Determine relative paths/endpoints for downloading
-        folder_name = ""
-        if doc_type.lower() == "invoice":
-            folder_name = "Invoices"
-        elif doc_type.lower() == "receipt":
-            folder_name = "Receipts"
-        else:
-            folder_name = "Quotations"
+        target_path = pdf_path if format_type == "pdf" else docx_path
+        download_filename = os.path.basename(target_path)
 
-        download_filename = os.path.basename(pdf_path) if format_type == "pdf" else os.path.basename(docx_path)
-        download_url = f"/download/{folder_name}/{download_filename}"
-
-        return jsonify({
-            "success": True,
-            "download_url": download_url,
-            "filename": download_filename
-        })
+        response = send_file(target_path, as_attachment=True, download_name=download_filename)
+        response.headers["Content-Disposition"] = f'attachment; filename="{download_filename}"'
+        response.headers["Access-Control-Expose-Headers"] = "Content-Disposition"
+        return response
 
     except Exception as e:
         import traceback

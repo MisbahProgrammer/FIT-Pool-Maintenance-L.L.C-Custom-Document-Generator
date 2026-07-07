@@ -353,7 +353,7 @@ function generateDocument(format) {
     // Show loading spinner
     document.getElementById("loading-overlay").style.display = "flex";
 
-    // Call /generate endpoint with JSON payload and receive the download URL
+    // Call /generate endpoint with JSON payload to download the file directly
     fetch("/generate", {
         method: "POST",
         headers: {
@@ -363,20 +363,41 @@ function generateDocument(format) {
     })
     .then(response => {
         if (!response.ok) {
-            return response.json().then(err => {
-                throw new Error(err.error || "Failed to generate document");
-            });
+            // Read response as JSON to extract custom error message, fallback to generic
+            return response.json()
+                .catch(() => ({ error: "Server error occurred during generation." }))
+                .then(err => {
+                    throw new Error(err.error || "Failed to generate document");
+                });
         }
-        return response.json();
+        // Extract filename from Content-Disposition header
+        let filename = "document";
+        const disposition = response.headers.get("Content-Disposition");
+        if (disposition && disposition.indexOf("filename=") !== -1) {
+            const matches = disposition.split("filename=");
+            if (matches.length > 1) {
+                filename = matches[1].replace(/[";]/g, "").trim();
+            }
+        } else {
+            // Fallback extension based on format
+            filename = `Document_${clientName.replace(/\s+/g, "_")}_${new Date().toLocaleDateString('en-GB').replace(/\//g, '-')}.${format}`;
+        }
+        
+        return response.blob().then(blob => ({ blob, filename }));
     })
     .then(data => {
         document.getElementById("loading-overlay").style.display = "none";
-        if (data.success && data.download_url) {
-            // Trigger native download via GET request which guarantees clean filename handling
-            window.location.href = data.download_url;
-        } else {
-            alert("Error: " + (data.error || "Failed to generate document"));
-        }
+        
+        // Trigger programmatic browser download
+        const url = window.URL.createObjectURL(data.blob);
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = url;
+        a.download = data.filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
     })
     .catch(error => {
         document.getElementById("loading-overlay").style.display = "none";
