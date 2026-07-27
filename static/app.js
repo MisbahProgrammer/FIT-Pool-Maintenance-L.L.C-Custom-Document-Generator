@@ -410,9 +410,13 @@ function generateDocument(format) {
         const element = sourceElement.cloneNode(true);
         
         // Apply inline styles to force correct desktop print sizing on the clone
+        element.style.boxSizing = "border-box";
         element.style.width = "794px"; // 210mm at 96 DPI
-        element.style.minHeight = "1123px"; // 297mm at 96 DPI
-        element.style.padding = "50px";
+        element.style.height = "1123px"; // 297mm at 96 DPI (exact single A4 page height)
+        element.style.minHeight = "1123px";
+        element.style.maxHeight = "1123px";
+        element.style.overflow = "hidden";
+        element.style.padding = "45px 50px";
         element.style.fontSize = "11pt";
         element.style.transform = "none";
         element.style.borderRadius = "0";
@@ -502,8 +506,9 @@ function generateDocument(format) {
             margin:       0,
             filename:     filename,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'px', format: [794, 1123], hotfixes: ['px_scaling'] }
+            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            jsPDF:        { unit: 'px', format: [794, 1123], hotfixes: ['px_scaling'] },
+            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
         };
 
         // Render the clone to PDF and save
