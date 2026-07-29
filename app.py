@@ -3,9 +3,12 @@ from docxtpl import DocxTemplate
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from docx.shared import RGBColor, Inches
+from docx.shared import RGBColor, Inches, Pt
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.table import WD_TABLE_ALIGNMENT
 import os
+import io
+import base64
 from datetime import datetime
 from docx2pdf import convert
 
@@ -131,6 +134,21 @@ def generate():
         format_type = data.get("format", "pdf").lower()  # 'pdf' or 'docx'
         version = str(data.get("version", "2.0"))        # '1.0' (Original) or '2.0' (V2.0)
 
+        # Extended Report & Photo Toggles
+        photos = data.get("photos", [])
+        show_pricing = data.get("show_pricing", True)
+        show_photos = data.get("show_photos", True)
+        show_scope = data.get("show_scope", True)
+        show_advance = data.get("show_advance", False)
+        show_terms = data.get("show_terms", True)
+        show_account = data.get("show_account", True)
+
+        advance_amount = float(data.get("advance_amount", 0))
+        remaining_amount = float(data.get("remaining_amount", 0))
+
+        scope_title = data.get("scope_title", "").strip()
+        scope_text = data.get("scope_text", "").strip()
+
         if not client_name:
             return jsonify({"error": "Client Name is required"}), 400
 
@@ -181,106 +199,187 @@ def generate():
             # 6. Update Intro Paragraph
             elif (txt.startswith("With reference to") or 
                   txt.startswith("We are pleased to acknowledge") or 
+                  txt.startswith("This report confirms") or
+                  txt.startswith("Following our") or
                   (len(txt) > 40 and "maintenance work" in txt.lower() and txt.startswith("Dear") is False)):
                 update_paragraph_text_preserving_style(paragraph, intro_text)
 
-        # Spacing before table
-        doc_final.add_paragraph("")
-
-        # Create items table (4 columns: No, Description, Qty, Total Amount)
-        table = doc_final.add_table(rows=1, cols=4)
-        set_table_borders(table)
-
-        # Style header row (grey background, bold text)
-        headers = ['No', 'Description', 'Qty', 'Total (AED)']
-        hdr_cells = table.rows[0].cells
-        set_row_cell_widths(table.rows[0])
-        for i in range(4):
-            hdr_cells[i].text = headers[i]
-            set_cell_background(hdr_cells[i], 'D9D9D9')
-            run = hdr_cells[i].paragraphs[0].runs[0]
-            run.font.bold = True
-            run.font.color.rgb = RGBColor(0, 0, 0)
-
-        # Add item rows
-        subtotal = 0.0
-        for idx, item in enumerate(items):
-            no_str = f"{idx + 1:02d}"
-            desc = item.get("desc", "").strip()
-            qty = item.get("qty", "").strip()
-            try:
-                amount = float(item.get("amount", 0))
-            except ValueError:
-                amount = 0.0
+        # Step 3: Insert Site Photos into Word document (Grid Layout)
+        if show_photos and photos:
+            doc_final.add_paragraph("")
+            num_photos = len(photos)
+            cols = 4 if num_photos >= 4 else (2 if num_photos >= 2 else 1)
+            rows = (num_photos + cols - 1) // cols
+            
+            photo_table = doc_final.add_table(rows=rows, cols=cols)
+            photo_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+            
+            for i, photo_obj in enumerate(photos):
+                r_idx = i // cols
+                c_idx = i % cols
+                cell = photo_table.cell(r_idx, c_idx)
                 
-            row_cells = table.add_row().cells
-            set_row_cell_widths(table.rows[-1])
-            row_cells[0].text = no_str
-            row_cells[1].text = desc
-            row_cells[2].text = qty
-            row_cells[3].text = f"{amount:.2f}"
-            subtotal += amount
+                data_url = photo_obj.get("dataUrl", "")
+                caption = photo_obj.get("caption", "").strip()
+                
+                if data_url and "," in data_url:
+                    try:
+                        header, encoded = data_url.split(",", 1)
+                        img_bytes = base64.b64decode(encoded)
+                        img_stream = io.BytesIO(img_bytes)
+                        
+                        p = cell.paragraphs[0]
+                        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                        run = p.add_run()
+                        img_w = Inches(1.4 if cols >= 4 else (2.8 if cols == 2 else 5.5))
+                        run.add_picture(img_stream, width=img_w)
+                        
+                        if caption:
+                            p_cap = cell.add_paragraph()
+                            p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                            run_cap = p_cap.add_run(caption)
+                            run_cap.font.size = Pt(8.5)
+                            run_cap.font.bold = True
+                            run_cap.font.color.rgb = RGBColor(55, 65, 81)
+                    except Exception as img_err:
+                        print(f"Error processing image {i}: {img_err}")
 
-        # Add totals section
-        if vat_enabled:
-            vat_amount = subtotal * (vat_rate / 100.0)
-            grand_total = subtotal + vat_amount
+        # Step 4: Insert Scope & Work Details into Word document
+        if show_scope and (scope_title or scope_text):
+            doc_final.add_paragraph("")
+            if scope_title:
+                p_stitle = doc_final.add_paragraph()
+                run_stitle = p_stitle.add_run(scope_title)
+                run_stitle.bold = True
+                run_stitle.font.size = Pt(12)
+                run_stitle.font.color.rgb = RGBColor(13, 5, 250)
             
-            # Subtotal row
-            sub_cells = table.add_row().cells
-            sub_cells[0].merge(sub_cells[2])
-            sub_cells[0].text = "Subtotal Amount:"
-            sub_cells[0].paragraphs[0].runs[0].font.bold = True
-            sub_cells[3].text = f"{subtotal:.2f}"
-            sub_cells[3].paragraphs[0].runs[0].font.bold = True
-            set_cell_background(sub_cells[0], 'F2F2F2')
-            set_cell_background(sub_cells[3], 'F2F2F2')
-            
-            # VAT row
-            vat_cells = table.add_row().cells
-            vat_cells[0].merge(vat_cells[2])
-            vat_cells[0].text = f"VAT ({vat_rate}%):"
-            vat_cells[0].paragraphs[0].runs[0].font.bold = True
-            vat_cells[3].text = f"{vat_amount:.2f}"
-            vat_cells[3].paragraphs[0].runs[0].font.bold = True
-            set_cell_background(vat_cells[0], 'F2F2F2')
-            set_cell_background(vat_cells[3], 'F2F2F2')
-        else:
-            grand_total = subtotal
+            if scope_text:
+                for line in scope_text.split('\n'):
+                    line_str = line.strip()
+                    if not line_str:
+                        continue
+                    if line_str.startswith("•") or line_str.startswith("-") or line_str.startswith("*"):
+                        content = line_str[1:].strip()
+                        p_bullet = doc_final.add_paragraph(style='List Bullet')
+                        if ":" in content and not content.startswith("http"):
+                            parts = content.split(":", 1)
+                            r_b = p_bullet.add_run(parts[0] + ":")
+                            r_b.bold = True
+                            p_bullet.add_run(parts[1])
+                        else:
+                            p_bullet.add_run(content)
+                    else:
+                        p_norm = doc_final.add_paragraph()
+                        if ":" in line_str and len(line_str) < 80:
+                            parts = line_str.split(":", 1)
+                            r_b = p_norm.add_run(parts[0] + ":")
+                            r_b.bold = True
+                            p_norm.add_run(parts[1])
+                        else:
+                            p_norm.add_run(line_str)
 
-        # Grand Total row
-        tot_cells = table.add_row().cells
-        tot_cells[0].merge(tot_cells[2])
-        tot_cells[0].text = "Total Amount:" if not vat_enabled else "Grand Total:"
-        tot_cells[0].paragraphs[0].runs[0].font.bold = True
-        tot_cells[3].text = f"{grand_total:.2f}"
-        tot_cells[3].paragraphs[0].runs[0].font.bold = True
-        set_cell_background(tot_cells[0], 'F2F2F2')
-        set_cell_background(tot_cells[3], 'F2F2F2')
+        # Step 5: Insert Line Items Pricing Table (if enabled)
+        if show_pricing:
+            doc_final.add_paragraph("")
+            table = doc_final.add_table(rows=1, cols=4)
+            set_table_borders(table)
 
-        # Amount in words
-        words_total = data.get("words_total", "").strip()
-        words_cells = table.add_row().cells
-        words_cells[0].merge(words_cells[3])
-        words_cells[0].text = f"Amount in words AED: {words_total}"
-        words_cells[0].paragraphs[0].runs[0].font.bold = True
-        set_cell_background(words_cells[0], 'F2F2F2')
+            headers = ['No', 'Description', 'Qty', 'Total (AED)']
+            hdr_cells = table.rows[0].cells
+            set_row_cell_widths(table.rows[0])
+            for i in range(4):
+                hdr_cells[i].text = headers[i]
+                set_cell_background(hdr_cells[i], 'D9D9D9')
+                run = hdr_cells[i].paragraphs[0].runs[0]
+                run.font.bold = True
+                run.font.color.rgb = RGBColor(0, 0, 0)
 
-        # Append Terms & Conditions
-        if terms:
+            subtotal = 0.0
+            for idx, item in enumerate(items):
+                no_str = f"{idx + 1:02d}"
+                desc = item.get("desc", "").strip()
+                qty = item.get("qty", "").strip()
+                try:
+                    amount = float(item.get("amount", 0))
+                except ValueError:
+                    amount = 0.0
+                    
+                row_cells = table.add_row().cells
+                set_row_cell_widths(table.rows[-1])
+                row_cells[0].text = no_str
+                row_cells[1].text = desc
+                row_cells[2].text = qty
+                row_cells[3].text = f"{amount:.2f}"
+                subtotal += amount
+
+            if vat_enabled:
+                vat_amount = subtotal * (vat_rate / 100.0)
+                grand_total = subtotal + vat_amount
+                
+                sub_cells = table.add_row().cells
+                sub_cells[0].merge(sub_cells[2])
+                sub_cells[0].text = "Subtotal Amount:"
+                sub_cells[0].paragraphs[0].runs[0].font.bold = True
+                sub_cells[3].text = f"{subtotal:.2f}"
+                sub_cells[3].paragraphs[0].runs[0].font.bold = True
+                set_cell_background(sub_cells[0], 'F2F2F2')
+                set_cell_background(sub_cells[3], 'F2F2F2')
+                
+                vat_cells = table.add_row().cells
+                vat_cells[0].merge(vat_cells[2])
+                vat_cells[0].text = f"VAT ({vat_rate}%):"
+                vat_cells[0].paragraphs[0].runs[0].font.bold = True
+                vat_cells[3].text = f"{vat_amount:.2f}"
+                vat_cells[3].paragraphs[0].runs[0].font.bold = True
+                set_cell_background(vat_cells[0], 'F2F2F2')
+                set_cell_background(vat_cells[3], 'F2F2F2')
+            else:
+                grand_total = subtotal
+
+            tot_cells = table.add_row().cells
+            tot_cells[0].merge(tot_cells[2])
+            tot_cells[0].text = "Total Amount:" if not vat_enabled else "Grand Total:"
+            tot_cells[0].paragraphs[0].runs[0].font.bold = True
+            tot_cells[3].text = f"{grand_total:.2f}"
+            tot_cells[3].paragraphs[0].runs[0].font.bold = True
+            set_cell_background(tot_cells[0], 'F2F2F2')
+            set_cell_background(tot_cells[3], 'F2F2F2')
+
+            words_total = data.get("words_total", "").strip()
+            words_cells = table.add_row().cells
+            words_cells[0].merge(words_cells[3])
+            words_cells[0].text = f"Amount in words AED: {words_total}"
+            words_cells[0].paragraphs[0].runs[0].font.bold = True
+            set_cell_background(words_cells[0], 'F2F2F2')
+
+        # Step 6: Advance & Remaining Payment Breakdown
+        if show_advance:
+            doc_final.add_paragraph("")
+            adv_p = doc_final.add_paragraph()
+            r_adv1 = adv_p.add_run("Advance Payment Received: ")
+            r_adv1.bold = True
+            adv_p.add_run(f"{advance_amount:.2f} AED\n")
+            r_adv2 = adv_p.add_run("Remaining Payment Balance: ")
+            r_adv2.bold = True
+            adv_p.add_run(f"{remaining_amount:.2f} AED")
+            set_paragraph_background(adv_p, 'F8FAFC')
+
+        # Step 7: Append Terms & Conditions
+        if show_terms and terms:
             doc_final.add_paragraph("")
             term_p = doc_final.add_paragraph()
             term_p.add_run("Payment term and condition").bold = True
             doc_final.add_paragraph(terms)
 
-        # Append Account Details
-        if account_details:
+        # Step 8: Append Bank Account Details
+        if show_account and account_details:
             doc_final.add_paragraph("")
             acc_p = doc_final.add_paragraph()
             acc_p.add_run("Account details").bold = True
             doc_final.add_paragraph(account_details)
 
-        # Add Footer Banner
+        # Step 9: Add Footer Banner
         if footer_text:
             doc_final.add_paragraph("")
             footer_para = doc_final.add_paragraph()
@@ -288,24 +387,22 @@ def generate():
             footer_run = footer_para.add_run(footer_text)
             footer_run.bold = True
             footer_run.font.color.rgb = RGBColor(255, 255, 255)
-            
-            # Parse hex color
-            r = int(footer_color[0:2], 16)
-            g = int(footer_color[2:4], 16)
-            b = int(footer_color[4:6], 16)
-            
             set_paragraph_background(footer_para, footer_color)
 
         # Determine folders and filenames
         safe_name = "".join(c if c.isalnum() or c in [' ', '_', '-'] else "" for c in client_name).replace(" ", "_")
         date_str = datetime.today().strftime('%d-%m-%Y')
         
-        if doc_type.lower() == "invoice":
+        doc_type_lower = doc_type.lower()
+        if "invoice" in doc_type_lower:
             folder = os.path.join(GENERATED_DIR, "Invoices")
             prefix = "Invoice"
-        elif doc_type.lower() == "receipt":
+        elif "receipt" in doc_type_lower:
             folder = os.path.join(GENERATED_DIR, "Receipts")
             prefix = "Payment_Receipt"
+        elif "report" in doc_type_lower or "scope" in doc_type_lower:
+            folder = os.path.join(GENERATED_DIR, "Reports")
+            prefix = doc_type.replace(" ", "_")
         else:
             folder = os.path.join(GENERATED_DIR, "Quotations")
             prefix = "Quotation"
@@ -361,14 +458,12 @@ def generate():
 @app.route('/download/<folder_name>/<filename>')
 def download_file(folder_name, filename):
     try:
-        # Secure filename check to prevent path traversal
-        if folder_name not in ['Quotations', 'Invoices', 'Receipts']:
+        if folder_name not in ['Quotations', 'Invoices', 'Receipts', 'Reports']:
             return jsonify({"error": "Invalid folder"}), 400
         
         safe_filename = os.path.basename(filename)
         file_path = os.path.abspath(os.path.join(GENERATED_DIR, folder_name, safe_filename))
         
-        # Verify it stays within the expected directory
         expected_dir = os.path.abspath(os.path.join(GENERATED_DIR, folder_name))
         if not file_path.startswith(expected_dir):
             return jsonify({"error": "Access denied"}), 403

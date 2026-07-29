@@ -3,8 +3,9 @@ let currentDocType = "Quotation";
 let items = [
     { desc: "Standard Swimming pool maintenance chemical and cleaning service", qty: "1 No's", amount: 1500.00 }
 ];
+let uploadedPhotos = []; // [{ id, dataUrl, caption }]
 
-// Default configurations
+// Default document configurations
 const docPresets = {
     Quotation: {
         title: "QUOTATION",
@@ -16,7 +17,9 @@ const docPresets = {
         terms: "75% Advance payment\n25% Payment after completion of work",
         account: "Ijaz Hussain\nMeshruq Bank\nIBAN: AE 660330000019200061112\nContact No: +971564378296",
         footerText: "Thanks and Regards: Fit Pool Building Maintenance L.L.C",
-        footerColor: "#0d05fa"
+        footerColor: "#0d05fa",
+        showPricing: true,
+        showAdvance: false
     },
     Invoice: {
         title: "INVOICE",
@@ -28,7 +31,9 @@ const docPresets = {
         terms: "Payment is due within 7 days of invoice date.\nLate payments may incur additional processing fees.",
         account: "Ijaz Hussain\nMeshruq Bank\nIBAN: AE 660330000019200061112\nContact No: +971564378296",
         footerText: "Thanks and Regards: Fit Pool Building Maintenance L.L.C",
-        footerColor: "#0d05fa"
+        footerColor: "#0d05fa",
+        showPricing: true,
+        showAdvance: false
     },
     Receipt: {
         title: "PAYMENT RECEIPT",
@@ -38,9 +43,106 @@ const docPresets = {
         subject: "Payment Receipt for swimming pool maintenance work",
         intro: "We are pleased to acknowledge receipt of payment for the swimming pool maintenance work as detailed below.",
         terms: "Paid in full. Thank you for your business!",
-        account: "", // Receipts don't necessarily need to demand payment details
+        account: "",
         footerText: "Thanks and Regards: Fit Pool Building Maintenance L.L.C",
-        footerColor: "#0d05fa"
+        footerColor: "#0d05fa",
+        showPricing: true,
+        showAdvance: false
+    },
+    "Work Completion Report": {
+        title: "WORK COMPLETION REPORT",
+        refNo: "FP/WCR-2026/0402",
+        validity: "1 month",
+        city: "Abu Dhabi",
+        subject: "Work Completion Report for swimming pool maintenance work",
+        intro: "This report confirms the successful completion of the swimming pool maintenance, deep cleaning, and equipment restoration work as detailed below.",
+        terms: "",
+        account: "Ijaz Hussain\nMeshruq Bank\nIBAN: AE 660330000019200061112\nContact No: +971564378296",
+        footerText: "Thanks and Regards: Fit Pool Building Maintenance L.L.C",
+        footerColor: "#0d05fa",
+        showPricing: false,
+        showAdvance: false
+    },
+    "Site Inspection & Scope Report": {
+        title: "REPORT AND SCOPE OF WORK",
+        refNo: "FP/SWR-2026/0402",
+        validity: "1 month",
+        city: "Abu Dhabi",
+        subject: "Site Inspection Report and Scope of Work",
+        intro: "Following our technical site inspection, this report outlines the scope of work, technical requirements, and standard operating procedures for your property.",
+        terms: "75% Advance payment required prior to commencement.",
+        account: "Ijaz Hussain\nMeshruq Bank\nIBAN: AE 660330000019200061112\nContact No: +971564378296",
+        footerText: "Thanks and Regards: Fit Pool Building Maintenance L.L.C",
+        footerColor: "#0d05fa",
+        showPricing: false,
+        showAdvance: false
+    },
+    "Leakage & Waterproofing Report": {
+        title: "LEAKAGE REPAIR & WATERPROOFING REPORT",
+        refNo: "FP/LWR-2026/0402",
+        validity: "1 month",
+        city: "Abu Dhabi",
+        subject: "Work Execution Report: Swimming Pool Leakage Repair & Waterproofing",
+        intro: "This report outlines the step-by-step technical repair, pressure testing, and waterproofing protocol executed for the swimming pool and pump room infrastructure.",
+        terms: "Payment terms per contract agreement.",
+        account: "Ijaz Hussain\nMeshruq Bank\nIBAN: AE 660330000019200061112\nContact No: +971564378296",
+        footerText: "Thanks and Regards: Fit Pool Building Maintenance L.L.C",
+        footerColor: "#0d05fa",
+        showPricing: false,
+        showAdvance: false
+    }
+};
+
+// Technician Auto-Report Work Presets
+const workPresets = {
+    pool_deep_cleaning: {
+        title: "Cleaning and Maintenance Services",
+        text: `• Apt 601 Pool Deep Cleaning: Performed a complete draining of the pool followed by pressure washing and chemical deep cleaning of all floors and walls.
+• Debris and Algae Removal: Successfully removed all algae, calcium deposits, and general debris from the pool structure.
+• Sanitization: Completed full disinfection and preparation of the pool for refilling.
+• Apt 605 Pool Deep Cleaning: Completed a full deep cleaning of the second pool unit.
+• Pump Room Maintenance: Conducted a thorough cleaning of the pump room located at Apt 605.`
+    },
+    filtration_upgrade: {
+        title: "System Repairs and Modifications",
+        text: `• Filtration System Replacement: Modified the filtration system by removing the existing cartridge filter, which was identified as unsuitable and ineffective for clearing the pool water.
+• Sand Filter Installation: Installed a new 500mm Filter and Multiport valve (50m) to upgrade the system.
+• Media Upgrade: Added 100kg of sand media to the new filtration system to ensure proper water clarity.
+• Lighting Upgrade: Installed 4 new LED warm white swimming pool lights.`
+    },
+    electrical_panel: {
+        title: "Control Panel & Electrical Replacements",
+        text: `The following work has been finished:
+• Electrical Replacements: Installed 2 new magnet contactors and 2 overload relays in the control panel.
+• System Repairs: Replaced the filtration pump to ensure proper pool circulation.
+• Automation Upgrade: Installed a new float valve to automate the swimming pool water filling process.`
+    },
+    waterproofing_5day: {
+        title: "Report and Scope of Work: Waterproofing",
+        text: `This report outlines the standard operating procedure for the waterproofing of the pump room, which covers an area of 40 to 44 square meters. The duration of this project is scheduled for 5 days.
+
+Site Conditions & Challenges: The project presents a level of difficulty due to existing PVC piping, valves, pump, and filters.
+
+5-Day Work Schedule:
+• Day 1: Surface Preparation and Crack Repair - Thorough inspection and filling all holes/cracks using specialized chemical crack filler.
+• Day 2: First Coat Application - Application of cement and liquid waterproofing chemical mixture with 24-hour curing.
+• Day 3: Mesh Reinforcement and Second Coat - Embedding Mapei Mapetex Sel non-woven fabric mesh and applying second liquid membrane coat.
+• Day 4: Complex Detailing and Wall Upturns - Waterproofing around PVC pipes, filters, risers, and extending up walls to 300mm height.
+• Day 5: Final Inspection and Handover Preparation - Final inspection and 72-hour curing prior to active use.`
+    },
+    leakage_repair: {
+        title: "Work Execution Report: Swimming Pool Leakage Repair",
+        text: `• Concrete Cutting & Deep Excavation: Accurately locating leakage point, cutting surface concrete, and excavating underground pipeline.
+• Pipeline Repair & Fixation: Repairing damaged pipeline section and securely stabilizing pipe structure.
+• Pressure Testing: Conducting mandatory pressure test to ensure zero hidden leaks remain in system.
+• System Restart & Final Restoration: Verifying full functionality under normal working conditions and refilling excavated area with concrete surface restoration.`
+    },
+    mep_ac_maintenance: {
+        title: "MEP & AC Maintenance Services",
+        text: `• AC Coil & Filter Cleaning: Conducted deep chemical cleaning of indoor evaporator coils and outdoor condenser units.
+• Refrigerant Top-up: Checked system pressures and topped up R410A refrigerant to optimal operating level.
+• Drainage Flushing: Cleared and flushed all AC condensate drain lines to prevent overflow and water leaks.
+• MEP Inspection: Checked electrical breaker connections, water pump pressure switches, and plumbing fixtures.`
     }
 };
 
@@ -49,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Set date field to today
     const today = new Date();
     const dd = String(today.getDate()).padStart(2, '0');
-    const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
     const yyyy = today.getFullYear();
     document.getElementById("doc-date").value = `${dd}/${mm}/${yyyy}`;
 
@@ -57,12 +159,13 @@ document.addEventListener("DOMContentLoaded", () => {
     loadPreset(currentDocType);
     renderItemsTable();
     onVersionChange();
+    setupDragAndDrop();
     updatePreview();
 });
 
 // Load Presets when changing Document Type
 function loadPreset(docType) {
-    const preset = docPresets[docType];
+    const preset = docPresets[docType] || docPresets.Quotation;
     
     document.getElementById("main-heading").innerText = `Generate ${docType}`;
     document.getElementById("doc-ref").value = preset.refNo;
@@ -72,7 +175,6 @@ function loadPreset(docType) {
     document.getElementById("doc-custom-subject").value = "";
     document.getElementById("custom-subject-group").style.display = "none";
     
-    // Update intro text automatically based on subject
     updateIntroText();
 
     document.getElementById("doc-validity").value = preset.validity;
@@ -84,6 +186,10 @@ function loadPreset(docType) {
     document.getElementById("doc-footer-text").value = preset.footerText;
     document.getElementById("doc-footer-color").value = preset.footerColor;
     document.getElementById("color-hex-val").innerText = preset.footerColor;
+
+    // Apply document section toggle defaults
+    document.getElementById("pricing-table-toggle").checked = preset.showPricing;
+    document.getElementById("advance-remaining-toggle").checked = preset.showAdvance;
 
     updatePreview();
 }
@@ -127,6 +233,12 @@ function updateIntroText() {
         introText = `With reference to the completed ${subjectVal}. We are pleased to submit our invoice for your kind payment.`;
     } else if (currentDocType === "Receipt") {
         introText = `We are pleased to acknowledge receipt of payment for the ${subjectVal} as detailed below.`;
+    } else if (currentDocType === "Work Completion Report") {
+        introText = `This report confirms the successful completion of the ${subjectVal} as detailed below.`;
+    } else if (currentDocType === "Site Inspection & Scope Report") {
+        introText = `Following our site inspection for the ${subjectVal}, this report outlines the scope of work and technical requirements.`;
+    } else if (currentDocType === "Leakage & Waterproofing Report") {
+        introText = `This report details the work execution and technical steps for the ${subjectVal}.`;
     }
     
     document.getElementById("doc-intro").value = introText;
@@ -151,8 +263,113 @@ function setDocumentType(docType) {
     if (docType === "Quotation") document.getElementById("btn-quotation").classList.add("active");
     if (docType === "Invoice") document.getElementById("btn-invoice").classList.add("active");
     if (docType === "Receipt") document.getElementById("btn-receipt").classList.add("active");
+    if (docType === "Work Completion Report") document.getElementById("btn-completion-report").classList.add("active");
+    if (docType === "Site Inspection & Scope Report") document.getElementById("btn-scope-report").classList.add("active");
+    if (docType === "Leakage & Waterproofing Report") document.getElementById("btn-leakage-report").classList.add("active");
 
     loadPreset(docType);
+}
+
+// Technician Auto-Report Preset Helper
+function applyWorkPreset() {
+    const presetKey = document.getElementById("quick-preset-select").value;
+    if (!presetKey || !workPresets[presetKey]) {
+        alert("Please select a Work Category Preset from the dropdown first!");
+        return;
+    }
+
+    const preset = workPresets[presetKey];
+    document.getElementById("doc-scope-title").value = preset.title;
+    document.getElementById("doc-scope").value = preset.text;
+    document.getElementById("scope-toggle").checked = true;
+
+    updatePreview();
+}
+
+// Photo Attachment Handler
+function handlePhotoUpload(event) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    Array.from(files).forEach((file, index) => {
+        if (!file.type.startsWith("image/")) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            uploadedPhotos.push({
+                id: Date.now() + "_" + index + "_" + Math.random().toString(36).substr(2, 5),
+                dataUrl: e.target.result,
+                caption: file.name.replace(/\.[^/.]+$/, "") // default caption from filename
+            });
+            renderPhotosList();
+            updatePreview();
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // Reset input so same file can be chosen again if removed
+    event.target.value = "";
+}
+
+function setupDragAndDrop() {
+    const dropzone = document.getElementById("photo-dropzone");
+    if (!dropzone) return;
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.style.borderColor = "var(--accent)";
+            dropzone.style.backgroundColor = "rgba(59, 130, 246, 0.1)";
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.style.borderColor = "var(--border-dark)";
+            dropzone.style.backgroundColor = "rgba(15, 23, 42, 0.5)";
+        }, false);
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files && files.length > 0) {
+            handlePhotoUpload({ target: { files: files } });
+        }
+    }, false);
+}
+
+function renderPhotosList() {
+    const container = document.getElementById("photos-list-container");
+    container.innerHTML = "";
+
+    uploadedPhotos.forEach(photo => {
+        const item = document.createElement("div");
+        item.className = "photo-card-item";
+        item.innerHTML = `
+            <img src="${photo.dataUrl}" alt="Site Photo">
+            <input type="text" value="${photo.caption}" oninput="updatePhotoCaption('${photo.id}', this.value)" placeholder="Caption (e.g. Before / After Work)">
+            <button type="button" class="btn-remove-photo" onclick="removePhoto('${photo.id}')">×</button>
+        `;
+        container.appendChild(item);
+    });
+}
+
+function updatePhotoCaption(id, val) {
+    const photo = uploadedPhotos.find(p => p.id === id);
+    if (photo) {
+        photo.caption = val;
+        updatePreview();
+    }
+}
+
+function removePhoto(id) {
+    uploadedPhotos = uploadedPhotos.filter(p => p.id !== id);
+    renderPhotosList();
+    updatePreview();
 }
 
 // Render dynamic items in input form
@@ -213,8 +430,72 @@ function toggleVat() {
     updatePreview();
 }
 
+// Format scope text into structured HTML paragraphs and bullet lists
+function formatScopeText(text) {
+    if (!text || !text.trim()) return "";
+
+    const lines = text.split('\n');
+    let html = "";
+    let inList = false;
+
+    lines.forEach(line => {
+        let trimmed = line.trim();
+        if (!trimmed) return;
+
+        if (trimmed.startsWith("•") || trimmed.startsWith("-") || trimmed.startsWith("*")) {
+            if (!inList) {
+                html += "<ul>";
+                inList = true;
+            }
+            let content = trimmed.substring(1).trim();
+
+            // Format bold titles before colon if present (e.g. "Day 1: Surface Prep" -> "<strong>Day 1:</strong> Surface Prep")
+            if (content.includes(":") && !content.startsWith("http")) {
+                const parts = content.split(":");
+                content = `<strong>${parts[0]}:</strong>${parts.slice(1).join(":")}`;
+            }
+
+            html += `<li>${content}</li>`;
+        } else {
+            if (inList) {
+                html += "</ul>";
+                inList = false;
+            }
+            // Format title lines if short or bold
+            if (trimmed.includes(":") && trimmed.length < 80) {
+                const parts = trimmed.split(":");
+                html += `<p style="margin-top: 8px; margin-bottom: 4px;"><strong>${parts[0]}:</strong>${parts.slice(1).join(":")}</p>`;
+            } else {
+                html += `<p style="margin-bottom: 6px;">${trimmed}</p>`;
+            }
+        }
+    });
+
+    if (inList) {
+        html += "</ul>";
+    }
+
+    return html;
+}
+
 // Live Update Preview Section
 function updatePreview() {
+    // Read Section Toggles
+    const showPricing = document.getElementById("pricing-table-toggle").checked;
+    const showPhotos = document.getElementById("photos-toggle").checked;
+    const showScope = document.getElementById("scope-toggle").checked;
+    const showAdvance = document.getElementById("advance-remaining-toggle").checked;
+    const showTerms = document.getElementById("terms-toggle").checked;
+    const showAccount = document.getElementById("account-toggle").checked;
+
+    // Toggle Form Card Visibilities
+    document.getElementById("form-card-pricing").style.display = showPricing ? "block" : "none";
+    document.getElementById("form-card-photos").style.display = showPhotos ? "block" : "none";
+    document.getElementById("form-card-scope").style.display = showScope ? "block" : "none";
+    document.getElementById("form-card-advance").style.display = showAdvance ? "block" : "none";
+    document.getElementById("form-group-terms").style.display = showTerms ? "block" : "none";
+    document.getElementById("form-group-account").style.display = showAccount ? "block" : "none";
+
     // Client info
     const clientName = document.getElementById("client-name").value;
     const clientAddress = document.getElementById("client-address").value;
@@ -262,67 +543,119 @@ function updatePreview() {
     }
     document.getElementById("prev-validity").innerText = validityVal;
     
-    document.getElementById("prev-doc-title").innerText = currentDocType.toUpperCase();
+    const docPreset = docPresets[currentDocType];
+    const docTitle = docPreset ? docPreset.title : currentDocType.toUpperCase();
+    document.getElementById("prev-doc-title").innerText = docTitle;
     
     // Subject and Intro
     const subjectSelect = document.getElementById("doc-subject").value;
     const customSubject = document.getElementById("doc-custom-subject").value;
     const subjectVal = subjectSelect === "Other" ? (customSubject || "maintenance work") : subjectSelect;
     
-    // Dynamic subject text in preview
     const fullSubjectText = `${currentDocType} for ${subjectVal}`;
     document.getElementById("prev-subject").innerText = fullSubjectText;
     document.getElementById("prev-intro").innerText = document.getElementById("doc-intro").value || "";
 
-    // Calculate totals
-    let subtotal = 0;
-    items.forEach(item => {
-        subtotal += item.amount;
-    });
-
-    const isVat = document.getElementById("vat-toggle").checked;
-    let grandTotal = subtotal;
-    
-    if (isVat) {
-        const vatAmount = subtotal * 0.05;
-        grandTotal = subtotal + vatAmount;
-        
-        document.getElementById("prev-row-subtotal").style.display = "table-row";
-        document.getElementById("prev-row-vat").style.display = "table-row";
-        
-        document.getElementById("prev-subtotal-val").innerText = subtotal.toFixed(2);
-        document.getElementById("prev-vat-val").innerText = vatAmount.toFixed(2);
-        document.getElementById("prev-total-label").innerText = "Grand Total:";
+    // Site Photos Preview
+    const photosSection = document.getElementById("prev-photos-section");
+    const photosGrid = document.getElementById("prev-photos-grid");
+    if (showPhotos && uploadedPhotos.length > 0) {
+        photosSection.style.display = "block";
+        photosGrid.innerHTML = "";
+        uploadedPhotos.forEach(photo => {
+            const box = document.createElement("div");
+            box.className = "preview-photo-box";
+            box.innerHTML = `
+                <img src="${photo.dataUrl}" alt="${photo.caption}">
+                ${photo.caption ? `<div class="caption-text">${photo.caption}</div>` : ""}
+            `;
+            photosGrid.appendChild(box);
+        });
     } else {
-        document.getElementById("prev-row-subtotal").style.display = "none";
-        document.getElementById("prev-row-vat").style.display = "none";
-        document.getElementById("prev-total-label").innerText = "Total Amount:";
+        photosSection.style.display = "none";
     }
 
-    document.getElementById("prev-total-val").innerText = grandTotal.toFixed(2);
+    // Scope & Work Bullets Preview
+    const scopeSection = document.getElementById("prev-scope-section");
+    const scopeTitleEl = document.getElementById("prev-scope-title");
+    const scopeContentEl = document.getElementById("prev-scope-content");
+    const scopeTitleVal = document.getElementById("doc-scope-title").value;
+    const scopeTextVal = document.getElementById("doc-scope").value;
 
-    // Update Amount in Words
-    const words = convertNumberToWords(grandTotal);
-    document.getElementById("prev-words-val").innerText = words;
+    if (showScope && (scopeTitleVal.trim() || scopeTextVal.trim())) {
+        scopeSection.style.display = "block";
+        scopeTitleEl.innerText = scopeTitleVal.trim() || "Work Scope & Details";
+        scopeContentEl.innerHTML = formatScopeText(scopeTextVal);
+    } else {
+        scopeSection.style.display = "none";
+    }
 
-    // Render Preview Table Items
-    const prevTbody = document.getElementById("prev-table-tbody");
-    prevTbody.innerHTML = "";
-    items.forEach((item, idx) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${String(idx + 1).padStart(2, '0')}</td>
-            <td style="white-space: pre-wrap;">${item.desc || "Item Description"}</td>
-            <td>${item.qty}</td>
-            <td>${item.amount.toFixed(2)}</td>
-        `;
-        prevTbody.appendChild(tr);
-    });
+    // Items Pricing Table Preview
+    const prevTableContainer = document.getElementById("prev-table-container");
+    if (showPricing) {
+        prevTableContainer.style.display = "block";
+
+        let subtotal = 0;
+        items.forEach(item => {
+            subtotal += item.amount;
+        });
+
+        const isVat = document.getElementById("vat-toggle").checked;
+        let grandTotal = subtotal;
+        
+        if (isVat) {
+            const vatAmount = subtotal * 0.05;
+            grandTotal = subtotal + vatAmount;
+            
+            document.getElementById("prev-row-subtotal").style.display = "table-row";
+            document.getElementById("prev-row-vat").style.display = "table-row";
+            
+            document.getElementById("prev-subtotal-val").innerText = subtotal.toFixed(2);
+            document.getElementById("prev-vat-val").innerText = vatAmount.toFixed(2);
+            document.getElementById("prev-total-label").innerText = "Grand Total:";
+        } else {
+            document.getElementById("prev-row-subtotal").style.display = "none";
+            document.getElementById("prev-row-vat").style.display = "none";
+            document.getElementById("prev-total-label").innerText = "Total Amount:";
+        }
+
+        document.getElementById("prev-total-val").innerText = grandTotal.toFixed(2);
+
+        const words = convertNumberToWords(grandTotal);
+        document.getElementById("prev-words-val").innerText = words;
+
+        const prevTbody = document.getElementById("prev-table-tbody");
+        prevTbody.innerHTML = "";
+        items.forEach((item, idx) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${String(idx + 1).padStart(2, '0')}</td>
+                <td style="white-space: pre-wrap;">${item.desc || "Item Description"}</td>
+                <td>${item.qty}</td>
+                <td>${item.amount.toFixed(2)}</td>
+            `;
+            prevTbody.appendChild(tr);
+        });
+    } else {
+        prevTableContainer.style.display = "none";
+    }
+
+    // Advance & Remaining Payment Section
+    const advanceSection = document.getElementById("prev-advance-remaining-section");
+    if (showAdvance) {
+        advanceSection.style.display = "block";
+        const advVal = parseFloat(document.getElementById("doc-advance-amount").value) || 0;
+        const remVal = parseFloat(document.getElementById("doc-remaining-amount").value) || 0;
+        document.getElementById("prev-advance-val").innerText = `${advVal.toFixed(2)} AED`;
+        document.getElementById("prev-remaining-val").innerText = `${remVal.toFixed(2)} AED`;
+    } else {
+        advanceSection.style.display = "none";
+    }
 
     // Terms & Conditions section
     const termsVal = document.getElementById("doc-terms").value;
     const termsSection = document.getElementById("prev-terms-section");
-    if (termsVal.trim()) {
+    if (showTerms && termsVal.trim()) {
         termsSection.style.display = "block";
         document.getElementById("prev-terms").innerText = termsVal;
     } else {
@@ -332,7 +665,7 @@ function updatePreview() {
     // Account details section
     const accVal = document.getElementById("doc-account").value;
     const accSection = document.getElementById("prev-account-section");
-    if (accVal.trim()) {
+    if (showAccount && accVal.trim()) {
         accSection.style.display = "block";
         document.getElementById("prev-account").innerText = accVal;
     } else {
@@ -377,6 +710,13 @@ function generateDocument(format) {
     const subjectVal = subjectSelect === "Other" ? (customSubject || "maintenance work") : subjectSelect;
     const subjectLine = `${currentDocType} for ${subjectVal}`;
 
+    const showPricing = document.getElementById("pricing-table-toggle").checked;
+    const showPhotos = document.getElementById("photos-toggle").checked;
+    const showScope = document.getElementById("scope-toggle").checked;
+    const showAdvance = document.getElementById("advance-remaining-toggle").checked;
+    const showTerms = document.getElementById("terms-toggle").checked;
+    const showAccount = document.getElementById("account-toggle").checked;
+
     // Assemble payload
     const payload = {
         doc_type: currentDocType,
@@ -398,31 +738,43 @@ function generateDocument(format) {
         footer_text: document.getElementById("doc-footer-text").value,
         footer_color: document.getElementById("doc-footer-color").value,
         format: format,
-        version: document.getElementById("template-version").value
+        version: document.getElementById("template-version").value,
+        
+        // Extended Report & Photo Features
+        photos: uploadedPhotos,
+        show_pricing: showPricing,
+        show_photos: showPhotos,
+        show_scope: showScope,
+        show_advance: showAdvance,
+        show_terms: showTerms,
+        show_account: showAccount,
+        advance_amount: parseFloat(document.getElementById("doc-advance-amount").value) || 0,
+        remaining_amount: parseFloat(document.getElementById("doc-remaining-amount").value) || 0,
+        scope_title: document.getElementById("doc-scope-title").value,
+        scope_text: document.getElementById("doc-scope").value
     };
 
     // Show loading spinner
     document.getElementById("loading-overlay").style.display = "flex";
 
     if (format === 'pdf') {
-        // Clone the preview element to force standard desktop A4 dimensions during PDF capture
+        // Clone preview element to force standard desktop print dimensions during PDF capture
         const sourceElement = document.getElementById("document-preview");
         const element = sourceElement.cloneNode(true);
         
-        // Apply inline styles to force correct desktop print sizing on the clone
+        // Force A4 dimensions on clone
         element.style.boxSizing = "border-box";
         element.style.width = "794px"; // 210mm at 96 DPI
-        element.style.height = "1123px"; // 297mm at 96 DPI (exact single A4 page height)
+        element.style.height = "auto";
         element.style.minHeight = "1123px";
-        element.style.maxHeight = "1123px";
-        element.style.overflow = "hidden";
+        element.style.overflow = "visible";
         element.style.padding = "45px 50px";
         element.style.fontSize = "11pt";
         element.style.transform = "none";
         element.style.borderRadius = "0";
         element.style.boxShadow = "none";
         
-        // Ensure child elements inside the clone match their correct desktop dimensions
+        // Adjust elements inside clone
         element.querySelectorAll(".company-header-real").forEach(header => {
             header.style.height = "85px";
             header.style.marginBottom = "25px";
@@ -468,29 +820,8 @@ function generateDocument(format) {
             tbl.style.fontSize = "0.9rem";
             tbl.style.width = "100%";
         });
-        element.querySelectorAll(".preview-meta-grid").forEach(grid => {
-            grid.style.fontSize = "0.9rem";
-            grid.style.display = "grid";
-        });
-        element.querySelectorAll(".preview-client-box").forEach(box => {
-            box.style.fontSize = "0.95rem";
-        });
-        element.querySelectorAll(".preview-subject-line").forEach(sub => {
-            sub.style.fontSize = "0.95rem";
-        });
-        element.querySelectorAll(".preview-salutation, .preview-intro").forEach(el => {
-            el.style.fontSize = "0.95rem";
-        });
-        element.querySelectorAll(".preview-terms-section, .preview-account-section").forEach(sec => {
-            sec.style.fontSize = "0.85rem";
-        });
-        element.querySelectorAll(".preview-footer-banner").forEach(footer => {
-            footer.style.fontSize = "0.9rem";
-            footer.style.borderRadius = "4px";
-            footer.style.padding = "8px";
-        });
 
-        // Create an off-screen container to mount the styled clone
+        // Off-screen container
         const container = document.createElement("div");
         container.style.position = "absolute";
         container.style.left = "-9999px";
@@ -500,18 +831,18 @@ function generateDocument(format) {
 
         const safeClientName = clientName.replace(/[^a-zA-Z0-9]/g, "_");
         const formattedDate = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
-        const filename = `${currentDocType}_${safeClientName}_${formattedDate}.pdf`;
+        const filename = `${currentDocType.replace(/\s+/g, "_")}_${safeClientName}_${formattedDate}.pdf`;
 
         const opt = {
-            margin:       0,
+            margin:       10,
             filename:     filename,
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true, logging: false },
-            jsPDF:        { unit: 'px', format: [794, 1123], hotfixes: ['px_scaling'] },
+            jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait' },
             pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
         };
 
-        // Render the clone to PDF and save
+        // Save PDF
         html2pdf().set(opt).from(element).save().then(() => {
             document.body.removeChild(container);
             document.getElementById("loading-overlay").style.display = "none";
@@ -525,7 +856,7 @@ function generateDocument(format) {
         return;
     }
 
-    // Call /generate endpoint with JSON payload to download the DOCX file directly from backend
+    // DOCX download via POST to /generate
     fetch("/generate", {
         method: "POST",
         headers: {
@@ -535,14 +866,12 @@ function generateDocument(format) {
     })
     .then(response => {
         if (!response.ok) {
-            // Read response as JSON to extract custom error message, fallback to generic
             return response.json()
                 .catch(() => ({ error: "Server error occurred during generation." }))
                 .then(err => {
                     throw new Error(err.error || "Failed to generate document");
                 });
         }
-        // Extract filename from Content-Disposition header
         let filename = "document";
         const disposition = response.headers.get("Content-Disposition");
         if (disposition && disposition.indexOf("filename=") !== -1) {
@@ -551,7 +880,6 @@ function generateDocument(format) {
                 filename = matches[1].replace(/[";]/g, "").trim();
             }
         } else {
-            // Fallback extension based on format
             filename = `Document_${clientName.replace(/\s+/g, "_")}_${new Date().toLocaleDateString('en-GB').replace(/\//g, '-')}.${format}`;
         }
         
@@ -560,7 +888,6 @@ function generateDocument(format) {
     .then(data => {
         document.getElementById("loading-overlay").style.display = "none";
         
-        // Trigger programmatic browser download
         const url = window.URL.createObjectURL(data.blob);
         const a = document.createElement("a");
         a.style.display = "none";
@@ -600,7 +927,6 @@ function convertNumberToWords(amount) {
         return groupText.trim();
     }
 
-    // Ensure double-digit accuracy
     let parts = parseFloat(amount).toFixed(2).split('.');
     let dirhamsVal = parseInt(parts[0]);
     let filsVal = parseInt(parts[1]);

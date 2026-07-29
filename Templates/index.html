@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fit Pool Document Generator</title>
-    <meta name="description" content="Generate high-quality invoices, quotations, and receipts dynamically for Fit Pool Building Maintenance L.L.C">
+    <title>Fit Pool Document & Report Generator</title>
+    <meta name="description" content="Generate high-quality invoices, quotations, receipts, work completion reports, and scope documents dynamically with site photos for Fit Pool Building Maintenance L.L.C">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,18 +41,57 @@
                     <button class="doc-btn" id="btn-receipt" onclick="setDocumentType('Receipt')">
                         <span class="icon">💸</span> Payment Receipt
                     </button>
+                    <button class="doc-btn" id="btn-completion-report" onclick="setDocumentType('Work Completion Report')">
+                        <span class="icon">📋</span> Work Completion Report
+                    </button>
+                    <button class="doc-btn" id="btn-scope-report" onclick="setDocumentType('Site Inspection & Scope Report')">
+                        <span class="icon">🛠️</span> Scope of Work Report
+                    </button>
+                    <button class="doc-btn" id="btn-leakage-report" onclick="setDocumentType('Leakage & Waterproofing Report')">
+                        <span class="icon">🌊</span> Leakage Repair Report
+                    </button>
                 </div>
             </div>
 
             <div class="nav-section">
-                <h3>Options</h3>
-                <div class="option-card" style="display: flex; flex-direction: column; gap: 14px;">
+                <h3>Section Toggles</h3>
+                <div class="option-card" style="display: flex; flex-direction: column; gap: 10px;">
+                    <label class="switch-container">
+                        <input type="checkbox" id="pricing-table-toggle" checked onchange="updatePreview()">
+                        <span class="checkmark"></span>
+                        Pricing Table
+                    </label>
                     <label class="switch-container">
                         <input type="checkbox" id="vat-toggle" onchange="toggleVat()">
                         <span class="checkmark"></span>
                         Enable VAT (5%)
                     </label>
-                    <div class="version-select-wrapper" style="border-top: 1px solid var(--border-dark); padding-top: 12px; display: flex; flex-direction: column; gap: 6px;">
+                    <label class="switch-container">
+                        <input type="checkbox" id="photos-toggle" checked onchange="updatePreview()">
+                        <span class="checkmark"></span>
+                        Site Photos
+                    </label>
+                    <label class="switch-container">
+                        <input type="checkbox" id="scope-toggle" checked onchange="updatePreview()">
+                        <span class="checkmark"></span>
+                        Scope / Work Bullets
+                    </label>
+                    <label class="switch-container">
+                        <input type="checkbox" id="advance-remaining-toggle" onchange="updatePreview()">
+                        <span class="checkmark"></span>
+                        Advance / Remaining Balance
+                    </label>
+                    <label class="switch-container">
+                        <input type="checkbox" id="terms-toggle" checked onchange="updatePreview()">
+                        <span class="checkmark"></span>
+                        Payment Terms
+                    </label>
+                    <label class="switch-container">
+                        <input type="checkbox" id="account-toggle" checked onchange="updatePreview()">
+                        <span class="checkmark"></span>
+                        Bank Account Details
+                    </label>
+                    <div class="version-select-wrapper" style="border-top: 1px solid var(--border-dark); padding-top: 10px; margin-top: 4px; display: flex; flex-direction: column; gap: 6px;">
                         <label for="template-version" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 700;">Template Layout</label>
                         <select id="template-version" onchange="onVersionChange()" style="background-color: #0f172a; border: 1px solid var(--border-dark); border-radius: 8px; color: var(--text-main); padding: 8px 12px; font-family: var(--font-body); font-size: 0.9rem; outline: none; width: 100%; cursor: pointer;">
                             <option value="1.0">Original (Classic)</option>
@@ -64,7 +103,7 @@
 
             <div class="sidebar-footer">
                 <p>Fit Pool Document Automation</p>
-                <span class="version">v2.0 (Dynamic)</span>
+                <span class="version">v2.5 (Pro Report & Photos)</span>
             </div>
         </aside>
 
@@ -84,7 +123,7 @@
             <section class="control-panel">
                 <div class="panel-header">
                     <h1 id="main-heading">Generate Quotation</h1>
-                    <p class="subtitle">Fill in the fields below to update the document dynamically.</p>
+                    <p class="subtitle">Fill in details, select technician auto-report templates, and attach site photos.</p>
                 </div>
 
                 <div class="form-scroll-container">
@@ -97,8 +136,8 @@
                                 <input type="text" id="client-name" placeholder="Enter Client or Company Name" required oninput="updatePreview()">
                             </div>
                             <div class="form-group full-width">
-                                <label for="client-address">Address / Apt Details</label>
-                                <input type="text" id="client-address" placeholder="e.g. Al Raha Loft 1, Apt 601, Dubai" oninput="updatePreview()">
+                                <label for="client-address">Address / Apt / Villa Details</label>
+                                <input type="text" id="client-address" placeholder="e.g. Al Raha Loft 1, Apt 601, Abu Dhabi" oninput="updatePreview()">
                             </div>
                             <div class="form-group">
                                 <label for="client-contact">Contact No</label>
@@ -158,10 +197,64 @@
                         </div>
                     </div>
 
-                    <!-- Section 3: Line Items -->
-                    <div class="form-section-card">
+                    <!-- Section 3: Technician Auto-Report Helper & Work Scope -->
+                    <div class="form-section-card" id="form-card-scope">
                         <div class="section-title-action">
-                            <h3>Line Items</h3>
+                            <h3>🤖 Technician Auto-Report Assistant</h3>
+                        </div>
+                        <p class="subtitle" style="font-size: 0.85rem; margin-bottom: 12px; color: var(--text-muted);">Select a standard work service below to automatically generate formal English report details and bullet points.</p>
+                        
+                        <div class="form-grid">
+                            <div class="form-group full-width" style="display: flex; gap: 10px; align-items: center;">
+                                <select id="quick-preset-select" style="flex: 1; padding: 10px; background: #0f172a; color: var(--text-main); border: 1px solid var(--border-dark); border-radius: 8px;">
+                                    <option value="">-- Select Work Category Preset --</option>
+                                    <option value="pool_deep_cleaning">🏊‍♂️ Swimming Pool Deep Cleaning & Sanitization</option>
+                                    <option value="filtration_upgrade">⚙️ Filtration System Upgrade & Sand Media</option>
+                                    <option value="electrical_panel">⚡ Control Panel & Electrical Replacements</option>
+                                    <option value="waterproofing_5day">🛡️ Pump Room Waterproofing (5-Day Schedule)</option>
+                                    <option value="leakage_repair">💧 Swimming Pool Leakage Repair (4-Step Process)</option>
+                                    <option value="mep_ac_maintenance">🔧 MEP & AC Maintenance Services</option>
+                                </select>
+                                <button type="button" class="btn-action-small" onclick="applyWorkPreset()" style="padding: 10px 16px; font-weight: 700; white-space: nowrap;">✨ Auto-Fill Report</button>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="doc-scope-title">Report / Scope Section Title</label>
+                                <input type="text" id="doc-scope-title" placeholder="e.g. Cleaning and Maintenance Services / Project Overview" oninput="updatePreview()">
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="doc-scope">Work Details & Bullet Points</label>
+                                <textarea id="doc-scope" rows="6" placeholder="Enter work details, completed tasks, or scope bullet points (one bullet per line starting with • or -)..." oninput="updatePreview()"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Site Photos Attachment -->
+                    <div class="form-section-card" id="form-card-photos">
+                        <div class="section-title-action">
+                            <h3>📸 Site Photos Attachment</h3>
+                            <button type="button" class="btn-action-small" onclick="document.getElementById('photo-upload-input').click()">+ Add Photos</button>
+                        </div>
+                        <p class="subtitle" style="font-size: 0.85rem; margin-bottom: 12px; color: var(--text-muted);">Attach site inspection or completed work photos from Mobile Camera or PC. Add captions for each image.</p>
+                        
+                        <input type="file" id="photo-upload-input" accept="image/*" multiple style="display: none;" onchange="handlePhotoUpload(event)">
+                        
+                        <div class="photo-dropzone" id="photo-dropzone" onclick="document.getElementById('photo-upload-input').click()">
+                            <div class="dropzone-icon">📷</div>
+                            <p><strong>Click to upload</strong> or drag & drop site photos</p>
+                            <span>Supports JPG, PNG, WEBP from Phone Camera or Files</span>
+                        </div>
+
+                        <div class="photos-list-grid" id="photos-list-container">
+                            <!-- Dynamically added photo items -->
+                        </div>
+                    </div>
+
+                    <!-- Section 5: Line Items Table -->
+                    <div class="form-section-card" id="form-card-pricing">
+                        <div class="section-title-action">
+                            <h3>Line Items (Pricing Table)</h3>
                             <button type="button" class="btn-action-small" onclick="addItemRow()">+ Add Item</button>
                         </div>
                         
@@ -182,15 +275,30 @@
                         </div>
                     </div>
 
-                    <!-- Section 4: Terms & Bank Info -->
+                    <!-- Section 6: Advance & Remaining Payment Breakdown -->
+                    <div class="form-section-card" id="form-card-advance" style="display: none;">
+                        <h3>Advance & Remaining Payment Breakdown</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="doc-advance-amount">Advance Payment Received (AED)</label>
+                                <input type="number" step="0.01" id="doc-advance-amount" placeholder="e.g. 3825.00" oninput="updatePreview()">
+                            </div>
+                            <div class="form-group">
+                                <label for="doc-remaining-amount">Remaining Payment Balance (AED)</label>
+                                <input type="number" step="0.01" id="doc-remaining-amount" placeholder="e.g. 4475.00" oninput="updatePreview()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 7: Terms, Bank & Footer Settings -->
                     <div class="form-section-card">
                         <h3>Terms, Account & Footer Settings</h3>
                         <div class="form-grid">
-                            <div class="form-group full-width">
+                            <div class="form-group full-width" id="form-group-terms">
                                 <label for="doc-terms">Payment Terms & Conditions</label>
                                 <textarea id="doc-terms" rows="3" placeholder="Enter payment terms..." oninput="updatePreview()"></textarea>
                             </div>
-                            <div class="form-group full-width">
+                            <div class="form-group full-width" id="form-group-account">
                                 <label for="doc-account">Bank Account Details</label>
                                 <textarea id="doc-account" rows="4" placeholder="Enter bank account details..." oninput="updatePreview()"></textarea>
                             </div>
@@ -254,7 +362,7 @@
                             <div style="text-align: right; line-height: 1.5; font-size: 0.95rem; color: #111827;">
                                 <p><strong style="font-weight: bold; color: #111827;">Date:</strong> <span id="prev-date">25/06/2026</span>&nbsp;&nbsp;<span id="prev-date-type" style="font-weight: 500;">Invoice</span></p>
                                 <p id="prev-ref-container"><strong style="font-weight: bold; color: #111827;">Ref:</strong> <span id="prev-ref">FP/QT-2026/0402</span></p>
-                                <p><strong style="font-weight: bold; color: #111827;">Validity:</strong> <span id="prev-validity">1 month</span></p>
+                                <p id="prev-validity-container"><strong style="font-weight: bold; color: #111827;">Validity:</strong> <span id="prev-validity">1 month</span></p>
                             </div>
                         </div>
 
@@ -281,39 +389,64 @@
                         <p class="preview-salutation">Dear Sir/ Madam,</p>
                         <p class="preview-intro" id="prev-intro">With reference to your inquiry for the swimming pool maintenance work. We are pleased to submit our best competitive offer for your kind consideration.</p>
 
-                        <!-- Preview Table -->
-                        <table class="preview-items-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 8%;">No</th>
-                                    <th style="width: 57%;">Description</th>
-                                    <th style="width: 13%;">Qty</th>
-                                    <th style="width: 22%;">Total (AED)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="prev-table-tbody">
-                                <!-- Generated by JS -->
-                            </tbody>
-                            <tfoot>
-                                <tr id="prev-row-subtotal" style="display: none;">
-                                    <td colspan="3" class="text-right"><strong>Subtotal Amount:</strong></td>
-                                    <td id="prev-subtotal-val">0.00</td>
-                                </tr>
-                                <tr id="prev-row-vat" style="display: none;">
-                                    <td colspan="3" class="text-right"><strong>VAT (5%):</strong></td>
-                                    <td id="prev-vat-val">0.00</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3" class="text-right"><strong id="prev-total-label">Total Amount:</strong></td>
-                                    <td id="prev-total-val" style="font-weight: bold;">0.00</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" class="words-cell">
-                                        <strong>Amount in words AED:</strong> <span id="prev-words-val">Zero AED Only</span>
-                                    </td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                        <!-- Site Photos Preview Section -->
+                        <div class="preview-photos-section" id="prev-photos-section" style="display: none;">
+                            <div class="preview-photos-grid" id="prev-photos-grid">
+                                <!-- Rendered dynamically by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Scope & Details Preview Section -->
+                        <div class="preview-scope-section" id="prev-scope-section" style="display: none;">
+                            <h4 id="prev-scope-title" class="preview-section-title">Cleaning and Maintenance Services</h4>
+                            <div id="prev-scope-content" class="preview-scope-content">
+                                <!-- Rendered dynamically by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Preview Items Table Container -->
+                        <div id="prev-table-container">
+                            <table class="preview-items-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 8%;">No</th>
+                                        <th style="width: 57%;">Description</th>
+                                        <th style="width: 13%;">Qty</th>
+                                        <th style="width: 22%;">Total (AED)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="prev-table-tbody">
+                                    <!-- Generated by JS -->
+                                </tbody>
+                                <tfoot>
+                                    <tr id="prev-row-subtotal" style="display: none;">
+                                        <td colspan="3" class="text-right"><strong>Subtotal Amount:</strong></td>
+                                        <td id="prev-subtotal-val">0.00</td>
+                                    </tr>
+                                    <tr id="prev-row-vat" style="display: none;">
+                                        <td colspan="3" class="text-right"><strong>VAT (5%):</strong></td>
+                                        <td id="prev-vat-val">0.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-right"><strong id="prev-total-label">Total Amount:</strong></td>
+                                        <td id="prev-total-val" style="font-weight: bold;">0.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" class="words-cell">
+                                            <strong>Amount in words AED:</strong> <span id="prev-words-val">Zero AED Only</span>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <!-- Advance & Remaining Payment Section -->
+                        <div class="preview-advance-remaining-section" id="prev-advance-remaining-section" style="display: none;">
+                            <div class="advance-highlight-box">
+                                <p><strong>Advance Payment Received:</strong> <span id="prev-advance-val">0.00 AED</span></p>
+                                <p><strong>Remaining Payment Balance:</strong> <span id="prev-remaining-val">0.00 AED</span></p>
+                            </div>
+                        </div>
 
                         <!-- Terms and bank details -->
                         <div class="preview-terms-section" id="prev-terms-section">
