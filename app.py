@@ -121,6 +121,7 @@ def generate():
         intro_text = data.get("intro_text", "").strip()
         city = data.get("city", "Abu Dhabi").strip()
         validity = data.get("validity", "1 month").strip()
+        show_validity = data.get("show_validity", True)
         
         items = data.get("items", [])
         vat_enabled = data.get("vat_enabled", False)
@@ -165,10 +166,11 @@ def generate():
         temp_filename = os.path.join(temp_dir, "temp_render.docx")
         doc_tpl.save(temp_filename)
 
-        # Step 2: Open and apply edits to paragraphs and add table
+        # Step 2: Open and apply edits to paragraphs
         doc_final = Document(temp_filename)
 
         # Find and replace headers/metadata
+        heading_p = None
         for paragraph in doc_final.paragraphs:
             txt = paragraph.text.strip()
             
@@ -183,10 +185,14 @@ def generate():
                 
             # 3. Update Validity
             elif txt.startswith("Validity:"):
-                update_paragraph_text_preserving_style(paragraph, f"Validity: {validity}")
+                if show_validity and validity:
+                    update_paragraph_text_preserving_style(paragraph, f"Validity: {validity}")
+                else:
+                    update_paragraph_text_preserving_style(paragraph, "")
                 
             # 4. Update Main Heading (centered, search runs)
             elif txt in ["PAYMENT RECEIPT", "QUOTATION", "INVOICE"]:
+                heading_p = paragraph
                 for run in paragraph.runs:
                     cleaned = run.text.strip()
                     if cleaned in ["PAYMENT RECEIPT", "QUOTATION", "INVOICE"]:
@@ -204,9 +210,8 @@ def generate():
                   (len(txt) > 40 and "maintenance work" in txt.lower() and txt.startswith("Dear") is False)):
                 update_paragraph_text_preserving_style(paragraph, intro_text)
 
-        # Step 3: Insert Site Photos into Word document (Grid Layout)
+        # Step 3: Insert Site Photos right under Document Heading Badge
         if show_photos and photos:
-            doc_final.add_paragraph("")
             num_photos = len(photos)
             cols = 4 if num_photos >= 4 else (2 if num_photos >= 2 else 1)
             rows = (num_photos + cols - 1) // cols
@@ -243,6 +248,10 @@ def generate():
                             run_cap.font.color.rgb = RGBColor(55, 65, 81)
                     except Exception as img_err:
                         print(f"Error processing image {i}: {img_err}")
+            
+            # Position photo table right after heading paragraph if found
+            if heading_p:
+                heading_p._p.addnext(photo_table._tbl)
 
         # Step 4: Insert Scope & Work Details into Word document
         if show_scope and (scope_title or scope_text):
@@ -251,7 +260,7 @@ def generate():
                 p_stitle = doc_final.add_paragraph()
                 run_stitle = p_stitle.add_run(scope_title)
                 run_stitle.bold = True
-                run_stitle.font.size = Pt(12)
+                run_stitle.font.size = Pt(11.5)
                 run_stitle.font.color.rgb = RGBColor(13, 5, 250)
             
             if scope_text:

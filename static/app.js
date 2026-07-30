@@ -1,5 +1,6 @@
 // Document States and Defaults
 let currentDocType = "Quotation";
+let showValidity = true;
 let items = [
     { desc: "Standard Swimming pool maintenance chemical and cleaning service", qty: "1 No's", amount: 1500.00 }
 ];
@@ -19,7 +20,8 @@ const docPresets = {
         footerText: "Thanks and Regards: Fit Pool Building Maintenance L.L.C",
         footerColor: "#0d05fa",
         showPricing: true,
-        showAdvance: false
+        showAdvance: false,
+        showValidity: true
     },
     Invoice: {
         title: "INVOICE",
@@ -33,7 +35,8 @@ const docPresets = {
         footerText: "Thanks and Regards: Fit Pool Building Maintenance L.L.C",
         footerColor: "#0d05fa",
         showPricing: true,
-        showAdvance: false
+        showAdvance: false,
+        showValidity: false
     },
     Receipt: {
         title: "PAYMENT RECEIPT",
@@ -47,7 +50,8 @@ const docPresets = {
         footerText: "Thanks and Regards: Fit Pool Building Maintenance L.L.C",
         footerColor: "#0d05fa",
         showPricing: true,
-        showAdvance: false
+        showAdvance: false,
+        showValidity: false
     },
     "Work Completion Report": {
         title: "WORK COMPLETION REPORT",
@@ -60,8 +64,9 @@ const docPresets = {
         account: "Ijaz Hussain\nMeshruq Bank\nIBAN: AE 660330000019200061112\nContact No: +971564378296",
         footerText: "Thanks and Regards: Fit Pool Building Maintenance L.L.C",
         footerColor: "#0d05fa",
-        showPricing: false,
-        showAdvance: false
+        showPricing: true,
+        showAdvance: false,
+        showValidity: false
     },
     "Site Inspection & Scope Report": {
         title: "REPORT AND SCOPE OF WORK",
@@ -75,7 +80,8 @@ const docPresets = {
         footerText: "Thanks and Regards: Fit Pool Building Maintenance L.L.C",
         footerColor: "#0d05fa",
         showPricing: false,
-        showAdvance: false
+        showAdvance: false,
+        showValidity: true
     },
     "Leakage & Waterproofing Report": {
         title: "LEAKAGE REPAIR & WATERPROOFING REPORT",
@@ -89,37 +95,66 @@ const docPresets = {
         footerText: "Thanks and Regards: Fit Pool Building Maintenance L.L.C",
         footerColor: "#0d05fa",
         showPricing: false,
-        showAdvance: false
+        showAdvance: false,
+        showValidity: true
     }
 };
 
 // Technician Auto-Report Work Presets
 const workPresets = {
+    pool_light_replacement: {
+        title: "Swimming Pool Light Replacement",
+        subject: "swimming pool light replacement",
+        scope: `• Pool Light Replacement: Replaced non-working underwater pool light fixture with a new LED warm white light unit.
+• Transformer & Wiring Inspection: Checked 12V safety transformer connections and verified safe underwater electrical operation.
+• Testing & Verification: All pool lights tested, fully operational, and illuminated successfully.`,
+        item: { desc: "Swimming Pool under water light .", qty: "1 No's", amount: 450.00 }
+    },
+    pool_overall_repair: {
+        title: "COMPLETED WORKS & REPLACED COMPONENTS",
+        subject: "swimming pool maintenance work",
+        scope: `• Inlet Nozzles: Replaced 2 damaged inlet nozzles.
+• Pool Tile & Grouting: Repaired tile and applied missing grouting across pool floor and walls.
+• Pool Lights: Repaired and restored functionality to 2 non-working swimming pool lights.
+• Light Electrical Transformers: Replaced 2 electrical transformers for both pool lights.
+• Pool Light Magnetic Contactor: Replaced 1 burnt/noisy magnetic contactor electrical part for the pool lights.
+• Filtration Pump Relay: Replaced 1 noisy magnetic contactor overload relay for the swimming pool filtration pump.
+• Filtration Pump Valve: Replaced 1 damaged filtration pump valve.
+• On-Site Technical Labor: Complete physical installation, electrical testing, and maintenance work.`,
+        item: { desc: "Swimming Pool maintenance, tile grouting, light & pump repair parts.", qty: "1 Lot", amount: 2100.00 }
+    },
     pool_deep_cleaning: {
         title: "Cleaning and Maintenance Services",
-        text: `• Apt 601 Pool Deep Cleaning: Performed a complete draining of the pool followed by pressure washing and chemical deep cleaning of all floors and walls.
+        subject: "swimming pool maintenance work",
+        scope: `• Apt 601 Pool Deep Cleaning: Performed a complete draining of the pool followed by pressure washing and chemical deep cleaning of all floors and walls.
 • Debris and Algae Removal: Successfully removed all algae, calcium deposits, and general debris from the pool structure.
 • Sanitization: Completed full disinfection and preparation of the pool for refilling.
 • Apt 605 Pool Deep Cleaning: Completed a full deep cleaning of the second pool unit.
-• Pump Room Maintenance: Conducted a thorough cleaning of the pump room located at Apt 605.`
+• Pump Room Maintenance: Conducted a thorough cleaning of the pump room located at Apt 605.`,
+        item: { desc: "Swimming pool chemical deep cleaning & sanitization service.", qty: "1 Job", amount: 1500.00 }
     },
     filtration_upgrade: {
         title: "System Repairs and Modifications",
-        text: `• Filtration System Replacement: Modified the filtration system by removing the existing cartridge filter, which was identified as unsuitable and ineffective for clearing the pool water.
+        subject: "swimming pool maintenance work",
+        scope: `• Filtration System Replacement: Modified the filtration system by removing the existing cartridge filter, which was identified as unsuitable and ineffective for clearing the pool water.
 • Sand Filter Installation: Installed a new 500mm Filter and Multiport valve (50m) to upgrade the system.
 • Media Upgrade: Added 100kg of sand media to the new filtration system to ensure proper water clarity.
-• Lighting Upgrade: Installed 4 new LED warm white swimming pool lights.`
+• Lighting Upgrade: Installed 4 new LED warm white swimming pool lights.`,
+        item: { desc: "Filter 500mm, Multiport valve, 100kg Sand Media & 4 LED Lights.", qty: "1 Set", amount: 7650.00 }
     },
     electrical_panel: {
         title: "Control Panel & Electrical Replacements",
-        text: `The following work has been finished:
+        subject: "electrical maintenance work",
+        scope: `The following work has been finished:
 • Electrical Replacements: Installed 2 new magnet contactors and 2 overload relays in the control panel.
 • System Repairs: Replaced the filtration pump to ensure proper pool circulation.
-• Automation Upgrade: Installed a new float valve to automate the swimming pool water filling process.`
+• Automation Upgrade: Installed a new float valve to automate the swimming pool water filling process.`,
+        item: { desc: "Control Panel Magnet contactors, relays & Float valve automation.", qty: "1 Set", amount: 2100.00 }
     },
     waterproofing_5day: {
         title: "Report and Scope of Work: Waterproofing",
-        text: `This report outlines the standard operating procedure for the waterproofing of the pump room, which covers an area of 40 to 44 square meters. The duration of this project is scheduled for 5 days.
+        subject: "building maintenance work",
+        scope: `This report outlines the standard operating procedure for the waterproofing of the pump room, which covers an area of 40 to 44 square meters. The duration of this project is scheduled for 5 days.
 
 Site Conditions & Challenges: The project presents a level of difficulty due to existing PVC piping, valves, pump, and filters.
 
@@ -128,21 +163,51 @@ Site Conditions & Challenges: The project presents a level of difficulty due to 
 • Day 2: First Coat Application - Application of cement and liquid waterproofing chemical mixture with 24-hour curing.
 • Day 3: Mesh Reinforcement and Second Coat - Embedding Mapei Mapetex Sel non-woven fabric mesh and applying second liquid membrane coat.
 • Day 4: Complex Detailing and Wall Upturns - Waterproofing around PVC pipes, filters, risers, and extending up walls to 300mm height.
-• Day 5: Final Inspection and Handover Preparation - Final inspection and 72-hour curing prior to active use.`
+• Day 5: Final Inspection and Handover Preparation - Final inspection and 72-hour curing prior to active use.`,
+        item: { desc: "Pump room 5-day liquid membrane waterproofing treatment.", qty: "44 Sqm", amount: 4500.00 }
     },
     leakage_repair: {
         title: "Work Execution Report: Swimming Pool Leakage Repair",
-        text: `• Concrete Cutting & Deep Excavation: Accurately locating leakage point, cutting surface concrete, and excavating underground pipeline.
+        subject: "plumbing maintenance work",
+        scope: `• Concrete Cutting & Deep Excavation: Accurately locating leakage point, cutting surface concrete, and excavating underground pipeline.
 • Pipeline Repair & Fixation: Repairing damaged pipeline section and securely stabilizing pipe structure.
 • Pressure Testing: Conducting mandatory pressure test to ensure zero hidden leaks remain in system.
-• System Restart & Final Restoration: Verifying full functionality under normal working conditions and refilling excavated area with concrete surface restoration.`
+• System Restart & Final Restoration: Verifying full functionality under normal working conditions and refilling excavated area with concrete surface restoration.`,
+        item: { desc: "Underground pool pipeline leak detection, excavation & repair.", qty: "1 Job", amount: 3200.00 }
+    },
+    pool_water_treatment: {
+        title: "Swimming Pool Water Treatment & Chemical Balancing",
+        subject: "swimming pool maintenance work",
+        scope: `• Water Analysis: Tested pH, free chlorine, cyanuric acid, and total alkalinity levels.
+• Shock Chemical Treatment: Dosed pool water with chlorine shock treatment and anti-algaecide chemical.
+• Clarifier & Flocculant Application: Added pool water clarifier to eliminate turbidity and restore crystal-clear water.
+• Vacuuming & Filtration Run: Conducted manual bottom vacuuming and ran filtration system for 12 continuous hours.`,
+        item: { desc: "Pool water chemical balancing & shock dosing treatment.", qty: "1 Job", amount: 650.00 }
+    },
+    pump_piping_overhaul: {
+        title: "Pump Room Motor Repair & Piping Overhaul",
+        subject: "plumbing maintenance work",
+        scope: `• Pump Motor Overhaul: Serviced pool circulation pump motor, replaced worn bearings, and renewed mechanical seals.
+• Check Valve & Union Replacements: Replaced 2 faulty PVC non-return check valves and 2 high-pressure ball unions.
+• Pressure Gauge Installation: Fitted 2 new stainless steel liquid-filled pressure gauges on filtration lines.`,
+        item: { desc: "Circulation pump motor bearings & PVC check valves overhaul.", qty: "1 Set", amount: 1250.00 }
+    },
+    pool_heat_pump: {
+        title: "Pool Heat Pump & AC Maintenance Services",
+        subject: "AC maintenance work",
+        scope: `• Heat Pump Servicing: Cleaned titanium heat exchanger coils and inspected R410A refrigerant operating pressures.
+• Electrical & Sensor Calibration: Calibrated digital water temperature thermostat sensors and verified flow switch operation.
+• Fan & Compressor Inspection: Inspected compressor amp draw and lubricated condenser fan motor.`,
+        item: { desc: "Pool heat pump coil cleaning, gas top-up & sensor calibration.", qty: "1 Job", amount: 850.00 }
     },
     mep_ac_maintenance: {
         title: "MEP & AC Maintenance Services",
-        text: `• AC Coil & Filter Cleaning: Conducted deep chemical cleaning of indoor evaporator coils and outdoor condenser units.
+        subject: "MEP maintenance work",
+        scope: `• AC Coil & Filter Cleaning: Conducted deep chemical cleaning of indoor evaporator coils and outdoor condenser units.
 • Refrigerant Top-up: Checked system pressures and topped up R410A refrigerant to optimal operating level.
 • Drainage Flushing: Cleared and flushed all AC condensate drain lines to prevent overflow and water leaks.
-• MEP Inspection: Checked electrical breaker connections, water pump pressure switches, and plumbing fixtures.`
+• MEP Inspection: Checked electrical breaker connections, water pump pressure switches, and plumbing fixtures.`,
+        item: { desc: "Comprehensive MEP & AC chemical cleaning and preventive maintenance.", qty: "1 Lot", amount: 1800.00 }
     }
 };
 
@@ -190,7 +255,48 @@ function loadPreset(docType) {
     // Apply document section toggle defaults
     document.getElementById("pricing-table-toggle").checked = preset.showPricing;
     document.getElementById("advance-remaining-toggle").checked = preset.showAdvance;
+    
+    // Apply validity state
+    showValidity = preset.showValidity;
+    syncValidityUI();
 
+    updatePreview();
+}
+
+function syncValidityUI() {
+    const valInput = document.getElementById("doc-validity");
+    const btn = document.getElementById("btn-toggle-validity");
+    const toggleSwitch = document.getElementById("validity-toggle");
+    
+    if (showValidity) {
+        valInput.disabled = false;
+        valInput.style.opacity = "1";
+        if (!valInput.value.trim()) valInput.value = "1 month";
+        if (btn) {
+            btn.innerText = "✕ Remove";
+            btn.style.color = "var(--danger)";
+        }
+        if (toggleSwitch) toggleSwitch.checked = true;
+    } else {
+        valInput.disabled = true;
+        valInput.style.opacity = "0.4";
+        if (btn) {
+            btn.innerText = "+ Add Validity";
+            btn.style.color = "var(--success)";
+        }
+        if (toggleSwitch) toggleSwitch.checked = false;
+    }
+}
+
+function toggleValidityField() {
+    showValidity = !showValidity;
+    syncValidityUI();
+    updatePreview();
+}
+
+function toggleValidityFromSidebar() {
+    showValidity = document.getElementById("validity-toggle").checked;
+    syncValidityUI();
     updatePreview();
 }
 
@@ -258,7 +364,6 @@ function onVersionChange() {
 function setDocumentType(docType) {
     currentDocType = docType;
     
-    // Update button active states
     document.querySelectorAll(".doc-btn").forEach(btn => btn.classList.remove("active"));
     if (docType === "Quotation") document.getElementById("btn-quotation").classList.add("active");
     if (docType === "Invoice") document.getElementById("btn-invoice").classList.add("active");
@@ -280,13 +385,23 @@ function applyWorkPreset() {
 
     const preset = workPresets[presetKey];
     document.getElementById("doc-scope-title").value = preset.title;
-    document.getElementById("doc-scope").value = preset.text;
+    document.getElementById("doc-scope").value = preset.scope;
     document.getElementById("scope-toggle").checked = true;
+
+    if (preset.subject) {
+        document.getElementById("doc-subject").value = preset.subject;
+        updateIntroText();
+    }
+
+    if (preset.item) {
+        items = [{ desc: preset.item.desc, qty: preset.item.qty, amount: preset.item.amount }];
+        renderItemsTable();
+    }
 
     updatePreview();
 }
 
-// Photo Attachment Handler
+// Client-Side High-Speed Image Compressor (Downscales camera photos to max 1200px JPEG)
 function handlePhotoUpload(event) {
     const files = event.target.files;
     if (!files || files.length === 0) return;
@@ -296,18 +411,42 @@ function handlePhotoUpload(event) {
 
         const reader = new FileReader();
         reader.onload = function(e) {
-            uploadedPhotos.push({
-                id: Date.now() + "_" + index + "_" + Math.random().toString(36).substr(2, 5),
-                dataUrl: e.target.result,
-                caption: file.name.replace(/\.[^/.]+$/, "") // default caption from filename
-            });
-            renderPhotosList();
-            updatePreview();
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                const maxDim = 1200; // max dimension 1200px for crystal-clear print quality
+                
+                if (width > maxDim || height > maxDim) {
+                    if (width > height) {
+                        height = Math.round((height * maxDim) / width);
+                        width = maxDim;
+                    } else {
+                        width = Math.round((width * maxDim) / height);
+                        height = maxDim;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+                uploadedPhotos.push({
+                    id: Date.now() + "_" + index + "_" + Math.random().toString(36).substr(2, 5),
+                    dataUrl: compressedDataUrl,
+                    caption: file.name.replace(/\.[^/.]+$/, "")
+                });
+                renderPhotosList();
+                updatePreview();
+            };
+            img.src = e.target.result;
         };
         reader.readAsDataURL(file);
     });
 
-    // Reset input so same file can be chosen again if removed
     event.target.value = "";
 }
 
@@ -397,14 +536,12 @@ function renderItemsTable() {
     });
 }
 
-// Add row item
 function addItemRow() {
     items.push({ desc: "", qty: "1 No's", amount: 0.00 });
     renderItemsTable();
     updatePreview();
 }
 
-// Remove row item
 function removeItemRow(idx) {
     if (items.length > 1) {
         items.splice(idx, 1);
@@ -415,7 +552,6 @@ function removeItemRow(idx) {
     updatePreview();
 }
 
-// Update Item Field Handler
 function updateItemField(idx, field, val) {
     if (field === 'amount') {
         items[idx][field] = parseFloat(val) || 0;
@@ -425,12 +561,10 @@ function updateItemField(idx, field, val) {
     updatePreview();
 }
 
-// Toggle VAT Handler
 function toggleVat() {
     updatePreview();
 }
 
-// Format scope text into structured HTML paragraphs and bullet lists
 function formatScopeText(text) {
     if (!text || !text.trim()) return "";
 
@@ -449,7 +583,6 @@ function formatScopeText(text) {
             }
             let content = trimmed.substring(1).trim();
 
-            // Format bold titles before colon if present (e.g. "Day 1: Surface Prep" -> "<strong>Day 1:</strong> Surface Prep")
             if (content.includes(":") && !content.startsWith("http")) {
                 const parts = content.split(":");
                 content = `<strong>${parts[0]}:</strong>${parts.slice(1).join(":")}`;
@@ -461,7 +594,6 @@ function formatScopeText(text) {
                 html += "</ul>";
                 inList = false;
             }
-            // Format title lines if short or bold
             if (trimmed.includes(":") && trimmed.length < 80) {
                 const parts = trimmed.split(":");
                 html += `<p style="margin-top: 8px; margin-bottom: 4px;"><strong>${parts[0]}:</strong>${parts.slice(1).join(":")}</p>`;
@@ -541,7 +673,15 @@ function updatePreview() {
     } else {
         refContainer.style.display = "none";
     }
-    document.getElementById("prev-validity").innerText = validityVal;
+
+    // Toggle Validity in preview
+    const validityContainer = document.getElementById("prev-validity-container");
+    if (showValidity && validityVal.trim()) {
+        validityContainer.style.display = "block";
+        document.getElementById("prev-validity").innerText = validityVal;
+    } else {
+        validityContainer.style.display = "none";
+    }
     
     const docPreset = docPresets[currentDocType];
     const docTitle = docPreset ? docPreset.title : currentDocType.toUpperCase();
@@ -691,7 +831,6 @@ function generateDocument(format) {
         return;
     }
 
-    // Calculate totals
     let subtotal = 0;
     items.forEach(item => {
         subtotal += item.amount;
@@ -717,7 +856,6 @@ function generateDocument(format) {
     const showTerms = document.getElementById("terms-toggle").checked;
     const showAccount = document.getElementById("account-toggle").checked;
 
-    // Assemble payload
     const payload = {
         doc_type: currentDocType,
         client_name: clientName,
@@ -726,6 +864,7 @@ function generateDocument(format) {
         date: document.getElementById("doc-date").value,
         ref_no: document.getElementById("doc-ref").value,
         validity: document.getElementById("doc-validity").value,
+        show_validity: showValidity,
         city: cityVal,
         subject: subjectLine,
         intro_text: document.getElementById("doc-intro").value,
@@ -740,7 +879,6 @@ function generateDocument(format) {
         format: format,
         version: document.getElementById("template-version").value,
         
-        // Extended Report & Photo Features
         photos: uploadedPhotos,
         show_pricing: showPricing,
         show_photos: showPhotos,
@@ -754,17 +892,14 @@ function generateDocument(format) {
         scope_text: document.getElementById("doc-scope").value
     };
 
-    // Show loading spinner
     document.getElementById("loading-overlay").style.display = "flex";
 
     if (format === 'pdf') {
-        // Clone preview element to force standard desktop print dimensions during PDF capture
         const sourceElement = document.getElementById("document-preview");
         const element = sourceElement.cloneNode(true);
         
-        // Force A4 dimensions on clone
         element.style.boxSizing = "border-box";
-        element.style.width = "794px"; // 210mm at 96 DPI
+        element.style.width = "794px";
         element.style.height = "auto";
         element.style.minHeight = "1123px";
         element.style.overflow = "visible";
@@ -774,7 +909,6 @@ function generateDocument(format) {
         element.style.borderRadius = "0";
         element.style.boxShadow = "none";
         
-        // Adjust elements inside clone
         element.querySelectorAll(".company-header-real").forEach(header => {
             header.style.height = "85px";
             header.style.marginBottom = "25px";
@@ -821,7 +955,6 @@ function generateDocument(format) {
             tbl.style.width = "100%";
         });
 
-        // Off-screen container
         const container = document.createElement("div");
         container.style.position = "absolute";
         container.style.left = "-9999px";
@@ -842,7 +975,6 @@ function generateDocument(format) {
             pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
         };
 
-        // Save PDF
         html2pdf().set(opt).from(element).save().then(() => {
             document.body.removeChild(container);
             document.getElementById("loading-overlay").style.display = "none";
