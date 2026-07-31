@@ -1,8 +1,10 @@
 // Document States and Defaults
 let currentDocType = "Quotation";
+let currentReportSubtype = "Work Completion Report";
 let showValidity = true;
+
 let items = [
-    { desc: "Standard Swimming pool maintenance chemical and cleaning service", qty: "1 No's", amount: 1500.00 }
+    { desc: "Standard Swimming pool maintenance chemical and cleaning service", qty: "1 No's", amount: 1500.00, bgStyle: "none" }
 ];
 let uploadedPhotos = []; // [{ id, dataUrl, caption }]
 
@@ -21,7 +23,8 @@ const docPresets = {
         footerColor: "#0d05fa",
         showPricing: true,
         showAdvance: false,
-        showValidity: true
+        showValidity: true,
+        showContract: false
     },
     Invoice: {
         title: "INVOICE",
@@ -36,7 +39,8 @@ const docPresets = {
         footerColor: "#0d05fa",
         showPricing: true,
         showAdvance: false,
-        showValidity: false
+        showValidity: false,
+        showContract: false
     },
     Receipt: {
         title: "PAYMENT RECEIPT",
@@ -51,7 +55,8 @@ const docPresets = {
         footerColor: "#0d05fa",
         showPricing: true,
         showAdvance: false,
-        showValidity: false
+        showValidity: false,
+        showContract: false
     },
     "Work Completion Report": {
         title: "WORK COMPLETION REPORT",
@@ -66,7 +71,8 @@ const docPresets = {
         footerColor: "#0d05fa",
         showPricing: true,
         showAdvance: false,
-        showValidity: false
+        showValidity: false,
+        showContract: false
     },
     "Site Inspection & Scope Report": {
         title: "REPORT AND SCOPE OF WORK",
@@ -81,7 +87,8 @@ const docPresets = {
         footerColor: "#0d05fa",
         showPricing: false,
         showAdvance: false,
-        showValidity: true
+        showValidity: true,
+        showContract: false
     },
     "Leakage & Waterproofing Report": {
         title: "LEAKAGE REPAIR & WATERPROOFING REPORT",
@@ -96,19 +103,67 @@ const docPresets = {
         footerColor: "#0d05fa",
         showPricing: false,
         showAdvance: false,
-        showValidity: true
+        showValidity: true,
+        showContract: false
+    },
+    "Swimming Pool Cleaning Contract": {
+        title: "QUOTATION",
+        refNo: "FP/SPC-2026/0402",
+        validity: "1 month",
+        city: "Abu Dhabi",
+        subject: "swimming pool cleaning contract",
+        intro: "With reference to your inquiry for the swimming pool maintenance work. We are pleased to submit our best competitive offer for your kind consideration.",
+        terms: "",
+        account: "Ijaz Hussain\nMeshruq Bank\nIBAN: AE 660330000019200061112\nContact No: +971564378296",
+        footerText: "Thanks and Regards: Fit Pool Building Maintenance L.L.C",
+        footerColor: "#0d05fa",
+        showPricing: true,
+        showAdvance: false,
+        showValidity: false,
+        showContract: true
+    },
+    "Custom Report": {
+        title: "MAINTENANCE REPORT",
+        refNo: "FP/REP-2026/0402",
+        validity: "1 month",
+        city: "Abu Dhabi",
+        subject: "building maintenance work",
+        intro: "With reference to the requested maintenance services, please find detailed report and scope below.",
+        terms: "",
+        account: "Ijaz Hussain\nMeshruq Bank\nIBAN: AE 660330000019200061112\nContact No: +971564378296",
+        footerText: "Thanks and Regards: Fit Pool Building Maintenance L.L.C",
+        footerColor: "#0d05fa",
+        showPricing: true,
+        showAdvance: false,
+        showValidity: false,
+        showContract: false
     }
 };
 
 // Technician Auto-Report Work Presets
 const workPresets = {
+    pool_cleaning_contract: {
+        title: "Notes or Special comments",
+        subject: "swimming pool cleaning contract",
+        scope: `• Swimming Pool Maintenance & Cleaning Service Contract.
+• Schedule: Once a week or Twice a week regular maintenance visits.
+• Full chemical testing, water balance, wall brushing, and bottom vacuuming included.`,
+        items: [
+            { desc: "Swimming Pool Cleaning Service (2 Types)", qty: "", amount: 0.00, bgStyle: "grey" },
+            { desc: "Pool Cleaning (Type 1) - Once a week\nMonthly Payment (1 Month): 350.00 AED\n1 Year Payment (12 Months): 4,200.00 AED", qty: "1 Year", amount: 4200.00, bgStyle: "none" },
+            { desc: "Pool Cleaning (Type 2) - Twice a week\nMonthly Payment (1 Month): 550.00 AED\n1 Year Payment (12 Months): 6,600.00 AED", qty: "1 Year", amount: 6600.00, bgStyle: "none" }
+        ],
+        contract: true
+    },
     pool_light_replacement: {
         title: "Swimming Pool Light Replacement",
         subject: "swimming pool light replacement",
         scope: `• Pool Light Replacement: Replaced non-working underwater pool light fixture with a new LED warm white light unit.
 • Transformer & Wiring Inspection: Checked 12V safety transformer connections and verified safe underwater electrical operation.
 • Testing & Verification: All pool lights tested, fully operational, and illuminated successfully.`,
-        item: { desc: "Swimming Pool under water light .", qty: "1 No's", amount: 450.00 }
+        items: [
+            { desc: "Swimming Pool under water light .", qty: "1 No's", amount: 450.00, bgStyle: "none" }
+        ]
     },
     pool_overall_repair: {
         title: "COMPLETED WORKS & REPLACED COMPONENTS",
@@ -121,7 +176,9 @@ const workPresets = {
 • Filtration Pump Relay: Replaced 1 noisy magnetic contactor overload relay for the swimming pool filtration pump.
 • Filtration Pump Valve: Replaced 1 damaged filtration pump valve.
 • On-Site Technical Labor: Complete physical installation, electrical testing, and maintenance work.`,
-        item: { desc: "Swimming Pool maintenance, tile grouting, light & pump repair parts.", qty: "1 Lot", amount: 2100.00 }
+        items: [
+            { desc: "Swimming Pool maintenance, tile grouting, light & pump repair parts.", qty: "1 Lot", amount: 2100.00, bgStyle: "none" }
+        ]
     },
     pool_deep_cleaning: {
         title: "Cleaning and Maintenance Services",
@@ -131,7 +188,9 @@ const workPresets = {
 • Sanitization: Completed full disinfection and preparation of the pool for refilling.
 • Apt 605 Pool Deep Cleaning: Completed a full deep cleaning of the second pool unit.
 • Pump Room Maintenance: Conducted a thorough cleaning of the pump room located at Apt 605.`,
-        item: { desc: "Swimming pool chemical deep cleaning & sanitization service.", qty: "1 Job", amount: 1500.00 }
+        items: [
+            { desc: "Swimming pool chemical deep cleaning & sanitization service.", qty: "1 Job", amount: 1500.00, bgStyle: "none" }
+        ]
     },
     filtration_upgrade: {
         title: "System Repairs and Modifications",
@@ -140,7 +199,9 @@ const workPresets = {
 • Sand Filter Installation: Installed a new 500mm Filter and Multiport valve (50m) to upgrade the system.
 • Media Upgrade: Added 100kg of sand media to the new filtration system to ensure proper water clarity.
 • Lighting Upgrade: Installed 4 new LED warm white swimming pool lights.`,
-        item: { desc: "Filter 500mm, Multiport valve, 100kg Sand Media & 4 LED Lights.", qty: "1 Set", amount: 7650.00 }
+        items: [
+            { desc: "Filter 500mm, Multiport valve, 100kg Sand Media & 4 LED Lights.", qty: "1 Set", amount: 7650.00, bgStyle: "none" }
+        ]
     },
     electrical_panel: {
         title: "Control Panel & Electrical Replacements",
@@ -149,7 +210,9 @@ const workPresets = {
 • Electrical Replacements: Installed 2 new magnet contactors and 2 overload relays in the control panel.
 • System Repairs: Replaced the filtration pump to ensure proper pool circulation.
 • Automation Upgrade: Installed a new float valve to automate the swimming pool water filling process.`,
-        item: { desc: "Control Panel Magnet contactors, relays & Float valve automation.", qty: "1 Set", amount: 2100.00 }
+        items: [
+            { desc: "Control Panel Magnet contactors, relays & Float valve automation.", qty: "1 Set", amount: 2100.00, bgStyle: "none" }
+        ]
     },
     waterproofing_5day: {
         title: "Report and Scope of Work: Waterproofing",
@@ -164,7 +227,9 @@ Site Conditions & Challenges: The project presents a level of difficulty due to 
 • Day 3: Mesh Reinforcement and Second Coat - Embedding Mapei Mapetex Sel non-woven fabric mesh and applying second liquid membrane coat.
 • Day 4: Complex Detailing and Wall Upturns - Waterproofing around PVC pipes, filters, risers, and extending up walls to 300mm height.
 • Day 5: Final Inspection and Handover Preparation - Final inspection and 72-hour curing prior to active use.`,
-        item: { desc: "Pump room 5-day liquid membrane waterproofing treatment.", qty: "44 Sqm", amount: 4500.00 }
+        items: [
+            { desc: "Pump room 5-day liquid membrane waterproofing treatment.", qty: "44 Sqm", amount: 4500.00, bgStyle: "none" }
+        ]
     },
     leakage_repair: {
         title: "Work Execution Report: Swimming Pool Leakage Repair",
@@ -173,7 +238,9 @@ Site Conditions & Challenges: The project presents a level of difficulty due to 
 • Pipeline Repair & Fixation: Repairing damaged pipeline section and securely stabilizing pipe structure.
 • Pressure Testing: Conducting mandatory pressure test to ensure zero hidden leaks remain in system.
 • System Restart & Final Restoration: Verifying full functionality under normal working conditions and refilling excavated area with concrete surface restoration.`,
-        item: { desc: "Underground pool pipeline leak detection, excavation & repair.", qty: "1 Job", amount: 3200.00 }
+        items: [
+            { desc: "Underground pool pipeline leak detection, excavation & repair.", qty: "1 Job", amount: 3200.00, bgStyle: "none" }
+        ]
     },
     pool_water_treatment: {
         title: "Swimming Pool Water Treatment & Chemical Balancing",
@@ -182,7 +249,9 @@ Site Conditions & Challenges: The project presents a level of difficulty due to 
 • Shock Chemical Treatment: Dosed pool water with chlorine shock treatment and anti-algaecide chemical.
 • Clarifier & Flocculant Application: Added pool water clarifier to eliminate turbidity and restore crystal-clear water.
 • Vacuuming & Filtration Run: Conducted manual bottom vacuuming and ran filtration system for 12 continuous hours.`,
-        item: { desc: "Pool water chemical balancing & shock dosing treatment.", qty: "1 Job", amount: 650.00 }
+        items: [
+            { desc: "Pool water chemical balancing & shock dosing treatment.", qty: "1 Job", amount: 650.00, bgStyle: "none" }
+        ]
     },
     pump_piping_overhaul: {
         title: "Pump Room Motor Repair & Piping Overhaul",
@@ -190,7 +259,9 @@ Site Conditions & Challenges: The project presents a level of difficulty due to 
         scope: `• Pump Motor Overhaul: Serviced pool circulation pump motor, replaced worn bearings, and renewed mechanical seals.
 • Check Valve & Union Replacements: Replaced 2 faulty PVC non-return check valves and 2 high-pressure ball unions.
 • Pressure Gauge Installation: Fitted 2 new stainless steel liquid-filled pressure gauges on filtration lines.`,
-        item: { desc: "Circulation pump motor bearings & PVC check valves overhaul.", qty: "1 Set", amount: 1250.00 }
+        items: [
+            { desc: "Circulation pump motor bearings & PVC check valves overhaul.", qty: "1 Set", amount: 1250.00, bgStyle: "none" }
+        ]
     },
     pool_heat_pump: {
         title: "Pool Heat Pump & AC Maintenance Services",
@@ -198,7 +269,9 @@ Site Conditions & Challenges: The project presents a level of difficulty due to 
         scope: `• Heat Pump Servicing: Cleaned titanium heat exchanger coils and inspected R410A refrigerant operating pressures.
 • Electrical & Sensor Calibration: Calibrated digital water temperature thermostat sensors and verified flow switch operation.
 • Fan & Compressor Inspection: Inspected compressor amp draw and lubricated condenser fan motor.`,
-        item: { desc: "Pool heat pump coil cleaning, gas top-up & sensor calibration.", qty: "1 Job", amount: 850.00 }
+        items: [
+            { desc: "Pool heat pump coil cleaning, gas top-up & sensor calibration.", qty: "1 Job", amount: 850.00, bgStyle: "none" }
+        ]
     },
     mep_ac_maintenance: {
         title: "MEP & AC Maintenance Services",
@@ -207,20 +280,20 @@ Site Conditions & Challenges: The project presents a level of difficulty due to 
 • Refrigerant Top-up: Checked system pressures and topped up R410A refrigerant to optimal operating level.
 • Drainage Flushing: Cleared and flushed all AC condensate drain lines to prevent overflow and water leaks.
 • MEP Inspection: Checked electrical breaker connections, water pump pressure switches, and plumbing fixtures.`,
-        item: { desc: "Comprehensive MEP & AC chemical cleaning and preventive maintenance.", qty: "1 Lot", amount: 1800.00 }
+        items: [
+            { desc: "Comprehensive MEP & AC chemical cleaning and preventive maintenance.", qty: "1 Lot", amount: 1800.00, bgStyle: "none" }
+        ]
     }
 };
 
 // Initialize Application
 document.addEventListener("DOMContentLoaded", () => {
-    // Set date field to today
     const today = new Date();
     const dd = String(today.getDate()).padStart(2, '0');
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const yyyy = today.getFullYear();
     document.getElementById("doc-date").value = `${dd}/${mm}/${yyyy}`;
 
-    // Load defaults
     loadPreset(currentDocType);
     renderItemsTable();
     onVersionChange();
@@ -230,13 +303,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Load Presets when changing Document Type
 function loadPreset(docType) {
-    const preset = docPresets[docType] || docPresets.Quotation;
+    const targetKey = docType === 'Report' ? currentReportSubtype : docType;
+    const preset = docPresets[targetKey] || docPresets.Quotation;
     
-    document.getElementById("main-heading").innerText = `Generate ${docType}`;
+    document.getElementById("main-heading").innerText = `Generate ${targetKey}`;
     document.getElementById("doc-ref").value = preset.refNo;
     
-    // Reset subject select to default first option
-    document.getElementById("doc-subject").value = "swimming pool maintenance work";
+    document.getElementById("doc-subject").value = preset.subject || "swimming pool maintenance work";
     document.getElementById("doc-custom-subject").value = "";
     document.getElementById("custom-subject-group").style.display = "none";
     
@@ -252,11 +325,10 @@ function loadPreset(docType) {
     document.getElementById("doc-footer-color").value = preset.footerColor;
     document.getElementById("color-hex-val").innerText = preset.footerColor;
 
-    // Apply document section toggle defaults
     document.getElementById("pricing-table-toggle").checked = preset.showPricing;
     document.getElementById("advance-remaining-toggle").checked = preset.showAdvance;
+    document.getElementById("contract-toggle").checked = !!preset.showContract;
     
-    // Apply validity state
     showValidity = preset.showValidity;
     syncValidityUI();
 
@@ -332,19 +404,25 @@ function updateIntroText() {
     const customSubject = document.getElementById("doc-custom-subject").value;
     const subjectVal = subjectSelect === "Other" ? (customSubject || "maintenance work") : subjectSelect;
     
+    const activeType = currentDocType === 'Report' ? currentReportSubtype : currentDocType;
+
     let introText = "";
-    if (currentDocType === "Quotation") {
+    if (activeType === "Quotation") {
         introText = `With reference to your inquiry for the ${subjectVal}. We are pleased to submit our best competitive offer for your kind consideration.`;
-    } else if (currentDocType === "Invoice") {
+    } else if (activeType === "Invoice") {
         introText = `With reference to the completed ${subjectVal}. We are pleased to submit our invoice for your kind payment.`;
-    } else if (currentDocType === "Receipt") {
+    } else if (activeType === "Receipt") {
         introText = `We are pleased to acknowledge receipt of payment for the ${subjectVal} as detailed below.`;
-    } else if (currentDocType === "Work Completion Report") {
+    } else if (activeType === "Work Completion Report") {
         introText = `This report confirms the successful completion of the ${subjectVal} as detailed below.`;
-    } else if (currentDocType === "Site Inspection & Scope Report") {
+    } else if (activeType === "Site Inspection & Scope Report") {
         introText = `Following our site inspection for the ${subjectVal}, this report outlines the scope of work and technical requirements.`;
-    } else if (currentDocType === "Leakage & Waterproofing Report") {
+    } else if (activeType === "Leakage & Waterproofing Report") {
         introText = `This report details the work execution and technical steps for the ${subjectVal}.`;
+    } else if (activeType === "Swimming Pool Cleaning Contract") {
+        introText = `With reference to your inquiry for the swimming pool maintenance work. We are pleased to submit our best competitive offer for your kind consideration.`;
+    } else {
+        introText = `With reference to the requested maintenance services, please find detailed report and scope below.`;
     }
     
     document.getElementById("doc-intro").value = introText;
@@ -360,7 +438,7 @@ function onVersionChange() {
     }
 }
 
-// Set Document Type Handler
+// Set Document Type Handler (Sidebar Buttons)
 function setDocumentType(docType) {
     currentDocType = docType;
     
@@ -368,11 +446,23 @@ function setDocumentType(docType) {
     if (docType === "Quotation") document.getElementById("btn-quotation").classList.add("active");
     if (docType === "Invoice") document.getElementById("btn-invoice").classList.add("active");
     if (docType === "Receipt") document.getElementById("btn-receipt").classList.add("active");
-    if (docType === "Work Completion Report") document.getElementById("btn-completion-report").classList.add("active");
-    if (docType === "Site Inspection & Scope Report") document.getElementById("btn-scope-report").classList.add("active");
-    if (docType === "Leakage & Waterproofing Report") document.getElementById("btn-leakage-report").classList.add("active");
+    if (docType === "Report") document.getElementById("btn-report").classList.add("active");
 
-    loadPreset(docType);
+    const reportGroup = document.getElementById("report-subtype-group");
+    if (docType === "Report") {
+        reportGroup.style.display = "block";
+        currentReportSubtype = document.getElementById("doc-report-subtype").value || "Work Completion Report";
+        loadPreset(currentReportSubtype);
+    } else {
+        reportGroup.style.display = "none";
+        loadPreset(docType);
+    }
+}
+
+// Report Subtype Dropdown Change Handler
+function onReportSubtypeChange() {
+    currentReportSubtype = document.getElementById("doc-report-subtype").value;
+    loadPreset(currentReportSubtype);
 }
 
 // Technician Auto-Report Preset Helper
@@ -393,9 +483,18 @@ function applyWorkPreset() {
         updateIntroText();
     }
 
-    if (preset.item) {
-        items = [{ desc: preset.item.desc, qty: preset.item.qty, amount: preset.item.amount }];
+    if (preset.items && preset.items.length > 0) {
+        items = preset.items.map(i => ({
+            desc: i.desc,
+            qty: i.qty,
+            amount: i.amount,
+            bgStyle: i.bgStyle || "none"
+        }));
         renderItemsTable();
+    }
+
+    if (preset.contract) {
+        document.getElementById("contract-toggle").checked = true;
     }
 
     updatePreview();
@@ -416,7 +515,7 @@ function handlePhotoUpload(event) {
                 const canvas = document.createElement('canvas');
                 let width = img.width;
                 let height = img.height;
-                const maxDim = 1200; // max dimension 1200px for crystal-clear print quality
+                const maxDim = 1200;
                 
                 if (width > maxDim || height > maxDim) {
                     if (width > height) {
@@ -511,22 +610,32 @@ function removePhoto(id) {
     updatePreview();
 }
 
-// Render dynamic items in input form
+// Render dynamic items in input form with Row Color Shading Selector
 function renderItemsTable() {
     const tbody = document.getElementById("items-tbody");
     tbody.innerHTML = "";
 
     items.forEach((item, idx) => {
         const tr = document.createElement("tr");
+        const currentStyle = item.bgStyle || "none";
+        
         tr.innerHTML = `
             <td>
                 <input type="text" value="${item.desc}" oninput="updateItemField(${idx}, 'desc', this.value)" placeholder="Item Description">
             </td>
             <td>
-                <input type="text" value="${item.qty}" oninput="updateItemField(${idx}, 'qty', this.value)" placeholder="Qty (e.g. 1 No's)">
+                <input type="text" value="${item.qty}" oninput="updateItemField(${idx}, 'qty', this.value)" placeholder="Qty">
             </td>
             <td>
                 <input type="number" step="0.01" value="${item.amount}" oninput="updateItemField(${idx}, 'amount', this.value)" placeholder="Amount (AED)">
+            </td>
+            <td>
+                <select onchange="updateItemField(${idx}, 'bgStyle', this.value)" style="background: #0f172a; color: var(--text-main); border: 1px solid var(--border-dark); border-radius: 6px; padding: 6px 4px; font-size: 0.8rem; width: 100%;">
+                    <option value="none" ${currentStyle === 'none' ? 'selected' : ''}>Normal White</option>
+                    <option value="grey" ${currentStyle === 'grey' ? 'selected' : ''}>Grey Header (#D9D9D9)</option>
+                    <option value="sub_grey" ${currentStyle === 'sub_grey' ? 'selected' : ''}>Soft Grey (#F2F2F2)</option>
+                    <option value="blue" ${currentStyle === 'blue' ? 'selected' : ''}>Blue Banner (#0D05FA)</option>
+                </select>
             </td>
             <td>
                 <button type="button" class="btn-delete-row" onclick="removeItemRow(${idx})">×</button>
@@ -537,7 +646,7 @@ function renderItemsTable() {
 }
 
 function addItemRow() {
-    items.push({ desc: "", qty: "1 No's", amount: 0.00 });
+    items.push({ desc: "", qty: "1 No's", amount: 0.00, bgStyle: "none" });
     renderItemsTable();
     updatePreview();
 }
@@ -546,7 +655,7 @@ function removeItemRow(idx) {
     if (items.length > 1) {
         items.splice(idx, 1);
     } else {
-        items[0] = { desc: "", qty: "1 No's", amount: 0.00 };
+        items[0] = { desc: "", qty: "1 No's", amount: 0.00, bgStyle: "none" };
     }
     renderItemsTable();
     updatePreview();
@@ -612,15 +721,16 @@ function formatScopeText(text) {
 
 // Live Update Preview Section
 function updatePreview() {
-    // Read Section Toggles
+    const activeDocType = currentDocType === 'Report' ? currentReportSubtype : currentDocType;
+
     const showPricing = document.getElementById("pricing-table-toggle").checked;
     const showPhotos = document.getElementById("photos-toggle").checked;
     const showScope = document.getElementById("scope-toggle").checked;
+    const showContract = document.getElementById("contract-toggle").checked;
     const showAdvance = document.getElementById("advance-remaining-toggle").checked;
     const showTerms = document.getElementById("terms-toggle").checked;
     const showAccount = document.getElementById("account-toggle").checked;
 
-    // Toggle Form Card Visibilities
     document.getElementById("form-card-pricing").style.display = showPricing ? "block" : "none";
     document.getElementById("form-card-photos").style.display = showPhotos ? "block" : "none";
     document.getElementById("form-card-scope").style.display = showScope ? "block" : "none";
@@ -628,7 +738,6 @@ function updatePreview() {
     document.getElementById("form-group-terms").style.display = showTerms ? "block" : "none";
     document.getElementById("form-group-account").style.display = showAccount ? "block" : "none";
 
-    // Client info
     const clientName = document.getElementById("client-name").value;
     const clientAddress = document.getElementById("client-address").value;
 
@@ -651,19 +760,17 @@ function updatePreview() {
         addrEl.classList.add("empty-field");
     }
 
-    // City logic in preview
     const citySelect = document.getElementById("doc-city").value;
     const customCity = document.getElementById("doc-custom-city").value;
     const cityVal = citySelect === "Other" ? (customCity || "UAE City") : citySelect;
     document.getElementById("prev-city").innerText = cityVal;
 
-    // Metadata
     const refNo = document.getElementById("doc-ref").value;
     const dateVal = document.getElementById("doc-date").value || "25/06/2026";
     const validityVal = document.getElementById("doc-validity").value || "1 month";
     
     document.getElementById("prev-date").innerText = dateVal;
-    document.getElementById("prev-date-type").innerText = currentDocType;
+    document.getElementById("prev-date-type").innerText = activeDocType;
     
     const refContainer = document.getElementById("prev-ref-container");
     const refVal = document.getElementById("prev-ref");
@@ -674,7 +781,6 @@ function updatePreview() {
         refContainer.style.display = "none";
     }
 
-    // Toggle Validity in preview
     const validityContainer = document.getElementById("prev-validity-container");
     if (showValidity && validityVal.trim()) {
         validityContainer.style.display = "block";
@@ -683,16 +789,15 @@ function updatePreview() {
         validityContainer.style.display = "none";
     }
     
-    const docPreset = docPresets[currentDocType];
-    const docTitle = docPreset ? docPreset.title : currentDocType.toUpperCase();
+    const docPreset = docPresets[activeDocType];
+    const docTitle = docPreset ? docPreset.title : activeDocType.toUpperCase();
     document.getElementById("prev-doc-title").innerText = docTitle;
     
-    // Subject and Intro
     const subjectSelect = document.getElementById("doc-subject").value;
     const customSubject = document.getElementById("doc-custom-subject").value;
     const subjectVal = subjectSelect === "Other" ? (customSubject || "maintenance work") : subjectSelect;
     
-    const fullSubjectText = `${currentDocType} for ${subjectVal}`;
+    const fullSubjectText = `${activeDocType} for ${subjectVal}`;
     document.getElementById("prev-subject").innerText = fullSubjectText;
     document.getElementById("prev-intro").innerText = document.getElementById("doc-intro").value || "";
 
@@ -730,7 +835,7 @@ function updatePreview() {
         scopeSection.style.display = "none";
     }
 
-    // Items Pricing Table Preview
+    // Items Pricing Table Preview with Row Background Colors
     const prevTableContainer = document.getElementById("prev-table-container");
     if (showPricing) {
         prevTableContainer.style.display = "block";
@@ -768,6 +873,9 @@ function updatePreview() {
         prevTbody.innerHTML = "";
         items.forEach((item, idx) => {
             const tr = document.createElement("tr");
+            if (item.bgStyle && item.bgStyle !== "none") {
+                tr.className = `row-bg-${item.bgStyle}`;
+            }
             tr.innerHTML = `
                 <td>${String(idx + 1).padStart(2, '0')}</td>
                 <td style="white-space: pre-wrap;">${item.desc || "Item Description"}</td>
@@ -778,6 +886,19 @@ function updatePreview() {
         });
     } else {
         prevTableContainer.style.display = "none";
+    }
+
+    // Contract Clauses & Dual Signature Section
+    const contractSection = document.getElementById("prev-contract-section");
+    const signatureSection = document.getElementById("prev-signature-section");
+    if (showContract) {
+        contractSection.style.display = "block";
+        signatureSection.style.display = "flex";
+        // Hide standard single account section when contract dual signature section is present
+        document.getElementById("prev-account-section").style.display = "none";
+    } else {
+        contractSection.style.display = "none";
+        signatureSection.style.display = "none";
     }
 
     // Advance & Remaining Payment Section
@@ -802,13 +923,13 @@ function updatePreview() {
         termsSection.style.display = "none";
     }
 
-    // Account details section
+    // Account details section (standard)
     const accVal = document.getElementById("doc-account").value;
     const accSection = document.getElementById("prev-account-section");
-    if (showAccount && accVal.trim()) {
+    if (!showContract && showAccount && accVal.trim()) {
         accSection.style.display = "block";
         document.getElementById("prev-account").innerText = accVal;
-    } else {
+    } else if (!showContract) {
         accSection.style.display = "none";
     }
 
@@ -831,6 +952,8 @@ function generateDocument(format) {
         return;
     }
 
+    const activeDocType = currentDocType === 'Report' ? currentReportSubtype : currentDocType;
+
     let subtotal = 0;
     items.forEach(item => {
         subtotal += item.amount;
@@ -847,17 +970,18 @@ function generateDocument(format) {
     const subjectSelect = document.getElementById("doc-subject").value;
     const customSubject = document.getElementById("doc-custom-subject").value;
     const subjectVal = subjectSelect === "Other" ? (customSubject || "maintenance work") : subjectSelect;
-    const subjectLine = `${currentDocType} for ${subjectVal}`;
+    const subjectLine = `${activeDocType} for ${subjectVal}`;
 
     const showPricing = document.getElementById("pricing-table-toggle").checked;
     const showPhotos = document.getElementById("photos-toggle").checked;
     const showScope = document.getElementById("scope-toggle").checked;
+    const showContract = document.getElementById("contract-toggle").checked;
     const showAdvance = document.getElementById("advance-remaining-toggle").checked;
     const showTerms = document.getElementById("terms-toggle").checked;
     const showAccount = document.getElementById("account-toggle").checked;
 
     const payload = {
-        doc_type: currentDocType,
+        doc_type: activeDocType,
         client_name: clientName,
         client_address: document.getElementById("client-address").value,
         contact_no: document.getElementById("client-contact").value,
@@ -883,6 +1007,7 @@ function generateDocument(format) {
         show_pricing: showPricing,
         show_photos: showPhotos,
         show_scope: showScope,
+        show_contract: showContract,
         show_advance: showAdvance,
         show_terms: showTerms,
         show_account: showAccount,
@@ -964,7 +1089,7 @@ function generateDocument(format) {
 
         const safeClientName = clientName.replace(/[^a-zA-Z0-9]/g, "_");
         const formattedDate = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
-        const filename = `${currentDocType.replace(/\s+/g, "_")}_${safeClientName}_${formattedDate}.pdf`;
+        const filename = `${activeDocType.replace(/\s+/g, "_")}_${safeClientName}_${formattedDate}.pdf`;
 
         const opt = {
             margin:       10,
@@ -988,7 +1113,6 @@ function generateDocument(format) {
         return;
     }
 
-    // DOCX download via POST to /generate
     fetch("/generate", {
         method: "POST",
         headers: {

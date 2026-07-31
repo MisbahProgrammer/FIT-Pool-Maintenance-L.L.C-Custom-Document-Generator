@@ -1276,3 +1276,87 @@ body {
     color: #0d05fa;
 }
 
+/* Row Background Shading Styles */
+.preview-items-table tr.row-bg-grey td,
+.preview-items-table td.row-bg-grey {
+    background-color: #d9d9d9 !important;
+    color: #000000 !important;
+    font-weight: bold !important;
+}
+
+.preview-items-table tr.row-bg-sub_grey td,
+.preview-items-table td.row-bg-sub_grey {
+    background-color: #f2f2f2 !important;
+    color: #000000 !important;
+    font-weight: bold !important;
+}
+
+.preview-items-table tr.row-bg-blue td,
+.preview-items-table td.row-bg-blue {
+    background-color: #0d05fa !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+}
+
+/* Contract Section & Badges */
+.preview-contract-section {
+    margin: 16px 0;
+    font-size: 0.85rem;
+    color: #1f2937;
+    line-height: 1.5;
+}
+
+.contract-badge-banner {
+    background-color: #0d05fa;
+    color: #ffffff;
+    font-weight: bold;
+    text-align: center;
+    padding: 4px 12px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    display: inline-block;
+}
+
+.contract-block {
+    margin-bottom: 12px;
+}
+
+.contract-blue-badge {
+    background-color: #0d05fa;
+    color: #ffffff;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-bottom: 6px;
+
+}
+
+.contract-list {
+    padding-left: 20px;
+    margin-top: 4px;
+}
+
+.contract-list li {
+    margin-bottom: 4px;
+}
+
+/* Dual Signature Block */
+.preview-dual-signature-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 20px;
+    margin-bottom: 16px;
+    font-size: 0.85rem;
+}
+
+.signature-col-left {
+    width: 48%;
+}
+
+.signature-col-right {
+    width: 48%;
+}
+
+

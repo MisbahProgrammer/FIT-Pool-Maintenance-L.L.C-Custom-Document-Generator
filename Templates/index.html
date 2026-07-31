@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fit Pool Document & Report Generator</title>
-    <meta name="description" content="Generate high-quality invoices, quotations, receipts, work completion reports, and scope documents dynamically with site photos for Fit Pool Building Maintenance L.L.C">
+    <meta name="description" content="Generate high-quality invoices, quotations, receipts, work completion reports, contracts, and scope documents dynamically with site photos for Fit Pool Building Maintenance L.L.C">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,14 +41,8 @@
                     <button class="doc-btn" id="btn-receipt" onclick="setDocumentType('Receipt')">
                         <span class="icon">💸</span> Payment Receipt
                     </button>
-                    <button class="doc-btn" id="btn-completion-report" onclick="setDocumentType('Work Completion Report')">
-                        <span class="icon">📋</span> Work Completion Report
-                    </button>
-                    <button class="doc-btn" id="btn-scope-report" onclick="setDocumentType('Site Inspection & Scope Report')">
-                        <span class="icon">🛠️</span> Scope of Work Report
-                    </button>
-                    <button class="doc-btn" id="btn-leakage-report" onclick="setDocumentType('Leakage & Waterproofing Report')">
-                        <span class="icon">🌊</span> Leakage Repair Report
+                    <button class="doc-btn" id="btn-report" onclick="setDocumentType('Report')">
+                        <span class="icon">📋</span> Report
                     </button>
                 </div>
             </div>
@@ -82,6 +76,11 @@
                         Scope / Work Bullets
                     </label>
                     <label class="switch-container">
+                        <input type="checkbox" id="contract-toggle" onchange="updatePreview()">
+                        <span class="checkmark"></span>
+                        Contract Terms & Signatures
+                    </label>
+                    <label class="switch-container">
                         <input type="checkbox" id="advance-remaining-toggle" onchange="updatePreview()">
                         <span class="checkmark"></span>
                         Advance / Remaining Balance
@@ -108,7 +107,7 @@
 
             <div class="sidebar-footer">
                 <p>Fit Pool Document Automation</p>
-                <span class="version">v2.6 (Pro Report & Photos)</span>
+                <span class="version">v3.0 (Clean Menu & Contract)</span>
             </div>
         </aside>
 
@@ -128,7 +127,7 @@
             <section class="control-panel">
                 <div class="panel-header">
                     <h1 id="main-heading">Generate Quotation</h1>
-                    <p class="subtitle">Fill in details, select technician auto-report templates, and attach site photos.</p>
+                    <p class="subtitle">Fill in details, select report types, customize row background colors, and attach photos.</p>
                 </div>
 
                 <div class="form-scroll-container">
@@ -142,7 +141,7 @@
                             </div>
                             <div class="form-group full-width">
                                 <label for="client-address">Address / Apt / Villa Details</label>
-                                <input type="text" id="client-address" placeholder="e.g. Al Raha Loft 1, Apt 601, Abu Dhabi" oninput="updatePreview()">
+                                <input type="text" id="client-address" placeholder="e.g. Golf Garden, Villa A 45, Abu Dhabi" oninput="updatePreview()">
                             </div>
                             <div class="form-group">
                                 <label for="client-contact">Contact No</label>
@@ -155,6 +154,18 @@
                     <div class="form-section-card">
                         <h3>Document Metadata</h3>
                         <div class="form-grid">
+                            <!-- Report Subtype Selector (Visible when Report is selected) -->
+                            <div class="form-group full-width" id="report-subtype-group" style="display: none;">
+                                <label for="doc-report-subtype" style="color: var(--accent); font-weight: 700;">📋 Select Report Subtype</label>
+                                <select id="doc-report-subtype" onchange="onReportSubtypeChange(); updatePreview();" style="background-color: #0f172a; border: 1px solid var(--accent); border-radius: 8px; color: var(--text-main); padding: 10px; font-weight: 600;">
+                                    <option value="Work Completion Report">Work Completion Report (FP/WCR)</option>
+                                    <option value="Site Inspection & Scope Report">Site Inspection & Scope of Work Report (FP/SWR)</option>
+                                    <option value="Leakage & Waterproofing Report">Swimming Pool Leakage & Waterproofing Report (FP/LWR)</option>
+                                    <option value="Swimming Pool Cleaning Contract">Swimming Pool Cleaning Contract (FP/SPC)</option>
+                                    <option value="Custom Report">Custom Report</option>
+                                </select>
+                            </div>
+
                             <div class="form-group">
                                 <label for="doc-ref">Reference Number</label>
                                 <input type="text" id="doc-ref" placeholder="e.g. FP/QT-2026/0402" oninput="updatePreview()">
@@ -186,6 +197,7 @@
                                 <label for="doc-subject">Subject Line Option</label>
                                 <select id="doc-subject" onchange="onSubjectChange(); updatePreview();">
                                     <option value="swimming pool maintenance work">Swimming Pool Maintenance Work</option>
+                                    <option value="swimming pool cleaning contract">Swimming Pool Cleaning Contract</option>
                                     <option value="swimming pool light replacement">Swimming Pool Light Replacement</option>
                                     <option value="MEP maintenance work">MEP Maintenance Work</option>
                                     <option value="building maintenance work">Building Maintenance Work</option>
@@ -211,12 +223,13 @@
                         <div class="section-title-action">
                             <h3>🤖 Technician Auto-Report Assistant</h3>
                         </div>
-                        <p class="subtitle" style="font-size: 0.85rem; margin-bottom: 12px; color: var(--text-muted);">Select a standard work service below to automatically generate formal English report details and bullet points.</p>
+                        <p class="subtitle" style="font-size: 0.85rem; margin-bottom: 12px; color: var(--text-muted);">Select a standard work service below to automatically generate formal English report details, pricing, and bullet points.</p>
                         
                         <div class="form-grid">
                             <div class="form-group full-width" style="display: flex; gap: 10px; align-items: center;">
                                 <select id="quick-preset-select" style="flex: 1; padding: 10px; background: #0f172a; color: var(--text-main); border: 1px solid var(--border-dark); border-radius: 8px;">
                                     <option value="">-- Select Work Category Preset --</option>
+                                    <option value="pool_cleaning_contract">📜 Swimming Pool Cleaning Contract (Inclusions, Exclusions, Notes & Dual Signatures)</option>
                                     <option value="pool_light_replacement">💡 Swimming Pool Light Replacement</option>
                                     <option value="pool_overall_repair">🛠️ Swimming Pool Overall Repair & Component Replacement</option>
                                     <option value="pool_deep_cleaning">🏊‍♂️ Swimming Pool Deep Cleaning & Sanitization</option>
@@ -265,21 +278,23 @@
                         </div>
                     </div>
 
-                    <!-- Section 5: Line Items Table -->
+                    <!-- Section 5: Line Items Table & Row Color Customizer -->
                     <div class="form-section-card" id="form-card-pricing">
                         <div class="section-title-action">
-                            <h3>Line Items (Pricing Table)</h3>
+                            <h3>Line Items (Pricing Table & Row Color Shading)</h3>
                             <button type="button" class="btn-action-small" onclick="addItemRow()">+ Add Item</button>
                         </div>
+                        <p class="subtitle" style="font-size: 0.85rem; margin-bottom: 12px; color: var(--text-muted);">Customize row background color (Grey header style or Blue banner style) for full-row category shading.</p>
                         
                         <div class="items-list-container">
                             <table class="form-items-table">
                                 <thead>
                                     <tr>
-                                        <th style="width: 50%;">Description</th>
-                                        <th style="width: 20%;">Qty</th>
-                                        <th style="width: 20%;">Amount (AED)</th>
-                                        <th style="width: 10%;">Action</th>
+                                        <th style="width: 42%;">Description</th>
+                                        <th style="width: 18%;">Qty</th>
+                                        <th style="width: 18%;">Amount (AED)</th>
+                                        <th style="width: 14%;">Row Color</th>
+                                        <th style="width: 8%;">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="items-tbody">
@@ -454,11 +469,71 @@
                             </table>
                         </div>
 
+                        <!-- Contract Inclusions, Exclusions, Notes Section -->
+                        <div class="preview-contract-section" id="prev-contract-section" style="display: none;">
+                            <div class="contract-badge-banner">Notes or Special comments</div>
+                            
+                            <div class="contract-block">
+                                <span class="contract-blue-badge">Inclusion :</span>
+                                <ol class="contract-list">
+                                    <li>Checking of PH & Chlorine level and adjust as required supply of required chemicals.</li>
+                                    <li>Check level of water in the pool, fill as required (water to be provided by client).</li>
+                                    <li>Vacuum of the pool using vacuum head and telescopic handle and brush the walls as required.</li>
+                                    <li>Check filtration system for pressure reading. Backwash the filters as required.</li>
+                                    <li>Clean all debris from the pre-filter baskets as required.</li>
+                                    <li>Check and ensure that all timers, underwater pool lights, all electrical controls & equipment's are in proper operation then report irregularities to client.</li>
+                                </ol>
+                            </div>
+
+                            <div class="contract-block">
+                                <span class="contract-blue-badge">Exclusion :</span>
+                                <ol class="contract-list">
+                                    <li>Repairs/ rectification works such as pool leakage, re-grouting of tiles, replacement of underwater lights, filters and Pumps Repairs/rectification and spare parts will be charged on separate cost and subject to clients approval before proceeding with the required works.</li>
+                                    <li>Snag and all materials</li>
+                                    <li>All other works not related to pool cleaning and checking of equipment</li>
+                                </ol>
+                            </div>
+
+                            <div class="contract-block">
+                                <span class="contract-blue-badge">Notes</span>
+                                <ol class="contract-list">
+                                    <li>A separate quotation for items under exclusions (if required) will be provided to client for approval</li>
+                                    <li>Services provided Monday, Thursday, Friday, excluding public holidays.</li>
+                                    <li>Client is required to give access to the pool</li>
+                                    <li>Our company is not liable for any direct or consequential costs or liabilities arising due to failure or malfunction of any part of the pool or pool equipment.</li>
+                                </ol>
+                            </div>
+
+                            <div class="contract-block" style="margin-top: 10px;">
+                                <span class="contract-blue-badge">Payment Advance 100%</span>
+                            </div>
+                        </div>
+
                         <!-- Advance & Remaining Payment Section -->
                         <div class="preview-advance-remaining-section" id="prev-advance-remaining-section" style="display: none;">
                             <div class="advance-highlight-box">
                                 <p><strong>Advance Payment Received:</strong> <span id="prev-advance-val">0.00 AED</span></p>
                                 <p><strong>Remaining Payment Balance:</strong> <span id="prev-remaining-val">0.00 AED</span></p>
+                            </div>
+                        </div>
+
+                        <!-- Dual Signature & Account Details Section (For Contracts) -->
+                        <div class="preview-dual-signature-section" id="prev-signature-section" style="display: none;">
+                            <div class="signature-col-left">
+                                <p style="font-weight: bold; margin-bottom: 4px;">Sincerely,</p>
+                                <p>Ijaz Hussian</p>
+                                <p style="font-size: 0.85rem; color: #4b5563;">Fit Pool General Building Maintenance LLC<br>Abu Dhabi, Dubai</p>
+                                <div style="margin-top: 25px;">
+                                    <p style="font-weight: bold; margin-bottom: 2px;">Signed for and on behalf of Customer</p>
+                                    <p style="font-size: 0.85rem;">Name and Signature:</p>
+                                    <p style="font-size: 0.85rem;">Date:</p>
+                                </div>
+                            </div>
+                            <div class="signature-col-right">
+                                <div class="preview-account-section" style="margin-top: 0;">
+                                    <p class="section-title">Account details</p>
+                                    <p class="section-content">Ijaz Hussain<br>Meshruq Bank<br>IBAN: AE 660330000019200061112<br>Contact No: +971564378296</p>
+                                </div>
                             </div>
                         </div>
 

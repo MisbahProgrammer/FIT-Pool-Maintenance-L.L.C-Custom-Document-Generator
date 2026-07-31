@@ -135,11 +135,12 @@ def generate():
         format_type = data.get("format", "pdf").lower()  # 'pdf' or 'docx'
         version = str(data.get("version", "2.0"))        # '1.0' (Original) or '2.0' (V2.0)
 
-        # Extended Report & Photo Toggles
+        # Extended Report, Photo & Contract Toggles
         photos = data.get("photos", [])
         show_pricing = data.get("show_pricing", True)
         show_photos = data.get("show_photos", True)
         show_scope = data.get("show_scope", True)
+        show_contract = data.get("show_contract", False)
         show_advance = data.get("show_advance", False)
         show_terms = data.get("show_terms", True)
         show_account = data.get("show_account", True)
@@ -249,7 +250,6 @@ def generate():
                     except Exception as img_err:
                         print(f"Error processing image {i}: {img_err}")
             
-            # Position photo table right after heading paragraph if found
             if heading_p:
                 heading_p._p.addnext(photo_table._tbl)
 
@@ -288,7 +288,7 @@ def generate():
                         else:
                             p_norm.add_run(line_str)
 
-        # Step 5: Insert Line Items Pricing Table (if enabled)
+        # Step 5: Insert Line Items Pricing Table with Custom Row Shading (if enabled)
         if show_pricing:
             doc_final.add_paragraph("")
             table = doc_final.add_table(rows=1, cols=4)
@@ -309,6 +309,7 @@ def generate():
                 no_str = f"{idx + 1:02d}"
                 desc = item.get("desc", "").strip()
                 qty = item.get("qty", "").strip()
+                bg_style = item.get("bgStyle", "none")
                 try:
                     amount = float(item.get("amount", 0))
                 except ValueError:
@@ -319,7 +320,28 @@ def generate():
                 row_cells[0].text = no_str
                 row_cells[1].text = desc
                 row_cells[2].text = qty
-                row_cells[3].text = f"{amount:.2f}"
+                row_cells[3].text = f"{amount:.2f}" if amount > 0 or bg_style == 'none' else ""
+                
+                # Apply row background shading
+                if bg_style == "grey":
+                    for c in row_cells:
+                        set_cell_background(c, 'D9D9D9')
+                        if c.paragraphs and c.paragraphs[0].runs:
+                            c.paragraphs[0].runs[0].font.bold = True
+                            c.paragraphs[0].runs[0].font.color.rgb = RGBColor(0, 0, 0)
+                elif bg_style == "sub_grey":
+                    for c in row_cells:
+                        set_cell_background(c, 'F2F2F2')
+                        if c.paragraphs and c.paragraphs[0].runs:
+                            c.paragraphs[0].runs[0].font.bold = True
+                            c.paragraphs[0].runs[0].font.color.rgb = RGBColor(0, 0, 0)
+                elif bg_style == "blue":
+                    for c in row_cells:
+                        set_cell_background(c, '0D05FA')
+                        if c.paragraphs and c.paragraphs[0].runs:
+                            c.paragraphs[0].runs[0].font.bold = True
+                            c.paragraphs[0].runs[0].font.color.rgb = RGBColor(255, 255, 255)
+                
                 subtotal += amount
 
             if vat_enabled:
@@ -362,7 +384,94 @@ def generate():
             words_cells[0].paragraphs[0].runs[0].font.bold = True
             set_cell_background(words_cells[0], 'F2F2F2')
 
-        # Step 6: Advance & Remaining Payment Breakdown
+        # Step 6: Contract Clauses & Dual Signatures (if enabled)
+        if show_contract:
+            doc_final.add_paragraph("")
+            
+            # Notes or Special comments banner
+            p_comm = doc_final.add_paragraph()
+            r_comm = p_comm.add_run("Notes or Special comments")
+            r_comm.bold = True
+            r_comm.font.color.rgb = RGBColor(255, 255, 255)
+            set_paragraph_background(p_comm, '0D05FA')
+
+            # Inclusion
+            doc_final.add_paragraph("")
+            p_inc = doc_final.add_paragraph()
+            r_inc = p_inc.add_run("Inclusion :")
+            r_inc.bold = True
+            r_inc.font.color.rgb = RGBColor(255, 255, 255)
+            set_paragraph_background(p_inc, '0D05FA')
+
+            inclusions = [
+                "1. Checking of PH & Chlorine level and adjust as required supply of required chemicals.",
+                "2. Check level of water in the pool, fill as required (water to be provided by client).",
+                "3. Vacuum of the pool using vacuum head and telescopic handle and brush the walls as required.",
+                "4. Check filtration system for pressure reading. Backwash the filters as required.",
+                "5. Clean all debris from the pre-filter baskets as required.",
+                "6. Check and ensure that all timers, underwater pool lights, all electrical controls & equipment's are in proper operation then report irregularities to client."
+            ]
+            for inc in inclusions:
+                doc_final.add_paragraph(inc)
+
+            # Exclusion
+            doc_final.add_paragraph("")
+            p_exc = doc_final.add_paragraph()
+            r_exc = p_exc.add_run("Exclusion :")
+            r_exc.bold = True
+            r_exc.font.color.rgb = RGBColor(255, 255, 255)
+            set_paragraph_background(p_exc, '0D05FA')
+
+            exclusions = [
+                "1. Repairs/ rectification works such as pool leakage, re-grouting of tiles, replacement of underwater lights, filters and Pumps Repairs/rectification and spare parts will be charged on separate cost and subject to clients approval before proceeding with the required works.",
+                "2. Snag and all materials",
+                "3. All other works not related to pool cleaning and checking of equipment"
+            ]
+            for exc in exclusions:
+                doc_final.add_paragraph(exc)
+
+            # Notes
+            doc_final.add_paragraph("")
+            p_notes = doc_final.add_paragraph()
+            r_notes = p_notes.add_run("Notes")
+            r_notes.bold = True
+            r_notes.font.color.rgb = RGBColor(255, 255, 255)
+            set_paragraph_background(p_notes, '0D05FA')
+
+            notes_list = [
+                "1. A separate quotation for items under exclusions (if required) will be provided to client for approval",
+                "2. Services provided Monday, Thursday, Friday, excluding public holidays.",
+                "3. Client is required to give access to the pool",
+                "4. Our company is not liable for any direct or consequential costs or liabilities arising due to failure or malfunction of any part of the pool or pool equipment."
+            ]
+            for note in notes_list:
+                doc_final.add_paragraph(note)
+
+            # Advance 100% badge
+            doc_final.add_paragraph("")
+            p_adv = doc_final.add_paragraph()
+            r_adv = p_adv.add_run("Payment Advance 100%")
+            r_adv.bold = True
+            r_adv.font.color.rgb = RGBColor(255, 255, 255)
+            set_paragraph_background(p_adv, '0D05FA')
+
+            # Dual Signature Block (2 columns)
+            doc_final.add_paragraph("")
+            sig_table = doc_final.add_table(rows=1, cols=2)
+            sig_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+            
+            c_left = sig_table.cell(0, 0)
+            c_right = sig_table.cell(0, 1)
+            c_left.width = Inches(3.5)
+            c_right.width = Inches(3.0)
+            
+            p_l = c_left.paragraphs[0]
+            p_l.add_run("Sincerely,\nIjaz Hussian\nFit Pool General Building Maintenance LLC\nAbu Dhabi, Dubai\n\n\nSigned for and on behalf of Customer\nName and Signature:\nDate:")
+            
+            p_r = c_right.paragraphs[0]
+            p_r.add_run("Account details\nIjaz Hussain\nMeshruq Bank\nIBAN: AE 660330000019200061112\nContact No: +971564378296")
+
+        # Step 7: Advance & Remaining Payment Breakdown
         if show_advance:
             doc_final.add_paragraph("")
             adv_p = doc_final.add_paragraph()
@@ -374,21 +483,21 @@ def generate():
             adv_p.add_run(f"{remaining_amount:.2f} AED")
             set_paragraph_background(adv_p, 'F8FAFC')
 
-        # Step 7: Append Terms & Conditions
+        # Step 8: Append Terms & Conditions (Standard)
         if show_terms and terms:
             doc_final.add_paragraph("")
             term_p = doc_final.add_paragraph()
             term_p.add_run("Payment term and condition").bold = True
             doc_final.add_paragraph(terms)
 
-        # Step 8: Append Bank Account Details
-        if show_account and account_details:
+        # Step 9: Append Bank Account Details (Standard)
+        if not show_contract and show_account and account_details:
             doc_final.add_paragraph("")
             acc_p = doc_final.add_paragraph()
             acc_p.add_run("Account details").bold = True
             doc_final.add_paragraph(account_details)
 
-        # Step 9: Add Footer Banner
+        # Step 10: Add Footer Banner
         if footer_text:
             doc_final.add_paragraph("")
             footer_para = doc_final.add_paragraph()
@@ -409,6 +518,9 @@ def generate():
         elif "receipt" in doc_type_lower:
             folder = os.path.join(GENERATED_DIR, "Receipts")
             prefix = "Payment_Receipt"
+        elif "contract" in doc_type_lower:
+            folder = os.path.join(GENERATED_DIR, "Contracts")
+            prefix = "Cleaning_Contract"
         elif "report" in doc_type_lower or "scope" in doc_type_lower:
             folder = os.path.join(GENERATED_DIR, "Reports")
             prefix = doc_type.replace(" ", "_")
@@ -467,7 +579,7 @@ def generate():
 @app.route('/download/<folder_name>/<filename>')
 def download_file(folder_name, filename):
     try:
-        if folder_name not in ['Quotations', 'Invoices', 'Receipts', 'Reports']:
+        if folder_name not in ['Quotations', 'Invoices', 'Receipts', 'Reports', 'Contracts']:
             return jsonify({"error": "Invalid folder"}), 400
         
         safe_filename = os.path.basename(filename)
