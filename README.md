@@ -1,51 +1,98 @@
-# Fit Pool Document Generator: Dynamic PDF & DOCX Invoice, Quotation & Receipt Automated System
+# Fit Pool Document Generator: Dynamic PDF & DOCX Invoice, Quotation, Contract & Report Automated System
 
 [![Python Version](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
 [![Flask Version](https://img.shields.io/badge/Flask-3.0%2B-green.svg)](https://flask.palletsprojects.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-An enterprise-grade, SEO-optimized, highly responsive Python-Flask web application designed for automatic document generation. It allows organizations to dynamically generate and download high-quality, professional **Invoices, Quotations, and Payment Receipts** as formatted **DOCX (Word)** and **PDF** documents directly from a clean web-based dashboard.
+An enterprise-grade, SEO-optimized, highly responsive Python-Flask web application designed for automatic document and technical report generation for **Fit Pool Building Maintenance L.L.C**. 
+
+It allows technicians and management to dynamically generate and download high-quality, professional **Invoices, Quotations, Payment Receipts, Cleaning Contracts, Work Completion Reports, and Scope of Work Documents** as formatted **DOCX (Word)** and **PDF** files directly from a clean web dashboard.
 
 ---
 
 ## 🌟 Key Features
 
-### 1. Dynamic Layout Switching (V1.0 Classic vs V2.0 Modern)
-- **Classic V1.0 Layout**: Implements the pre-existing company background letterhead (`image1.jpeg`) as the structural base, aligning layout fields with exact millimeter precision.
-- **Modern V2.0 Layout**: Incorporates a clean web-first aesthetic featuring a centered **5% opacity company logo watermark**, a custom slanted Arabic company title banner, and a modern typography grid.
+### 1. 🧹 Streamlined Sidebar & Report Subtype Selector
+- **Decent, Minimalist Sidebar**: Streamlined main navigation into 4 primary document buttons:
+  - 📄 **Quotation**: Professional pricing estimates (`FP/QT-`).
+  - 💼 **Invoice**: Client billing statements (`FP/INV-`).
+  - 💸 **Payment Receipt**: Payment acknowledgment receipts (`FP/REC-`).
+  - 📋 **Report**: Technical maintenance reports (`FP/WCR-`, `FP/SWR-`, `FP/LWR-`, `FP/SPC-`).
+- **Dynamic Report Subtype Dropdown**: When **Report** is selected, a dedicated dropdown appears in the form panel for selecting specific report types:
+  - *Work Completion Report* (`FP/WCR-`)
+  - *Site Inspection & Scope of Work Report* (`FP/SWR-`)
+  - *Swimming Pool Leakage & Waterproofing Report* (`FP/LWR-`)
+  - *Swimming Pool Cleaning Contract* (`FP/SPC-`)
+  - *Custom Report*
 
-### 2. Intelligent Word & PDF Auto-Generation
-- **Automated Placeholders**: Replaces company metrics, dates, and client metadata inside the document.
-- **Multilingual Support**: Supports Arabic title text alignment (`RTL` layout parsing) to prevent text clipping.
-- **Dynamic Table Spacing**: Custom column-width allocations minimize description wrapping (`No` 8%, `Description` 57%, `Qty` 13%, `Total Amount` 22%).
-- **Word-to-PDF Conversion**: Thread-safe background COM invocation (`pythoncom.CoInitialize` with `docx2pdf`) to compile DOCX files into production-ready PDFs.
+### 2. 📜 Swimming Pool Cleaning Contract Engine
+- Full support for official **Fit Pool Swimming Pool Cleaning Contracts** matching company PDFs:
+  - **Inclusions (1-6)**: pH & chlorine level testing & chemical adjustment, water level filling, vacuuming & wall brushing, pressure reading & backwashing, basket cleaning, timers & underwater lights inspection.
+  - **Exclusions (1-3)**: Leakage repairs, re-grouting, underwater lights & pump replacements charged on separate quotes.
+  - **Notes (1-4)**: Schedule details, pool access requirement, liability disclaimers.
+  - **Payment Advance 100%** highlight badge.
+  - **Dual Signature Block**: `Sincerely, Fit Pool General Building Maintenance LLC` on the left & `Signed for and on behalf of Customer` (Name, Signature, Date) on the right.
 
-### 3. Interactive Real-Time Preview
-- Fully interactive virtual A4 page reflecting every typing modification instantly.
-- Dynamically toggles styling, watermark layers, and header heights to match chosen layout versions.
+### 3. 📸 Site Photos Attachment & High-Speed Compressor
+- **Multi-Photo Upload**: Technicians can upload multiple site inspection or completed work photos directly from PC or Mobile Cameras.
+- **Client-Side Canvas Compressor**: High-resolution camera photos (10MB+) are automatically downscaled to max 1200px JPEG quality in the browser, reducing payload size by over 90% and ensuring instant upload and export speed.
+- **Photo Captions**: Custom captions for each picture (e.g., *"Before Work: Leaking Pipe"*, *"Installed 500mm Sand Filter"*).
+- **Positioning**: Rendered in clean 2-column or 4-column photo grids positioned **directly below the main document heading badge** on Page 1.
 
-### 4. Advanced UX & Mobile Responsiveness
-- **Adaptive Viewport**: Fits viewports down to `320px` cleanly.
-- **Mobile Split Navigation**: Tabs form input and live draft layout separately on mobile.
-- **Burger Menu Drawer**: Slides out configuration options on touch devices.
+### 4. 🤖 Technician Auto-Report Assistant
+- Pre-built library of 11+ official UAE maintenance work templates:
+  - 📜 *Swimming Pool Cleaning Contract*
+  - 💡 *Swimming Pool Light Replacement*
+  - 🛠️ *Swimming Pool Overall Repair & Component Replacement*
+  - 🏊‍♂️ *Swimming Pool Deep Cleaning & Sanitization*
+  - ⚙️ *Filtration System Upgrade & Sand Media*
+  - ⚡ *Control Panel & Electrical Replacements*
+  - 🛡️ *Pump Room Waterproofing (5-Day Schedule)*
+  - 💧 *Swimming Pool Leakage Repair (4-Step Process)*
+  - 🧪 *Swimming Pool Water Treatment & Chemical Balancing*
+  - ⚙️ *Pump Room Motor Repair & Piping Overhaul*
+  - ❄️ *Pool Heat Pump & AC Servicing*
+  - 🔧 *MEP & AC Maintenance Services*
+- Selecting a category and clicking **"✨ Auto-Fill Report"** automatically populates formal English titles, scope bullet points, and pricing items.
 
-### 5. Secure File Download Integrity
-- Uses a **Two-Step GET Redirect download pattern** to bypass Chrome's sandboxed download naming bugs, guaranteeing clean filenames (e.g. `Quotation_Al_Raha_Loft_26-06-2026.pdf`) instead of random UUIDs or local server URLs.
+### 5. 🎨 Table Row Custom Color Shading (Blue & Grey)
+- **Row Style Selector**: Individual background shading option for each line item row:
+  - `Normal White` (Default background)
+  - `Grey Header (#D9D9D9)` (Bold black text across full row — for Category Headers like *"Swimming Pool Cleaning Service (2 Types)"*)
+  - `Soft Grey (#F2F2F2)` (Soft section shading)
+  - `Blue Banner (#0D05FA)` (Official blue banner background with bold white text)
+- Colors the **entire row background** across all columns in Live Preview, PDF export, and Word (`.docx`) files.
+
+### 6. 🎛️ Flexible Section Visibility & Validity Control
+- Sidebar toggle switches to show or hide:
+  - `Pricing Table`
+  - `Enable VAT (5%)`
+  - `Document Validity` (with explicit **"✕ Remove" / "+ Add Validity"** button)
+  - `Site Photos`
+  - `Scope / Work Bullets`
+  - `Contract Terms & Signatures`
+  - `Advance / Remaining Balance`
+  - `Payment Terms`
+  - `Bank Account Details`
+
+### 7. 🎨 Dynamic Layout Engine (V1.0 Classic vs V2.0 Modern)
+- **Classic V1.0 Layout**: Fits text into the original fixed company letterhead background image (`image1.jpeg`).
+- **Modern V2.0 Layout**: Clean web-first aesthetic featuring a centered 5% opacity company logo watermark, slanted blue Arabic title shape (`فيت بول جنرال لصيانة المباني ذ.م.م`), and modern typography.
 
 ---
 
 ## 🛠️ Technology Stack
 
-- **Backend**: Python 3.12+, Flask (Web framework), `python-docx` (XML Word manipulation), `docxtpl` (Word rendering), `docx2pdf` (COM Word-to-PDF compilation), `Pillow` (modern background compositor), `pywin32` (Windows COM bindings).
-- **Frontend**: HTML5 (Semantic Structure), Vanilla CSS3 (Custom Dark Mode Layout & Glassmorphism effects), Javascript (ES6+, state manager & math compiler).
+- **Backend**: Python 3.12+, Flask (Web framework), `python-docx` (XML Word manipulation & image table grid builder), `docxtpl` (Word rendering), `docx2pdf` (COM Word-to-PDF compilation), `Pillow` (PIL image compositor), `pywin32` (Windows COM bindings).
+- **Frontend**: HTML5 (Semantic Structure), Vanilla CSS3 (Custom Dark Mode Layout & Glassmorphism effects), Javascript (ES6+, client-side canvas compressor, state manager & number-to-words currency converter).
 
 ---
 
 ## 🚀 Quick Start & Installation
 
 ### Prerequisites
-- **Operating System**: Windows (required for PDF compilation due to Windows Microsoft Word COM components).
-- **Dependencies**: Microsoft Word installed on the host system.
+- **Operating System**: Windows (recommended for DOCX-to-PDF compilation via Microsoft Word COM components).
+- **Dependencies**: Python 3.8+ and Microsoft Word installed on the host system.
 
 ### Setup Instructions
 1. **Clone the Repository**:
@@ -80,35 +127,35 @@ An enterprise-grade, SEO-optimized, highly responsive Python-Flask web applicati
 fit-pool-document-generator/
 │
 ├── Templates/
+│   ├── index.html                       # Primary application view with dynamic inputs & preview
 │   └── Dynamic_Quotation_Template.docx  # Master Word template containing layout anchors
 │
 ├── static/
-│   ├── app.js                           # Frontend state manager and number-to-words utility
-│   ├── style.css                        # UI styling system (Glassmorphism layout and preview animations)
+│   ├── app.js                           # Frontend state manager, image compressor & number-to-words utility
+│   ├── style.css                        # UI styling system (Glassmorphism layout, photo grids & badges)
 │   ├── new_logo.png                     # Cropped company logo icon
 │   ├── image1.jpeg                      # Classic letterhead background
 │   └── image1_v2.jpeg                   # Modern pre-composed background image
 │
-├── templates/
-│   └── index.html                       # Application view with dynamic inputs
-│
 ├── Generated_Documents/                 # Server storage of compiled files (ignored in git)
 │   ├── Invoices/
 │   ├── Quotations/
-│   └── Receipts/
+│   ├── Receipts/
+│   ├── Reports/
+│   └── Contracts/
 │
 ├── app.py                               # Flask server, document engine & COM PDF converter
 ├── start_app.bat                        # Double-click Windows startup script
 ├── .gitignore                           # Excludes build cache, venv, and user-generated outputs
-└── README.md                            # Documentation
+└── README.md                            # Application Documentation
 ```
 
 ---
 
 ## 🔒 Security & Privacy (GitHub Best Practices)
 
-When uploading this codebase to GitHub, the following files and directories are **automatically ignored** via the included [.gitignore](.gitignore) to protect sensitive data and prevent clutter:
-- **`Generated_Documents/`**: Contains generated invoices, client contracts, and quotations with sensitive customer details. **Never upload this folder to a public repository.**
+When uploading this codebase to GitHub, the following files and directories are **automatically ignored** via [.gitignore](.gitignore) to protect sensitive client data:
+- **`Generated_Documents/`**: Contains generated invoices, client contracts, and reports with customer details.
 - **`.venv/` & `__pycache__/`**: Local Python packages and compiled cache files.
 - **`temp_render.docx` / `temp.docx`**: Temporary compiler renders.
 
