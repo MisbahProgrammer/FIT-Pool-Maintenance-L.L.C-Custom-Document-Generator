@@ -179,7 +179,17 @@
                                     <span>Document Validity</span>
                                     <button type="button" id="btn-toggle-validity" onclick="toggleValidityField()" style="background: none; border: none; color: var(--danger); font-weight: 700; cursor: pointer; font-size: 0.8rem;">✕ Remove</button>
                                 </label>
-                                <input type="text" id="doc-validity" placeholder="e.g. 1 month" oninput="updatePreview()">
+                                <select id="doc-validity" onchange="onValiditySelectChange(); updatePreview();">
+                                    <option value="10 days" selected>10 days</option>
+                                    <option value="7 days">7 days</option>
+                                    <option value="15 days">15 days</option>
+                                    <option value="30 days">30 days</option>
+                                    <option value="Other">Other (Type below)</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width" id="custom-validity-group" style="display: none;">
+                                <label for="doc-custom-validity">Custom Validity Period</label>
+                                <input type="text" id="doc-custom-validity" placeholder="e.g. 60 days, 1 year" oninput="updatePreview()">
                             </div>
                             <div class="form-group">
                                 <label for="doc-city">UAE City</label>
@@ -302,10 +312,15 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="form-group full-width" style="margin-top: 15px; border-top: 1px dashed var(--border-dark); padding-top: 12px;">
-                            <label for="doc-custom-total" style="color: var(--accent); font-weight: 700;">💰 Total Price / Lump Sum Override (AED)</label>
-                            <input type="number" step="0.01" id="doc-custom-total" placeholder="Auto-calculated from items, or enter lump sum total (e.g. 4200.00)" oninput="updatePreview()" style="background-color: #0f172a; border: 1px solid var(--accent);">
-                            <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; display: block;">Leave item amounts blank to display lump sum total with empty item row prices.</span>
+
+                        <div class="lumpsum-override-card" style="margin-top: 18px; padding: 16px; background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-dark); border-radius: 12px; box-shadow: var(--shadow-sm);">
+                            <div class="form-group full-width" style="margin-bottom: 0;">
+                                <label for="doc-custom-total" style="color: var(--accent); font-weight: 700; font-size: 0.92rem; display: flex; align-items: center; gap: 8px;">
+                                    <span>💰</span> Total Price / Lump Sum Override (AED)
+                                </label>
+                                <input type="number" step="0.01" id="doc-custom-total" placeholder="Auto-calculated from items, or enter lump sum total (e.g. 4200.00)" oninput="updatePreview()" style="margin-top: 8px; width: 100%;">
+                                <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; display: block; line-height: 1.4;">💡 Leave individual item prices blank to display a single lump sum total on the document.</span>
+                            </div>
                         </div>
                     </div>
 
@@ -396,7 +411,7 @@
                             <div style="text-align: right; line-height: 1.5; font-size: 0.95rem; color: #111827;">
                                 <p><strong style="font-weight: bold; color: #111827;">Date:</strong> <span id="prev-date">25/06/2026</span>&nbsp;&nbsp;<span id="prev-date-type" style="font-weight: 500;">Invoice</span></p>
                                 <p id="prev-ref-container"><strong style="font-weight: bold; color: #111827;">Ref:</strong> <span id="prev-ref">FP/QT-2026/0402</span></p>
-                                <p id="prev-validity-container"><strong style="font-weight: bold; color: #111827;">Validity:</strong> <span id="prev-validity">1 month</span></p>
+                                <p id="prev-validity-container"><strong style="font-weight: bold; color: #111827;">Validity:</strong> <span id="prev-validity">10 days</span></p>
                             </div>
                         </div>
 

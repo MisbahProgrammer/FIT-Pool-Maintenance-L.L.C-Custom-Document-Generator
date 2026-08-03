@@ -8,12 +8,12 @@ let items = [
 ];
 let uploadedPhotos = []; // [{ id, dataUrl, caption }]
 
-// Default document configurations
+// Default document configurations (Validity default updated to "10 days")
 const docPresets = {
     Quotation: {
         title: "QUOTATION",
         refNo: "FP/QT-2026/0402",
-        validity: "1 month",
+        validity: "10 days",
         city: "Abu Dhabi",
         subject: "Quotation for swimming pool maintenance work",
         intro: "With reference to your inquiry for the swimming pool maintenance work. We are pleased to submit our best competitive offer for your kind consideration.",
@@ -29,7 +29,7 @@ const docPresets = {
     Invoice: {
         title: "INVOICE",
         refNo: "FP/INV-2026/0402",
-        validity: "1 month",
+        validity: "10 days",
         city: "Abu Dhabi",
         subject: "Invoice for swimming pool maintenance work",
         intro: "With reference to the completed swimming pool maintenance work. We are pleased to submit our invoice for your kind payment.",
@@ -45,7 +45,7 @@ const docPresets = {
     Receipt: {
         title: "PAYMENT RECEIPT",
         refNo: "FP/REC-2026/0402",
-        validity: "1 month",
+        validity: "10 days",
         city: "Abu Dhabi",
         subject: "Payment Receipt for swimming pool maintenance work",
         intro: "We are pleased to acknowledge receipt of payment for the swimming pool maintenance work as detailed below.",
@@ -61,7 +61,7 @@ const docPresets = {
     "Work Completion Report": {
         title: "WORK COMPLETION REPORT",
         refNo: "FP/WCR-2026/0402",
-        validity: "1 month",
+        validity: "10 days",
         city: "Abu Dhabi",
         subject: "Work Completion Report for swimming pool maintenance work",
         intro: "This report confirms the successful completion of the swimming pool maintenance, deep cleaning, and equipment restoration work as detailed below.",
@@ -77,7 +77,7 @@ const docPresets = {
     "Site Inspection & Scope Report": {
         title: "REPORT AND SCOPE OF WORK",
         refNo: "FP/SWR-2026/0402",
-        validity: "1 month",
+        validity: "10 days",
         city: "Abu Dhabi",
         subject: "Site Inspection Report and Scope of Work",
         intro: "Following our technical site inspection, this report outlines the scope of work, technical requirements, and standard operating procedures for your property.",
@@ -93,7 +93,7 @@ const docPresets = {
     "Leakage & Waterproofing Report": {
         title: "LEAKAGE REPAIR & WATERPROOFING REPORT",
         refNo: "FP/LWR-2026/0402",
-        validity: "1 month",
+        validity: "10 days",
         city: "Abu Dhabi",
         subject: "Work Execution Report: Swimming Pool Leakage Repair & Waterproofing",
         intro: "This report outlines the step-by-step technical repair, pressure testing, and waterproofing protocol executed for the swimming pool and pump room infrastructure.",
@@ -109,7 +109,7 @@ const docPresets = {
     "Swimming Pool Cleaning Contract": {
         title: "QUOTATION",
         refNo: "FP/SPC-2026/0402",
-        validity: "1 month",
+        validity: "10 days",
         city: "Abu Dhabi",
         subject: "swimming pool cleaning contract",
         intro: "With reference to your inquiry for the swimming pool maintenance work. We are pleased to submit our best competitive offer for your kind consideration.",
@@ -125,7 +125,7 @@ const docPresets = {
     "Custom Report": {
         title: "MAINTENANCE REPORT",
         refNo: "FP/REP-2026/0402",
-        validity: "1 month",
+        validity: "10 days",
         city: "Abu Dhabi",
         subject: "building maintenance work",
         intro: "With reference to the requested maintenance services, please find detailed report and scope below.",
@@ -316,7 +316,21 @@ function loadPreset(docType) {
     
     updateIntroText();
 
-    document.getElementById("doc-validity").value = preset.validity;
+    const targetValidity = preset.validity || "10 days";
+    const validitySelect = document.getElementById("doc-validity");
+    const customValidityGroup = document.getElementById("custom-validity-group");
+    const customValidityInput = document.getElementById("doc-custom-validity");
+
+    if (["7 days", "10 days", "15 days", "30 days"].includes(targetValidity)) {
+        validitySelect.value = targetValidity;
+        customValidityGroup.style.display = "none";
+        customValidityInput.value = "";
+    } else {
+        validitySelect.value = "Other";
+        customValidityGroup.style.display = "flex";
+        customValidityInput.value = targetValidity;
+    }
+
     document.getElementById("doc-city").value = preset.city;
     document.getElementById("doc-custom-city").value = "";
     document.getElementById("custom-city-group").style.display = "none";
@@ -344,7 +358,7 @@ function syncValidityUI() {
     if (showValidity) {
         valInput.disabled = false;
         valInput.style.opacity = "1";
-        if (!valInput.value.trim()) valInput.value = "1 month";
+        if (!valInput.value.trim()) valInput.value = "10 days";
         if (btn) {
             btn.innerText = "✕ Remove";
             btn.style.color = "var(--danger)";
@@ -371,6 +385,16 @@ function toggleValidityFromSidebar() {
     showValidity = document.getElementById("validity-toggle").checked;
     syncValidityUI();
     updatePreview();
+}
+
+function onValiditySelectChange() {
+    const validitySelect = document.getElementById("doc-validity").value;
+    const customGroup = document.getElementById("custom-validity-group");
+    if (validitySelect === "Other") {
+        customGroup.style.display = "flex";
+    } else {
+        customGroup.style.display = "none";
+    }
 }
 
 function onCityChange() {
@@ -775,7 +799,10 @@ function updatePreview() {
 
     const refNo = document.getElementById("doc-ref").value;
     const dateVal = document.getElementById("doc-date").value || "25/06/2026";
-    const validityVal = document.getElementById("doc-validity").value || "1 month";
+    
+    const validitySelect = document.getElementById("doc-validity").value;
+    const customValidity = document.getElementById("doc-custom-validity").value;
+    const validityVal = validitySelect === "Other" ? (customValidity || "10 days") : validitySelect;
     
     document.getElementById("prev-date").innerText = dateVal;
     document.getElementById("prev-date-type").innerText = activeDocType;
@@ -1004,6 +1031,10 @@ function generateDocument(format) {
     const subjectVal = subjectSelect === "Other" ? (customSubject || "maintenance work") : subjectSelect;
     const subjectLine = `${activeDocType} for ${subjectVal}`;
 
+    const validitySelect = document.getElementById("doc-validity").value;
+    const customValidity = document.getElementById("doc-custom-validity").value;
+    const validityVal = validitySelect === "Other" ? (customValidity || "10 days") : validitySelect;
+
     const showPricing = document.getElementById("pricing-table-toggle").checked;
     const showPhotos = document.getElementById("photos-toggle").checked;
     const showScope = document.getElementById("scope-toggle").checked;
@@ -1019,7 +1050,7 @@ function generateDocument(format) {
         contact_no: document.getElementById("client-contact").value,
         date: document.getElementById("doc-date").value,
         ref_no: document.getElementById("doc-ref").value,
-        validity: document.getElementById("doc-validity").value,
+        validity: validityVal,
         show_validity: showValidity,
         city: cityVal,
         subject: subjectLine,

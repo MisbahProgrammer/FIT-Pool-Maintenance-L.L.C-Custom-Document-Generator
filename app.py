@@ -120,7 +120,7 @@ def generate():
         subject = data.get("subject", "").strip()
         intro_text = data.get("intro_text", "").strip()
         city = data.get("city", "Abu Dhabi").strip()
-        validity = data.get("validity", "1 month").strip()
+        validity = data.get("validity", "10 days").strip()
         show_validity = data.get("show_validity", True)
         
         items = data.get("items", [])
