@@ -17,9 +17,11 @@ Thumbs.db
 # Generated Documents (contains user-generated invoices/quotations/receipts with customer data)
 Generated_Documents/
 
-# Temporary files
+# Temporary & Test files
 temp_render.docx
 temp.docx
+test_*
+*.pdf
 *.log
 .system_generated/
 scratch/
@@ -28,6 +30,9 @@ browser/
 *.png
 *.jpg
 *.jpeg
+
+# Keep master template in repository
+!Templates/Dynamic_Quotation_Template.docx
 
 # Do not ignore static folder assets
 !static/

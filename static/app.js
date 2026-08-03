@@ -149,10 +149,11 @@ const workPresets = {
 • Schedule: Once a week or Twice a week regular maintenance visits.
 • Full chemical testing, water balance, wall brushing, and bottom vacuuming included.`,
         items: [
-            { desc: "Swimming Pool Cleaning Service (2 Types)", qty: "", amount: 0.00, bgStyle: "grey" },
-            { desc: "Pool Cleaning (Type 1) - Once a week\nMonthly Payment (1 Month): 350.00 AED\n1 Year Payment (12 Months): 4,200.00 AED", qty: "1 Year", amount: 4200.00, bgStyle: "none" },
-            { desc: "Pool Cleaning (Type 2) - Twice a week\nMonthly Payment (1 Month): 550.00 AED\n1 Year Payment (12 Months): 6,600.00 AED", qty: "1 Year", amount: 6600.00, bgStyle: "none" }
+            { desc: "Swimming Pool Cleaning Service (2 Types)", qty: "", amount: "", bgStyle: "grey" },
+            { desc: "Pool Cleaning (Type 1) - Once a week\nMonthly Payment (1 Month): 350.00 AED\n1 Year Payment (12 Months): 4,200.00 AED", qty: "1 Year", amount: "", bgStyle: "none" },
+            { desc: "Pool Cleaning (Type 2) - Twice a week\nMonthly Payment (1 Month): 550.00 AED\n1 Year Payment (12 Months): 6,600.00 AED", qty: "1 Year", amount: "", bgStyle: "none" }
         ],
+        customTotal: "6600.00",
         contract: true
     },
     pool_light_replacement: {
@@ -487,10 +488,15 @@ function applyWorkPreset() {
         items = preset.items.map(i => ({
             desc: i.desc,
             qty: i.qty,
-            amount: i.amount,
+            amount: (i.amount !== "" && i.amount !== null && i.amount !== undefined) ? i.amount : "",
             bgStyle: i.bgStyle || "none"
         }));
         renderItemsTable();
+    }
+
+    const customTotalInput = document.getElementById("doc-custom-total");
+    if (customTotalInput) {
+        customTotalInput.value = preset.customTotal || "";
     }
 
     if (preset.contract) {
@@ -618,6 +624,7 @@ function renderItemsTable() {
     items.forEach((item, idx) => {
         const tr = document.createElement("tr");
         const currentStyle = item.bgStyle || "none";
+        const amtValue = (item.amount !== "" && item.amount !== undefined && item.amount !== null && !isNaN(item.amount) && item.amount > 0) ? item.amount : "";
         
         tr.innerHTML = `
             <td>
@@ -627,7 +634,7 @@ function renderItemsTable() {
                 <input type="text" value="${item.qty}" oninput="updateItemField(${idx}, 'qty', this.value)" placeholder="Qty">
             </td>
             <td>
-                <input type="number" step="0.01" value="${item.amount}" oninput="updateItemField(${idx}, 'amount', this.value)" placeholder="Amount (AED)">
+                <input type="number" step="0.01" value="${amtValue}" oninput="updateItemField(${idx}, 'amount', this.value)" placeholder="Amount (AED)">
             </td>
             <td>
                 <select onchange="updateItemField(${idx}, 'bgStyle', this.value)" style="background: #0f172a; color: var(--text-main); border: 1px solid var(--border-dark); border-radius: 6px; padding: 6px 4px; font-size: 0.8rem; width: 100%;">
@@ -646,7 +653,7 @@ function renderItemsTable() {
 }
 
 function addItemRow() {
-    items.push({ desc: "", qty: "1 No's", amount: 0.00, bgStyle: "none" });
+    items.push({ desc: "", qty: "1 No's", amount: "", bgStyle: "none" });
     renderItemsTable();
     updatePreview();
 }
@@ -655,7 +662,7 @@ function removeItemRow(idx) {
     if (items.length > 1) {
         items.splice(idx, 1);
     } else {
-        items[0] = { desc: "", qty: "1 No's", amount: 0.00, bgStyle: "none" };
+        items[0] = { desc: "", qty: "1 No's", amount: "", bgStyle: "none" };
     }
     renderItemsTable();
     updatePreview();
@@ -663,7 +670,8 @@ function removeItemRow(idx) {
 
 function updateItemField(idx, field, val) {
     if (field === 'amount') {
-        items[idx][field] = parseFloat(val) || 0;
+        const parsed = parseFloat(val);
+        items[idx][field] = (!isNaN(parsed) && val.trim() !== "") ? parsed : "";
     } else {
         items[idx][field] = val;
     }
@@ -835,15 +843,27 @@ function updatePreview() {
         scopeSection.style.display = "none";
     }
 
-    // Items Pricing Table Preview with Row Background Colors
+    // Items Pricing Table Preview with Row Background Colors & Lump Sum Override
     const prevTableContainer = document.getElementById("prev-table-container");
     if (showPricing) {
         prevTableContainer.style.display = "block";
 
-        let subtotal = 0;
+        let calculatedSum = 0;
         items.forEach(item => {
-            subtotal += item.amount;
+            if (item.amount !== "" && item.amount !== null && item.amount !== undefined && !isNaN(parseFloat(item.amount)) && parseFloat(item.amount) > 0) {
+                calculatedSum += parseFloat(item.amount);
+            }
         });
+
+        const customTotalInput = document.getElementById("doc-custom-total");
+        const customTotalVal = customTotalInput ? customTotalInput.value.trim() : "";
+        let subtotal = 0;
+
+        if (customTotalVal !== "" && !isNaN(parseFloat(customTotalVal))) {
+            subtotal = parseFloat(customTotalVal);
+        } else {
+            subtotal = calculatedSum;
+        }
 
         const isVat = document.getElementById("vat-toggle").checked;
         let grandTotal = subtotal;
@@ -876,11 +896,17 @@ function updatePreview() {
             if (item.bgStyle && item.bgStyle !== "none") {
                 tr.className = `row-bg-${item.bgStyle}`;
             }
+
+            let amountDisplay = "";
+            if (item.amount !== "" && item.amount !== null && item.amount !== undefined && !isNaN(parseFloat(item.amount)) && parseFloat(item.amount) > 0) {
+                amountDisplay = parseFloat(item.amount).toFixed(2);
+            }
+
             tr.innerHTML = `
                 <td>${String(idx + 1).padStart(2, '0')}</td>
                 <td style="white-space: pre-wrap;">${item.desc || "Item Description"}</td>
-                <td>${item.qty}</td>
-                <td>${item.amount.toFixed(2)}</td>
+                <td>${item.qty || ""}</td>
+                <td>${amountDisplay}</td>
             `;
             prevTbody.appendChild(tr);
         });
@@ -894,7 +920,6 @@ function updatePreview() {
     if (showContract) {
         contractSection.style.display = "block";
         signatureSection.style.display = "flex";
-        // Hide standard single account section when contract dual signature section is present
         document.getElementById("prev-account-section").style.display = "none";
     } else {
         contractSection.style.display = "none";
@@ -954,11 +979,18 @@ function generateDocument(format) {
 
     const activeDocType = currentDocType === 'Report' ? currentReportSubtype : currentDocType;
 
-    let subtotal = 0;
+    let calculatedSum = 0;
     items.forEach(item => {
-        subtotal += item.amount;
+        if (item.amount !== "" && item.amount !== null && item.amount !== undefined && !isNaN(parseFloat(item.amount)) && parseFloat(item.amount) > 0) {
+            calculatedSum += parseFloat(item.amount);
+        }
     });
 
+    const customTotalInput = document.getElementById("doc-custom-total");
+    const customTotalVal = customTotalInput ? customTotalInput.value.trim() : "";
+    const overrideTotal = (customTotalVal !== "" && !isNaN(parseFloat(customTotalVal))) ? parseFloat(customTotalVal) : null;
+
+    const subtotal = overrideTotal !== null ? overrideTotal : calculatedSum;
     const isVat = document.getElementById("vat-toggle").checked;
     const grandTotal = isVat ? subtotal * 1.05 : subtotal;
     const wordsTotal = convertNumberToWords(grandTotal);
@@ -992,7 +1024,14 @@ function generateDocument(format) {
         city: cityVal,
         subject: subjectLine,
         intro_text: document.getElementById("doc-intro").value,
-        items: items,
+        override_total: overrideTotal,
+        items: items.map(item => ({
+            desc: item.desc,
+            qty: item.qty,
+            amount: (item.amount !== "" && item.amount !== null && item.amount !== undefined && !isNaN(parseFloat(item.amount))) ? parseFloat(item.amount) : 0,
+            has_amount: (item.amount !== "" && item.amount !== null && item.amount !== undefined && !isNaN(parseFloat(item.amount)) && parseFloat(item.amount) > 0),
+            bgStyle: item.bgStyle || "none"
+        })),
         vat_enabled: isVat,
         vat_rate: 5,
         words_total: wordsTotal,

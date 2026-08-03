@@ -124,6 +124,7 @@ def generate():
         show_validity = data.get("show_validity", True)
         
         items = data.get("items", [])
+        override_total = data.get("override_total")
         vat_enabled = data.get("vat_enabled", False)
         vat_rate = float(data.get("vat_rate", 5))
         
@@ -288,7 +289,7 @@ def generate():
                         else:
                             p_norm.add_run(line_str)
 
-        # Step 5: Insert Line Items Pricing Table with Custom Row Shading (if enabled)
+        # Step 5: Insert Line Items Pricing Table with Custom Row Shading & Lump Sum Override
         if show_pricing:
             doc_final.add_paragraph("")
             table = doc_final.add_table(rows=1, cols=4)
@@ -304,23 +305,32 @@ def generate():
                 run.font.bold = True
                 run.font.color.rgb = RGBColor(0, 0, 0)
 
-            subtotal = 0.0
+            calculated_subtotal = 0.0
             for idx, item in enumerate(items):
                 no_str = f"{idx + 1:02d}"
                 desc = item.get("desc", "").strip()
                 qty = item.get("qty", "").strip()
                 bg_style = item.get("bgStyle", "none")
+                has_amount = item.get("has_amount", False)
+                
                 try:
                     amount = float(item.get("amount", 0))
-                except ValueError:
+                except (ValueError, TypeError):
                     amount = 0.0
+
+                calculated_subtotal += amount
                     
                 row_cells = table.add_row().cells
                 set_row_cell_widths(table.rows[-1])
                 row_cells[0].text = no_str
                 row_cells[1].text = desc
                 row_cells[2].text = qty
-                row_cells[3].text = f"{amount:.2f}" if amount > 0 or bg_style == 'none' else ""
+                
+                # Display amount if provided/greater than 0, otherwise keep cell empty for lump sum items!
+                if has_amount or amount > 0:
+                    row_cells[3].text = f"{amount:.2f}"
+                else:
+                    row_cells[3].text = ""
                 
                 # Apply row background shading
                 if bg_style == "grey":
@@ -341,8 +351,15 @@ def generate():
                         if c.paragraphs and c.paragraphs[0].runs:
                             c.paragraphs[0].runs[0].font.bold = True
                             c.paragraphs[0].runs[0].font.color.rgb = RGBColor(255, 255, 255)
-                
-                subtotal += amount
+
+            # Determine final subtotal (Override lump sum or calculated sum)
+            if override_total is not None:
+                try:
+                    subtotal = float(override_total)
+                except (ValueError, TypeError):
+                    subtotal = calculated_subtotal
+            else:
+                subtotal = calculated_subtotal
 
             if vat_enabled:
                 vat_amount = subtotal * (vat_rate / 100.0)

@@ -302,6 +302,11 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div class="form-group full-width" style="margin-top: 15px; border-top: 1px dashed var(--border-dark); padding-top: 12px;">
+                            <label for="doc-custom-total" style="color: var(--accent); font-weight: 700;">💰 Total Price / Lump Sum Override (AED)</label>
+                            <input type="number" step="0.01" id="doc-custom-total" placeholder="Auto-calculated from items, or enter lump sum total (e.g. 4200.00)" oninput="updatePreview()" style="background-color: #0f172a; border: 1px solid var(--accent);">
+                            <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; display: block;">Leave item amounts blank to display lump sum total with empty item row prices.</span>
+                        </div>
                     </div>
 
                     <!-- Section 6: Advance & Remaining Payment Breakdown -->
