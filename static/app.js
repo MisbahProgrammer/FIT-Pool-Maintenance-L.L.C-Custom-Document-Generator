@@ -142,6 +142,42 @@ const docPresets = {
 
 // Technician Auto-Report Work Presets
 const workPresets = {
+    pool_renovation_tile_replacement: {
+        title: "Swimming Pool Renovation and Tiles Replacement",
+        subject: "swimming pool renovation and tile replacement",
+        scope: `Phase 1: Demolition & Site Preparation
+• Chipping & Removal: Carefully break down and remove all existing pool tiles and surrounding deck tiles.
+• Waste Disposal: Safely transport and dispose of all debris off-site according to local municipal guidelines.
+• Substrate Cleaning: Clean the underlying concrete surface thoroughly using high-pressure air/water jets to remove dust, grease, and loose concrete particles.
+
+Phase 2: Waterproofing Application
+• Primer Coating: Apply a prime coat to prepare the substrate for maximum bond strength.
+• Coating Application: Apply 4 full coats of high-performance, flexible swimming pool waterproofing slurry/membrane (allowing adequate inter-coat drying time).
+• Curing Period: Allow the waterproofing membrane to fully dry and cure uninterrupted for a minimum of 3 days (72 hours).
+• Flood Test: (Optional/Recommended) Perform a 24-48 hour water leak test to confirm complete seal integrity.
+
+Phase 3: Tiling & Grouting
+• Pool Tiling: Install high-grade swimming pool tiles using specialized chemical-resistant tile adhesive.
+• Deck Tiling: Lay anti-slip ceramic/porcelain tiles across the 300 m² deck area ensuring proper drainage slopes.
+• Grouting: Fill all tile joints using heavy-duty, waterproof epoxy/specialized grout to prevent chemical degradation and future water seepage.
+
+Phase 4: Final Curing & Handover
+• Final Curing: Leave the entire pool and tiled deck area dry and untouched for 1 full week (7 days) to allow adhesives and grout to attain full structural strength.
+• Final Cleaning & Handover: Clean all surfaces, inspect tile alignment, and hand over the site ready for water filling.
+
+Warranty Terms
+• Waterproofing Warranty: 2 Years covering water leakage and membrane failure.
+• Tiling & Material Warranty: 2 Years against tile debonding, detachment, and installation defects.
+
+Note:
+Our job includes the removal and off-site disposal of existing tiles, surface preparation, application of a 4-coat waterproofing system (with a 3-day curing period), installation of new pool tiles and anti-slip deck tiles, and complete waterproofing grouting.`,
+        items: [
+            { desc: "Swimming pool tiles replacement 335 square meter", qty: "", amount: 140700.00, bgStyle: "none" },
+            { desc: "Waterproofing swimming pool and floor", qty: "1 No's", amount: "", bgStyle: "none" },
+            { desc: "Floor tiles replacement anti slippery 300 square meter", qty: "1 No's", amount: 85500.00, bgStyle: "none" }
+        ],
+        customTotal: "226200.00"
+    },
     pool_cleaning_contract: {
         title: "Notes or Special comments",
         subject: "swimming pool cleaning contract",

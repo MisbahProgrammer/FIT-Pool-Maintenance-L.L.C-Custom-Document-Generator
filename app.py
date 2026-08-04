@@ -238,7 +238,7 @@ def generate():
                         p = cell.paragraphs[0]
                         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
                         run = p.add_run()
-                        img_w = Inches(1.4 if cols >= 4 else (2.8 if cols == 2 else 5.5))
+                        img_w = Inches(1.4 if cols >= 4 else (1.8 if cols == 2 else 2.0))
                         run.add_picture(img_stream, width=img_w)
                         
                         if caption:
@@ -271,7 +271,8 @@ def generate():
                         continue
                     if line_str.startswith("•") or line_str.startswith("-") or line_str.startswith("*"):
                         content = line_str[1:].strip()
-                        p_bullet = doc_final.add_paragraph(style='List Bullet')
+                        p_bullet = doc_final.add_paragraph()
+                        p_bullet.add_run("• ")
                         if ":" in content and not content.startswith("http"):
                             parts = content.split(":", 1)
                             r_b = p_bullet.add_run(parts[0] + ":")

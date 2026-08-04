@@ -180,10 +180,10 @@
                                     <button type="button" id="btn-toggle-validity" onclick="toggleValidityField()" style="background: none; border: none; color: var(--danger); font-weight: 700; cursor: pointer; font-size: 0.8rem;">✕ Remove</button>
                                 </label>
                                 <select id="doc-validity" onchange="onValiditySelectChange(); updatePreview();">
+                                    <option value="30 days">30 days</option>
                                     <option value="10 days" selected>10 days</option>
                                     <option value="7 days">7 days</option>
                                     <option value="15 days">15 days</option>
-                                    <option value="30 days">30 days</option>
                                     <option value="Other">Other (Type below)</option>
                                 </select>
                             </div>
@@ -208,6 +208,7 @@
                                 <select id="doc-subject" onchange="onSubjectChange(); updatePreview();">
                                     <option value="swimming pool maintenance work">Swimming Pool Maintenance Work</option>
                                     <option value="swimming pool cleaning contract">Swimming Pool Cleaning Contract</option>
+                                    <option value="swimming pool renovation and tile replacement">Swimming Pool Renovation and Tile Replacement</option>
                                     <option value="swimming pool light replacement">Swimming Pool Light Replacement</option>
                                     <option value="MEP maintenance work">MEP Maintenance Work</option>
                                     <option value="building maintenance work">Building Maintenance Work</option>
@@ -239,6 +240,7 @@
                             <div class="form-group full-width" style="display: flex; gap: 10px; align-items: center;">
                                 <select id="quick-preset-select" style="flex: 1; padding: 10px; background: #0f172a; color: var(--text-main); border: 1px solid var(--border-dark); border-radius: 8px;">
                                     <option value="">-- Select Work Category Preset --</option>
+                                    <option value="pool_renovation_tile_replacement">🏊 Swimming Pool Renovation and Tiles Replacement (Full 4-Phase Scope & Warranty)</option>
                                     <option value="pool_cleaning_contract">📜 Swimming Pool Cleaning Contract (Inclusions, Exclusions, Notes & Dual Signatures)</option>
                                     <option value="pool_light_replacement">💡 Swimming Pool Light Replacement</option>
                                     <option value="pool_overall_repair">🛠️ Swimming Pool Overall Repair & Component Replacement</option>
