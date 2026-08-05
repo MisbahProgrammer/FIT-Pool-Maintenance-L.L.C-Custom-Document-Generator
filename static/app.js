@@ -526,9 +526,159 @@ function onReportSubtypeChange() {
     loadPreset(currentReportSubtype);
 }
 
+function onPresetSelectChange() {
+    const presetSelect = document.getElementById("quick-preset-select").value;
+    const customGroup = document.getElementById("custom-preset-group");
+    if (presetSelect === "other_custom") {
+        customGroup.style.display = "block";
+        const input = document.getElementById("custom-preset-input");
+        if (input) input.focus();
+    } else {
+        customGroup.style.display = "none";
+    }
+}
+
+// Smart Maintenance AI / Vocabulary Engine for Custom Work Topics
+function generateSmartReportFromCustom(userText) {
+    if (!userText || !userText.trim()) {
+        alert("Please type your custom work / service topic in the text box first!");
+        const input = document.getElementById("custom-preset-input");
+        if (input) input.focus();
+        return;
+    }
+
+    const rawInput = userText.trim();
+    const lower = rawInput.toLowerCase();
+
+    // Capitalize Title Helper
+    const capitalize = (str) => {
+        return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+    };
+    const formattedTopic = capitalize(rawInput);
+
+    // Match keywords against existing maintenance presets
+    let matchedPresetKey = null;
+
+    if (lower.includes("renovate") || lower.includes("tile replacement") || lower.includes("renovation")) {
+        matchedPresetKey = "pool_renovation_tile_replacement";
+    } else if (lower.includes("cleaning contract") || lower.includes("weekly cleaning")) {
+        matchedPresetKey = "pool_cleaning_contract";
+    } else if (lower.includes("light") || lower.includes("led") || lower.includes("underwater light")) {
+        matchedPresetKey = "pool_light_replacement";
+    } else if (lower.includes("deep clean") || lower.includes("washing") || lower.includes("sanitization")) {
+        matchedPresetKey = "pool_deep_cleaning";
+    } else if (lower.includes("filter") || lower.includes("sand media") || lower.includes("multiport")) {
+        matchedPresetKey = "filtration_upgrade";
+    } else if (lower.includes("panel") || lower.includes("contactor") || lower.includes("relay") || lower.includes("breaker")) {
+        matchedPresetKey = "electrical_panel";
+    } else if (lower.includes("waterproof") || lower.includes("pump room waterproof")) {
+        matchedPresetKey = "waterproofing_5day";
+    } else if (lower.includes("leak") || lower.includes("leakage") || lower.includes("seepage")) {
+        matchedPresetKey = "leakage_repair";
+    } else if (lower.includes("chemical") || lower.includes("ph") || lower.includes("chlorine") || lower.includes("dosing")) {
+        matchedPresetKey = "pool_water_treatment";
+    } else if (lower.includes("pump") || lower.includes("motor") || lower.includes("bearing") || lower.includes("impeller") || lower.includes("piping")) {
+        matchedPresetKey = "pump_piping_overhaul";
+    } else if (lower.includes("heat pump") || lower.includes("heater") || lower.includes("chiller") || lower.includes("ac")) {
+        matchedPresetKey = "pool_heat_pump";
+    }
+
+    let finalTitle = "";
+    let finalScope = "";
+    let finalSubject = "swimming pool maintenance work";
+    let finalItems = [];
+
+    if (matchedPresetKey && workPresets[matchedPresetKey]) {
+        // MATCHED EXISTING PRESET: Modify preset with user's specific custom topic
+        const basePreset = workPresets[matchedPresetKey];
+        finalTitle = `${formattedTopic} / ${basePreset.title}`;
+        finalSubject = basePreset.subject || "swimming pool maintenance work";
+        
+        finalScope = `• Custom Service Scope: ${formattedTopic}\n${basePreset.scope}`;
+        
+        finalItems = basePreset.items.map((i, idx) => {
+            if (idx === 0) {
+                return {
+                    desc: `${formattedTopic} - ${i.desc}`,
+                    qty: i.qty || "1 Job",
+                    amount: (i.amount !== "" && i.amount !== null && i.amount !== undefined) ? i.amount : "",
+                    bgStyle: i.bgStyle || "none"
+                };
+            }
+            return {
+                desc: i.desc,
+                qty: i.qty,
+                amount: (i.amount !== "" && i.amount !== null && i.amount !== undefined) ? i.amount : "",
+                bgStyle: i.bgStyle || "none"
+            };
+        });
+    } else {
+        // NEW WORK TOPIC: Build dynamically from Professional Maintenance Vocabulary Engine
+        finalTitle = `Work Execution & Scope Report: ${formattedTopic}`;
+        
+        if (lower.includes("ac") || lower.includes("chiller") || lower.includes("cooling")) {
+            finalSubject = "AC maintenance work";
+        } else if (lower.includes("electrical") || lower.includes("wire") || lower.includes("voltage")) {
+            finalSubject = "electrical maintenance work";
+        } else if (lower.includes("plumbing") || lower.includes("pipe") || lower.includes("drain")) {
+            finalSubject = "plumbing maintenance work";
+        } else if (lower.includes("mep")) {
+            finalSubject = "MEP maintenance work";
+        } else if (lower.includes("building") || lower.includes("civil") || lower.includes("painting")) {
+            finalSubject = "building maintenance work";
+        } else {
+            finalSubject = "swimming pool maintenance work";
+        }
+
+        finalScope = `• Technical Inspection & Assessment: Conducted physical inspection and diagnostic evaluation for ${rawInput} at site.
+• Execution & Maintenance Work: Carried out complete ${rawInput} using specialized tools, high-grade materials, and technical protocols.
+• System Testing & Performance Calibration: Tested all associated mechanical, electrical, and structural components to ensure optimal performance.
+• Final Cleaning & Handover: Cleaned work area, verified normal operating parameters, and successfully handed over to client.`;
+
+        finalItems = [
+            {
+                desc: `${formattedTopic} - Labor, materials, and comprehensive servicing.`,
+                qty: "1 Job",
+                amount: "",
+                bgStyle: "none"
+            }
+        ];
+    }
+
+    // Set Form Fields
+    document.getElementById("doc-scope-title").value = finalTitle;
+    document.getElementById("doc-scope").value = finalScope;
+    document.getElementById("scope-toggle").checked = true;
+
+    // Set Subject Line
+    const subjectDropdown = document.getElementById("doc-subject");
+    if (Array.from(subjectDropdown.options).some(o => o.value === finalSubject)) {
+        subjectDropdown.value = finalSubject;
+        document.getElementById("custom-subject-group").style.display = "none";
+    } else {
+        subjectDropdown.value = "Other";
+        document.getElementById("custom-subject-group").style.display = "flex";
+        document.getElementById("doc-custom-subject").value = finalSubject;
+    }
+    updateIntroText();
+
+    // Set Items
+    items = finalItems;
+    renderItemsTable();
+
+    updatePreview();
+}
+
 // Technician Auto-Report Preset Helper
 function applyWorkPreset() {
     const presetKey = document.getElementById("quick-preset-select").value;
+
+    if (presetKey === "other_custom") {
+        const customText = document.getElementById("custom-preset-input").value;
+        generateSmartReportFromCustom(customText);
+        return;
+    }
+
     if (!presetKey || !workPresets[presetKey]) {
         alert("Please select a Work Category Preset from the dropdown first!");
         return;
