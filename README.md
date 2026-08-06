@@ -1,8 +1,9 @@
 # Fit Pool Document & Technical Report Automation System
 
+[![Engineered by BITFIX LABS](https://img.shields.io/badge/Engineered%20by-BITFIX%20LABS-0d05fa.svg)](https://github.com/MisbahProgrammer)
+[![Exclusive License](https://img.shields.io/badge/License-Exclusive%20to%20Fit%20Pool-blue.svg)]()
 [![Python Version](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
 [![Flask Version](https://img.shields.io/badge/Flask-3.0%2B-green.svg)](https://flask.palletsprojects.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 An enterprise-grade, SEO-optimized, highly responsive Python-Flask web application designed for automatic document generation and technical report creation for **Fit Pool Building Maintenance L.L.C** (Abu Dhabi & Dubai, UAE).
 
@@ -83,6 +84,15 @@ Included standard presets in the **Technician Auto-Report Assistant**:
 
 ---
 
+## 🛡️ License, Branding & Credits
+
+- **Engineered & Developed by**: **BITFIX LABS** ⚡
+- **Exclusive License**: This system is custom-engineered and licensed exclusively for **Fit Pool Building Maintenance L.L.C**.
+- **Discover More Products**: Looking for custom enterprise automation, document generation engines, or full-stack web applications?  
+  👉 [**🚀 Explore More BITFIX LABS Products & Solutions**](https://github.com/MisbahProgrammer)
+
+---
+
 ## 🛠️ Technology Stack
 
 - **Backend**: Python 3.12+, Flask (Web framework), `python-docx` (XML Word manipulation & photo grid layout), `docxtpl` (Template rendering), `docx2pdf` (COM Word-to-PDF compilation), `Pillow` (PIL image compositor), `pywin32` (Windows COM bindings).
@@ -127,10 +137,11 @@ Run this command in your terminal to commit and push all changes to GitHub:
 
 ```bash
 git add .
-git commit -m "docs & cleanup: update README.md with Smart AI engine, lump sum override, compact photo sizing, and clean test artifacts
+git commit -m "feat: add BITFIX LABS branding, exclusive licensing, and product explore hyperlink
 
-- Updated README.md with comprehensive documentation of all features, Smart AI Engine, custom report topics, and compact photo sizing
-- Cleaned up root directory temporary test files (test_*.docx / test_*.pdf)
-- Ensured 100% clean source code repository"
+- Added BITFIX LABS developer card and exclusive licensing statement in sidebar footer
+- Added BITFIX LABS powered-by badge in live document preview & exports
+- Added BITFIX LABS shields badges and License & Branding section in README.md
+- Added '🚀 Explore More Products by BITFIX LABS' hyperlink with sleek hover styling"
 git push origin main
 ```
