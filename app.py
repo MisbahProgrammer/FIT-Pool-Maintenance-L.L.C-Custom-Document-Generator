@@ -503,22 +503,31 @@ def generate():
 
         # Step 8: Append Terms & Conditions (Standard)
         if show_terms and terms:
-            doc_final.add_paragraph("")
             term_p = doc_final.add_paragraph()
+            term_p.paragraph_format.space_before = Pt(6)
+            term_p.paragraph_format.space_after = Pt(2)
             term_p.add_run("Payment term and condition").bold = True
-            doc_final.add_paragraph(terms)
+            
+            p_t_content = doc_final.add_paragraph(terms)
+            p_t_content.paragraph_format.space_before = Pt(0)
+            p_t_content.paragraph_format.space_after = Pt(4)
 
         # Step 9: Append Bank Account Details (Standard)
         if not show_contract and show_account and account_details:
-            doc_final.add_paragraph("")
             acc_p = doc_final.add_paragraph()
+            acc_p.paragraph_format.space_before = Pt(6)
+            acc_p.paragraph_format.space_after = Pt(2)
             acc_p.add_run("Account details").bold = True
-            doc_final.add_paragraph(account_details)
+            
+            p_a_content = doc_final.add_paragraph(account_details)
+            p_a_content.paragraph_format.space_before = Pt(0)
+            p_a_content.paragraph_format.space_after = Pt(4)
 
         # Step 10: Add Footer Banner
         if footer_text:
-            doc_final.add_paragraph("")
             footer_para = doc_final.add_paragraph()
+            footer_para.paragraph_format.space_before = Pt(8)
+            footer_para.paragraph_format.space_after = Pt(0)
             footer_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
             footer_run = footer_para.add_run(footer_text)
             footer_run.bold = True

@@ -1282,26 +1282,27 @@ function generateDocument(format) {
         element.style.boxSizing = "border-box";
         element.style.width = "794px";
         element.style.height = "auto";
-        element.style.minHeight = "1123px";
+        element.style.minHeight = "0px"; // Removed forced 1123px min-height that caused 2nd blank page overflow
+        element.style.maxHeight = "none";
         element.style.overflow = "visible";
-        element.style.padding = "45px 50px";
-        element.style.fontSize = "11pt";
+        element.style.padding = "30px 40px 15px 40px"; // Compact padding for clean single page fit
+        element.style.fontSize = "10.5pt";
         element.style.transform = "none";
         element.style.borderRadius = "0";
         element.style.boxShadow = "none";
         
         element.querySelectorAll(".company-header-real").forEach(header => {
-            header.style.height = "85px";
-            header.style.marginBottom = "25px";
+            header.style.height = "75px";
+            header.style.marginBottom = "15px";
             header.style.display = "flex";
         });
         element.querySelectorAll(".header-logo-img").forEach(img => {
             img.src = window.location.origin + "/static/new_logo.png";
-            img.style.height = "65px";
+            img.style.height = "55px";
             img.style.width = "auto";
         });
         element.querySelectorAll(".header-title-text h2").forEach(h2 => {
-            h2.style.fontSize = "0.95rem";
+            h2.style.fontSize = "0.9rem";
             h2.style.display = "block";
         });
         element.querySelectorAll(".header-right-wrapper").forEach(wrapper => {
@@ -1313,8 +1314,8 @@ function generateDocument(format) {
             wrapper.style.background = "transparent";
         });
         element.querySelectorAll(".header-right-shape").forEach(shape => {
-            shape.style.paddingLeft = "55px";
-            shape.style.paddingRight = "20px";
+            shape.style.paddingLeft = "45px";
+            shape.style.paddingRight = "15px";
             shape.style.display = "flex";
             shape.style.width = "100%";
             shape.style.background = "linear-gradient(135deg, #1e3a8a, #0d05fa)";
@@ -1323,17 +1324,21 @@ function generateDocument(format) {
             shape.style.borderRadius = "0";
         });
         element.querySelectorAll(".header-right-shape .arabic-text").forEach(txt => {
-            txt.style.fontSize = "1rem";
+            txt.style.fontSize = "0.95rem";
             txt.style.whiteSpace = "nowrap";
             txt.style.display = "inline";
         });
         element.querySelectorAll("#prev-doc-title").forEach(title => {
-            title.style.fontSize = "1.2rem";
+            title.style.fontSize = "1.1rem";
             title.style.display = "inline-block";
         });
         element.querySelectorAll(".preview-items-table").forEach(tbl => {
-            tbl.style.fontSize = "0.9rem";
+            tbl.style.fontSize = "0.85rem";
             tbl.style.width = "100%";
+        });
+        element.querySelectorAll(".preview-footer-banner").forEach(ft => {
+            ft.style.marginBottom = "0px";
+            ft.style.marginTop = "12px";
         });
 
         const container = document.createElement("div");
@@ -1348,10 +1353,10 @@ function generateDocument(format) {
         const filename = `${activeDocType.replace(/\s+/g, "_")}_${safeClientName}_${formattedDate}.pdf`;
 
         const opt = {
-            margin:       10,
+            margin:       0, // 0 margin to prevent external spillover onto 2nd page
             filename:     filename,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            html2canvas:  { scale: 2, useCORS: true, logging: false, scrollY: 0 },
             jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait' },
             pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
         };
