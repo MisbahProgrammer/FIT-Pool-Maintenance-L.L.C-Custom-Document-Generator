@@ -152,7 +152,7 @@ def generate():
         scope_title = data.get("scope_title", "").strip()
         scope_text = data.get("scope_text", "").strip()
 
-        show_note = data.get("show_note", True)
+        show_note = data.get("show_note", False)
         note_title = data.get("note_title", "Note / Special Terms").strip()
         note_text = data.get("note_text", "").strip()
 

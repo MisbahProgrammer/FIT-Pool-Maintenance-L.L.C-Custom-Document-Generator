@@ -360,6 +360,15 @@ function onNotePresetChange() {
     updatePreview();
 }
 
+function toggleNoteSection() {
+    const isChecked = document.getElementById("note-toggle").checked;
+    const noteCard = document.getElementById("form-card-note");
+    if (noteCard) {
+        noteCard.style.display = isChecked ? "block" : "none";
+    }
+    updatePreview();
+}
+
 // Initialize Application
 document.addEventListener("DOMContentLoaded", () => {
     const today = new Date();
@@ -1166,7 +1175,7 @@ function updatePreview() {
     }
 
     // Short Note / Scope Terms Preview Section (Renders under Price Table)
-    const showNote = document.getElementById("note-toggle") ? document.getElementById("note-toggle").checked : true;
+    const showNote = document.getElementById("note-toggle") ? document.getElementById("note-toggle").checked : false;
     const noteSection = document.getElementById("prev-note-section");
     const noteTitleEl = document.getElementById("prev-note-title");
     const noteContentEl = document.getElementById("prev-note-content");
@@ -1322,7 +1331,7 @@ function generateDocument(format) {
         show_contract: showContract,
         show_advance: showAdvance,
         show_terms: showTerms,
-        show_note: document.getElementById("note-toggle") ? document.getElementById("note-toggle").checked : true,
+        show_note: document.getElementById("note-toggle") ? document.getElementById("note-toggle").checked : false,
         note_title: document.getElementById("doc-note-title") ? document.getElementById("doc-note-title").value : "Note / Special Terms",
         note_text: document.getElementById("doc-note-text") ? document.getElementById("doc-note-text").value : "",
         advance_amount: parseFloat(document.getElementById("doc-advance-amount").value) || 0,

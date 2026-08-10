@@ -76,7 +76,7 @@
                         Scope / Work Bullets
                     </label>
                     <label class="switch-container">
-                        <input type="checkbox" id="note-toggle" checked onchange="updatePreview()">
+                        <input type="checkbox" id="note-toggle" onchange="toggleNoteSection()">
                         <span class="checkmark"></span>
                         Short Note / Warranty
                     </label>
@@ -352,7 +352,7 @@
                     </div>
 
                     <!-- Section 5B: Short Note & Scope Limitations (Renders Under Price Table) -->
-                    <div class="form-section-card" id="form-card-note">
+                    <div class="form-section-card" id="form-card-note" style="display: none;">
                         <div class="section-title-action">
                             <h3>📌 Short Note & Scope Terms (Under Price Table)</h3>
                         </div>
@@ -552,7 +552,7 @@
                         </div>
 
                         <!-- Short Note / Warranty Preview Section (Under Price Table) -->
-                        <div class="preview-note-section" id="prev-note-section" style="margin-top: 15px; display: block;">
+                        <div class="preview-note-section" id="prev-note-section" style="margin-top: 15px; display: none;">
                             <div class="note-blue-banner" id="prev-note-title" style="background-color: #0d05fa; color: #ffffff; padding: 6px 12px; font-weight: bold; font-size: 0.95rem; text-transform: uppercase; border-radius: 2px;">
                                 Note / Special Terms
                             </div>
