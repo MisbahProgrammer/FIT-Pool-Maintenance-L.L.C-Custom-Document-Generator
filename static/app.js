@@ -323,6 +323,43 @@ Site Conditions & Challenges: The project presents a level of difficulty due to 
     }
 };
 
+// Short Note & Scope Limitations Presets
+const notePresets = {
+    quotation_disclaimer: {
+        title: "Note / Special Terms",
+        text: `• Scope of Responsibility: Fit Pool Building Maintenance L.L.C is strictly responsible for the specific items, materials, and scope of work listed in this quotation.
+• Extra & External Works: Any additional works, modifications, or external repairs not mentioned above will be quoted and charged separately upon client approval.
+• Supply & Installation: Prices include professional supply, delivery, labor, and installation unless explicitly specified otherwise.
+• Site Access & Approvals: Client is requested to ensure necessary site access, villa approvals, and utility connections (water/electricity) prior to work commencement.`
+    },
+    equipment_warranty: {
+        title: "EQUIPMENT WARRANTY & SERVICE GUARANTEE",
+        text: `• 1-Year Equipment Warranty: Includes 1 full year comprehensive warranty on newly installed Filter Tank, Multiport Valve, and Sand Media.
+• System Status: All works have been fully completed and verified. Filtration, lighting, and electrical operations are running normally and properly.
+• 24/7 Technical Support: Our technical team is available 24/7 for any immediate assistance, operational guidance, or emergency inquiries.`
+    },
+    cleaning_contract_note: {
+        title: "Swimming Pool Service & Maintenance Note",
+        text: `• Service Scope: Includes regular pH/Chlorine level testing, chemical balancing, vacuuming, wall brushing, and pre-filter basket cleaning.
+• Exclusions & Repairs: Pipe leakage repairs, re-grouting of tiles, replacement of underwater lights, and major pump/filter overhauls are excluded and quoted separately.
+• Liability Disclaimer: Our company is not liable for pre-existing pool structural defects or indirect costs arising from utility interruptions.`
+    },
+    custom: {
+        title: "Note / Special Remarks",
+        text: ""
+    }
+};
+
+function onNotePresetChange() {
+    const key = document.getElementById("doc-note-preset").value;
+    const preset = notePresets[key] || notePresets.quotation_disclaimer;
+    if (key !== "custom") {
+        document.getElementById("doc-note-title").value = preset.title;
+        document.getElementById("doc-note-text").value = preset.text;
+    }
+    updatePreview();
+}
+
 // Initialize Application
 document.addEventListener("DOMContentLoaded", () => {
     const today = new Date();
@@ -332,6 +369,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("doc-date").value = `${dd}/${mm}/${yyyy}`;
 
     loadPreset(currentDocType);
+    onNotePresetChange();
     renderItemsTable();
     onVersionChange();
     setupDragAndDrop();
@@ -1127,6 +1165,24 @@ function updatePreview() {
         prevTableContainer.style.display = "none";
     }
 
+    // Short Note / Scope Terms Preview Section (Renders under Price Table)
+    const showNote = document.getElementById("note-toggle") ? document.getElementById("note-toggle").checked : true;
+    const noteSection = document.getElementById("prev-note-section");
+    const noteTitleEl = document.getElementById("prev-note-title");
+    const noteContentEl = document.getElementById("prev-note-content");
+    const noteTitleVal = document.getElementById("doc-note-title") ? document.getElementById("doc-note-title").value : "";
+    const noteTextVal = document.getElementById("doc-note-text") ? document.getElementById("doc-note-text").value : "";
+
+    if (noteSection) {
+        if (showNote && (noteTitleVal.trim() || noteTextVal.trim())) {
+            noteSection.style.display = "block";
+            noteTitleEl.innerText = noteTitleVal.trim() || "Note / Special Terms";
+            noteContentEl.innerHTML = formatScopeText(noteTextVal);
+        } else {
+            noteSection.style.display = "none";
+        }
+    }
+
     // Contract Clauses & Dual Signature Section
     const contractSection = document.getElementById("prev-contract-section");
     const signatureSection = document.getElementById("prev-signature-section");
@@ -1266,7 +1322,9 @@ function generateDocument(format) {
         show_contract: showContract,
         show_advance: showAdvance,
         show_terms: showTerms,
-        show_account: showAccount,
+        show_note: document.getElementById("note-toggle") ? document.getElementById("note-toggle").checked : true,
+        note_title: document.getElementById("doc-note-title") ? document.getElementById("doc-note-title").value : "Note / Special Terms",
+        note_text: document.getElementById("doc-note-text") ? document.getElementById("doc-note-text").value : "",
         advance_amount: parseFloat(document.getElementById("doc-advance-amount").value) || 0,
         remaining_amount: parseFloat(document.getElementById("doc-remaining-amount").value) || 0,
         scope_title: document.getElementById("doc-scope-title").value,

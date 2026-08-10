@@ -152,6 +152,10 @@ def generate():
         scope_title = data.get("scope_title", "").strip()
         scope_text = data.get("scope_text", "").strip()
 
+        show_note = data.get("show_note", True)
+        note_title = data.get("note_title", "Note / Special Terms").strip()
+        note_text = data.get("note_text", "").strip()
+
         if not client_name:
             return jsonify({"error": "Client Name is required"}), 400
 
@@ -401,6 +405,40 @@ def generate():
             words_cells[0].text = f"Amount in words AED: {words_total}"
             words_cells[0].paragraphs[0].runs[0].font.bold = True
             set_cell_background(words_cells[0], 'F2F2F2')
+
+        # Step 5B: Insert Short Note & Scope Limitations (Renders right under Pricing Table)
+        if show_note and (note_title or note_text):
+            p_note_hdr = doc_final.add_paragraph()
+            p_note_hdr.paragraph_format.space_before = Pt(8)
+            p_note_hdr.paragraph_format.space_after = Pt(2)
+            r_note_hdr = p_note_hdr.add_run(note_title or "Note / Special Terms")
+            r_note_hdr.bold = True
+            r_note_hdr.font.color.rgb = RGBColor(255, 255, 255)
+            set_paragraph_background(p_note_hdr, '0D05FA')
+
+            if note_text:
+                for line in note_text.split('\n'):
+                    line_s = line.strip()
+                    if not line_s:
+                        continue
+                    p_n_bullet = doc_final.add_paragraph()
+                    p_n_bullet.paragraph_format.space_before = Pt(0)
+                    p_n_bullet.paragraph_format.space_after = Pt(2)
+                    p_n_bullet.paragraph_format.left_indent = Inches(0.2)
+                    
+                    if line_s.startswith("•") or line_s.startswith("-") or line_s.startswith("*"):
+                        content = line_s[1:].strip()
+                    else:
+                        content = line_s
+                    
+                    p_n_bullet.add_run("• ")
+                    if ":" in content and not content.startswith("http"):
+                        parts = content.split(":", 1)
+                        r_b = p_n_bullet.add_run(parts[0] + ":")
+                        r_b.bold = True
+                        p_n_bullet.add_run(parts[1])
+                    else:
+                        p_n_bullet.add_run(content)
 
         # Step 6: Contract Clauses & Dual Signatures (if enabled)
         if show_contract:

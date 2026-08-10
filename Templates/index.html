@@ -76,6 +76,11 @@
                         Scope / Work Bullets
                     </label>
                     <label class="switch-container">
+                        <input type="checkbox" id="note-toggle" checked onchange="updatePreview()">
+                        <span class="checkmark"></span>
+                        Short Note / Warranty
+                    </label>
+                    <label class="switch-container">
                         <input type="checkbox" id="contract-toggle" onchange="updatePreview()">
                         <span class="checkmark"></span>
                         Contract Terms & Signatures
@@ -346,6 +351,38 @@
                         </div>
                     </div>
 
+                    <!-- Section 5B: Short Note & Scope Limitations (Renders Under Price Table) -->
+                    <div class="form-section-card" id="form-card-note">
+                        <div class="section-title-action">
+                            <h3>📌 Short Note & Scope Terms (Under Price Table)</h3>
+                        </div>
+                        <p class="subtitle" style="font-size: 0.85rem; margin-bottom: 12px; color: var(--text-muted);">
+                            Add automated scope limitation notes, quotation responsibility disclaimers, or equipment warranty terms under the pricing table. Renders in blue banner theme.
+                        </p>
+                        
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label for="doc-note-preset" style="color: var(--accent); font-weight: 700;">📋 Select Note / Disclaimer Preset</label>
+                                <select id="doc-note-preset" onchange="onNotePresetChange()" style="background-color: #0f172a; border: 1px solid var(--border-dark); border-radius: 8px; color: var(--text-main); padding: 10px; font-weight: 600;">
+                                    <option value="quotation_disclaimer" selected>📜 Standard Quotation Responsibility & Extra Works Disclaimer</option>
+                                    <option value="equipment_warranty">🛡️ Equipment Warranty & Service Guarantee (1-Year Warranty & 24/7 Support)</option>
+                                    <option value="cleaning_contract_note">🏊 Swimming Pool Cleaning & Service Note</option>
+                                    <option value="custom">✍️ Custom Note (Type Custom Heading & Bullets)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="doc-note-title">Note Heading (Renders in Document Blue Banner)</label>
+                                <input type="text" id="doc-note-title" value="Note / Special Terms" placeholder="e.g. Note / Special Terms or EQUIPMENT WARRANTY & SERVICE GUARANTEE" oninput="updatePreview()">
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="doc-note-text">Short Note Bullet Points</label>
+                                <textarea id="doc-note-text" rows="5" placeholder="Enter note bullet points (one per line starting with • or -)..." oninput="updatePreview()"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Section 6: Advance & Remaining Payment Breakdown -->
                     <div class="form-section-card" id="form-card-advance" style="display: none;">
                         <h3>Advance & Remaining Payment Breakdown</h3>
@@ -512,6 +549,16 @@
                                     </tr>
                                 </tfoot>
                             </table>
+                        </div>
+
+                        <!-- Short Note / Warranty Preview Section (Under Price Table) -->
+                        <div class="preview-note-section" id="prev-note-section" style="margin-top: 15px; display: block;">
+                            <div class="note-blue-banner" id="prev-note-title" style="background-color: #0d05fa; color: #ffffff; padding: 6px 12px; font-weight: bold; font-size: 0.95rem; text-transform: uppercase; border-radius: 2px;">
+                                Note / Special Terms
+                            </div>
+                            <div id="prev-note-content" class="preview-scope-content" style="margin-top: 6px; font-size: 0.9rem; color: #1e293b;">
+                                <!-- Rendered dynamically by JS -->
+                            </div>
                         </div>
 
                         <!-- Contract Inclusions, Exclusions, Notes Section -->
