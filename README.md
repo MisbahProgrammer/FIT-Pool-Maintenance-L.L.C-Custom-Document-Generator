@@ -13,7 +13,17 @@ It enables technicians and management to dynamically generate and export high-qu
 
 ## 🌟 Comprehensive Feature Set
 
-### 1. 🧹 Streamlined Navigation & Report Subtype Selector
+### 1. 📌 Short Note & Scope Terms (Blue Banner `#0D05FA` Theme)
+- **Optional Toggle Switch**: Added **`Short Note / Warranty`** toggle in the sidebar under *Section Toggles* (disabled by default so standard documents stay clean).
+- **Renders Under Pricing Table**: Positioned directly below the line items table on live preview, PDF exports, and Word (`.docx`) files.
+- **Document Blue Banner Heading (`#0D05FA`)**: Heading renders in the official document blue banner style with bold white text matching reference warranty and inspection documents.
+- **Automated Disclaimer & Warranty Presets**:
+  - 📜 **Standard Quotation Responsibility & Extra Works Disclaimer**: *"Fit Pool Building Maintenance L.L.C is strictly responsible for listed items/scope. Additional or external works quoted separately..."*
+  - 🛡️ **Equipment Warranty & Service Guarantee**: *"1-Year Comprehensive Warranty on newly installed Filter Tank, Multiport Valve, and Sand Media. System status verified. 24/7 Technical Support."*
+  - 🏊 **Swimming Pool Cleaning & Service Note**: Regular chemical balancing inclusions, access requirements, and repair exclusion terms.
+  - ✍️ **Custom Note & Bullet Points Editor**: Type custom headings and note bullet points.
+
+### 2. 🧹 Streamlined Navigation & Report Subtype Selector
 - **Minimalist Sidebar Navigation**: Simplified into 4 primary document categories:
   - 📄 **Quotation**: Professional pricing estimates (`FP/QT-`).
   - 💼 **Invoice**: Client billing statements (`FP/INV-`).
@@ -26,7 +36,7 @@ It enables technicians and management to dynamically generate and export high-qu
   - *Swimming Pool Cleaning Contract* (`FP/SPC-`)
   - *Custom Report*
 
-### 2. 🧠 Smart Maintenance AI & Vocabulary Engine (Custom Work Topics)
+### 3. 🧠 Smart Maintenance AI & Vocabulary Engine (Custom Work Topics)
 - **`✍️ Other (Type Custom Work / Service Name)` Option**: Technicians can type any custom topic (e.g., *"Jacuzzi Jet Cleaning, Skimmer Basket Replacement, Pool Deck Painting, Chiller Gas Top-up"*).
 - **Hybrid Keyword Matcher & Dynamic Vocabulary Construction**:
   - Automatically matches keywords against core domain categories (Pumps & Motors, Waterproofing, Tile Replacement, Electrical Panels, Filtration, Leakage, Chemical Treatment, Heat Pumps & AC, Plumbing, MEP, Civil Painting).
@@ -36,7 +46,7 @@ It enables technicians and management to dynamically generate and export high-qu
     3. **Pre-Populated Line Items**: Formats item descriptions cleanly with user topic and default quantity (`1 Job`).
     4. **Auto-Synced Subject Line**: Automatically selects matching subject category (`building maintenance work`, `plumbing maintenance work`, `electrical maintenance work`, `AC maintenance work`, `MEP maintenance work`, `swimming pool maintenance work`).
 
-### 3. 🏊 Pre-Built Technical Maintenance Presets
+### 4. 🏊 Pre-Built Technical Maintenance Presets
 Included standard presets in the **Technician Auto-Report Assistant**:
 - 🏊 **Swimming Pool Renovation and Tiles Replacement**: Full 4-Phase Scope (Demolition, 4-Coat Waterproofing, Tiling & Anti-Slip Decking, Curing & 2-Year Waterproofing & Material Warranties).
 - 📜 **Swimming Pool Cleaning Contract**: Complete clauses (Inclusions 1-6, Exclusions 1-3, Notes 1-4, 100% Payment Advance badge, Dual Signatures).
@@ -52,12 +62,12 @@ Included standard presets in the **Technician Auto-Report Assistant**:
 - ❄️ **Pool Heat Pump & AC Servicing**: Coil cleaning, refrigerant gas top-up & thermostat sensor calibration.
 - 🔧 **MEP & AC Maintenance Services**: Evaporator coil chemical cleaning, drain line flushing & electrical checks.
 
-### 4. 💰 Lump Sum Override & Empty Item Price Cells
+### 5. 💰 Lump Sum Override & Empty Item Price Cells
 - **Dedicated Lump Sum Override Card**: Enter a single lump sum amount (e.g., `4200.00 AED`) for the entire project.
 - **Clean Empty Item Row Rendering**: When individual item prices are left empty (`""`), the item table displays **EMPTY** price cells instead of printing `0.00`.
 - **Automatic English Currency Conversion**: Converts the total or lump sum override into formal English text (*"Four Thousand Two Hundred AED Only"*).
 
-### 5. 📅 Document Validity Dropdown (10 Days Default)
+### 6. 📅 Document Validity Dropdown (10 Days Default)
 - **Select Dropdown**: Choose validity directly from standard choices:
   - `10 days` (**Default**)
   - `7 days`
@@ -66,20 +76,23 @@ Included standard presets in the **Technician Auto-Report Assistant**:
   - `Other (Custom)` (Opens custom text box for 60 days, 1 year, etc.)
 - **Side-by-Side Toggle**: Includes **`✕ Remove` / `+ Add Validity`** button for instant visibility control.
 
-### 6. 📸 Compact Passport-Sized Site Photos Attachment
+### 7. 📸 Compact Passport-Sized Site Photos Attachment
 - **Multi-Photo Upload**: Attach site photos directly from Mobile Cameras or PC.
 - **High-Speed Browser Compressor**: Downscales 10MB+ camera photos to 1200px JPEGs in real-time.
 - **Passport-Like Compact Width in Word (`.docx`) & PDF**: Rendered side-by-side at compact proportions (~1.8 inches / 4.5 cm wide) under the document badge to fit neatly without pushing text onto extra pages.
 - **MS Word Resize Support**: Users can still click and drag corner handles inside MS Word to enlarge images if needed.
 
-### 7. 🎨 Table Row Custom Color System
+### 8. 🎨 Table Row Custom Color System
 - Customize individual row background colors for category headers and section banners:
   - `Normal White` (Standard item row)
   - `Grey Header (#D9D9D9)` (Bold black text across full row background)
   - `Soft Grey (#F2F2F2)` (Soft category shading)
   - `Blue Banner (#0D05FA)` (Official blue banner background with bold white text)
 
-### 8. 📜 Vertical Sidebar Scroll & Mobile Optimization
+### 9. 📄 Clean Single-Page PDF Export Optimization
+- Removed forced min-height (`min-height: 0`) and optimized padding in client-side renderer (`html2pdf.js`) and Word generator (`app.py`), preventing trailing blank 2nd pages on single-page quotations.
+
+### 10. 📜 Vertical Sidebar Scroll & Mobile Optimization
 - `overflow-y: auto` with a custom dark accent scrollbar (`6px`) ensuring all controls, section toggles, layout options, and version badges scroll smoothly on desktop screens and mobile phone drawers.
 
 ---
@@ -137,11 +150,10 @@ Run this command in your terminal to commit and push all changes to GitHub:
 
 ```bash
 git add .
-git commit -m "feat: add BITFIX LABS branding, exclusive licensing, and product explore hyperlink
+git commit -m "docs: update README.md with Short Note system, optional toggle, blue banner styling, and PDF fixes
 
-- Added BITFIX LABS developer card and exclusive licensing statement in sidebar footer
-- Added BITFIX LABS powered-by badge in live document preview & exports
-- Added BITFIX LABS shields badges and License & Branding section in README.md
-- Added '🚀 Explore More Products by BITFIX LABS' hyperlink with sleek hover styling"
+- Added documentation for Short Note & Scope Terms section under price table with blue banner theme
+- Documented optional sidebar toggle control and automated disclaimers/equipment warranty presets
+- Updated README.md feature list and quick start guides"
 git push origin main
 ```
