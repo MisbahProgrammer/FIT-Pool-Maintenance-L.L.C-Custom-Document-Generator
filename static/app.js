@@ -362,11 +362,53 @@ function onNotePresetChange() {
 
 function toggleNoteSection() {
     const isChecked = document.getElementById("note-toggle").checked;
-    const noteCard = document.getElementById("form-card-note");
-    if (noteCard) {
-        noteCard.style.display = isChecked ? "block" : "none";
-    }
+    syncSectionUIState();
     updatePreview();
+}
+
+function toggleOptionalSection(sectionKey) {
+    let toggleId = "";
+    if (sectionKey === "scope") toggleId = "scope-toggle";
+    if (sectionKey === "note") toggleId = "note-toggle";
+    if (sectionKey === "photos") toggleId = "photos-toggle";
+    if (sectionKey === "contract") toggleId = "contract-toggle";
+    if (sectionKey === "advance") toggleId = "advance-remaining-toggle";
+
+    const toggleEl = document.getElementById(toggleId);
+    if (toggleEl) {
+        toggleEl.checked = !toggleEl.checked;
+    }
+
+    syncSectionUIState();
+    updatePreview();
+}
+
+function syncSectionUIState() {
+    const map = [
+        { toggleId: "scope-toggle", cardId: "form-card-scope", pillId: "pill-scope" },
+        { toggleId: "note-toggle", cardId: "form-card-note", pillId: "pill-note" },
+        { toggleId: "photos-toggle", cardId: "form-card-photos", pillId: "pill-photos" },
+        { toggleId: "contract-toggle", cardId: "form-card-contract", pillId: "pill-contract" },
+        { toggleId: "advance-remaining-toggle", cardId: "form-card-advance", pillId: "pill-advance" }
+    ];
+
+    map.forEach(item => {
+        const toggleEl = document.getElementById(item.toggleId);
+        const cardEl = document.getElementById(item.cardId);
+        const pillEl = document.getElementById(item.pillId);
+        const isChecked = toggleEl ? toggleEl.checked : false;
+
+        if (cardEl) {
+            cardEl.style.display = isChecked ? "block" : "none";
+        }
+        if (pillEl) {
+            if (isChecked) {
+                pillEl.classList.add("active");
+            } else {
+                pillEl.classList.remove("active");
+            }
+        }
+    });
 }
 
 // Initialize Application
@@ -424,9 +466,21 @@ function loadPreset(docType) {
     document.getElementById("color-hex-val").innerText = preset.footerColor;
 
     document.getElementById("pricing-table-toggle").checked = preset.showPricing;
-    document.getElementById("advance-remaining-toggle").checked = preset.showAdvance;
+    document.getElementById("advance-remaining-toggle").checked = !!preset.showAdvance;
     document.getElementById("contract-toggle").checked = !!preset.showContract;
     
+    // Auto-set optional section toggles based on Document Type (Quotation/Invoice/Receipt vs Report)
+    if (docType === 'Report') {
+        document.getElementById("scope-toggle").checked = true;
+        document.getElementById("photos-toggle").checked = true;
+    } else {
+        document.getElementById("scope-toggle").checked = !!preset.showScope;
+        document.getElementById("photos-toggle").checked = !!preset.showPhotos;
+        document.getElementById("note-toggle").checked = false;
+    }
+
+    syncSectionUIState();
+
     showValidity = preset.showValidity;
     syncValidityUI();
 

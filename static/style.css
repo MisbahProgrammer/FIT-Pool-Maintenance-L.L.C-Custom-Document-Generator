@@ -273,20 +273,119 @@ body {
 }
 
 .form-section-card {
-    background-color: var(--panel-dark);
-    border: 1px solid var(--border-dark);
+    background: rgba(30, 41, 59, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 16px;
     padding: 24px;
-    box-shadow: var(--shadow-premium);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    transition: all 0.25s ease;
+}
+
+.form-section-card:hover {
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 12px 35px -8px rgba(13, 5, 250, 0.15);
 }
 
 .form-section-card h3 {
     font-family: var(--font-heading);
     font-size: 1.1rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 16px;
-    border-left: 3px solid var(--accent);
-    padding-left: 10px;
+    border-left: 4px solid var(--accent);
+    padding-left: 12px;
+    letter-spacing: -0.2px;
+}
+
+/* Quick-Add Optional Sections Bar */
+.quick-add-bar-card {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.85));
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 16px;
+    padding: 16px 20px;
+    box-shadow: 0 8px 24px rgba(13, 5, 250, 0.12);
+}
+
+.quick-add-title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.quick-add-label {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #60a5fa;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.quick-add-sub {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.quick-add-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid var(--border-dark);
+    border-radius: 20px;
+    color: #cbd5e1;
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+}
+
+.pill-btn:hover {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: #3b82f6;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.pill-btn.active {
+    background: linear-gradient(135deg, rgba(13, 5, 250, 0.25), rgba(59, 130, 246, 0.3));
+    border-color: #3b82f6;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+}
+
+.pill-icon {
+    font-size: 0.9rem;
+}
+
+.btn-remove-section {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #f87171;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-remove-section:hover {
+    background: rgba(239, 68, 68, 0.25);
+    color: #ffffff;
+    border-color: #ef4444;
 }
 
 .section-title-action {
@@ -301,19 +400,21 @@ body {
 }
 
 .btn-action-small {
-    background-color: var(--accent);
+    background: linear-gradient(135deg, #3b82f6, #0d05fa);
     color: var(--white);
     border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 0.8rem;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.82rem;
     cursor: pointer;
-    transition: background-color 0.2s;
+    box-shadow: 0 4px 10px rgba(13, 5, 250, 0.25);
+    transition: all 0.2s ease;
 }
 
 .btn-action-small:hover {
-    background-color: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(13, 5, 250, 0.35);
 }
 
 .form-grid {

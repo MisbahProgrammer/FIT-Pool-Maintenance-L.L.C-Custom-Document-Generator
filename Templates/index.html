@@ -66,27 +66,27 @@
                         Document Validity
                     </label>
                     <label class="switch-container">
-                        <input type="checkbox" id="photos-toggle" checked onchange="updatePreview()">
+                        <input type="checkbox" id="photos-toggle" onchange="syncSectionUIState(); updatePreview();">
                         <span class="checkmark"></span>
                         Site Photos
                     </label>
                     <label class="switch-container">
-                        <input type="checkbox" id="scope-toggle" checked onchange="updatePreview()">
+                        <input type="checkbox" id="scope-toggle" onchange="syncSectionUIState(); updatePreview();">
                         <span class="checkmark"></span>
                         Scope / Work Bullets
                     </label>
                     <label class="switch-container">
-                        <input type="checkbox" id="note-toggle" onchange="toggleNoteSection()">
+                        <input type="checkbox" id="note-toggle" onchange="syncSectionUIState(); updatePreview();">
                         <span class="checkmark"></span>
                         Short Note / Warranty
                     </label>
                     <label class="switch-container">
-                        <input type="checkbox" id="contract-toggle" onchange="updatePreview()">
+                        <input type="checkbox" id="contract-toggle" onchange="syncSectionUIState(); updatePreview();">
                         <span class="checkmark"></span>
                         Contract Terms & Signatures
                     </label>
                     <label class="switch-container">
-                        <input type="checkbox" id="advance-remaining-toggle" onchange="updatePreview()">
+                        <input type="checkbox" id="advance-remaining-toggle" onchange="syncSectionUIState(); updatePreview();">
                         <span class="checkmark"></span>
                         Advance / Remaining Balance
                     </label>
@@ -149,9 +149,34 @@
                 </div>
 
                 <div class="form-scroll-container">
-                    <!-- Section 1: Client Info -->
+                    <!-- Quick-Add Optional Sections Bar -->
+                    <div class="quick-add-bar-card">
+                        <div class="quick-add-title-row">
+                            <span class="quick-add-label">⚡ Add Optional Sections:</span>
+                            <span class="quick-add-sub">Click to enable or add extra details to your document</span>
+                        </div>
+                        <div class="quick-add-pills">
+                            <button type="button" class="pill-btn" id="pill-scope" onclick="toggleOptionalSection('scope')">
+                                <span class="pill-icon">📋</span> Work Scope & Bullets
+                            </button>
+                            <button type="button" class="pill-btn" id="pill-note" onclick="toggleOptionalSection('note')">
+                                <span class="pill-icon">📌</span> Short Note / Warranty
+                            </button>
+                            <button type="button" class="pill-btn" id="pill-photos" onclick="toggleOptionalSection('photos')">
+                                <span class="pill-icon">📸</span> Site Photos
+                            </button>
+                            <button type="button" class="pill-btn" id="pill-contract" onclick="toggleOptionalSection('contract')">
+                                <span class="pill-icon">📜</span> Contract Terms
+                            </button>
+                            <button type="button" class="pill-btn" id="pill-advance" onclick="toggleOptionalSection('advance')">
+                                <span class="pill-icon">💰</span> Advance / Balance
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Section 1: Client Information & Metadata -->
                     <div class="form-section-card">
-                        <h3>Client Information</h3>
+                        <h3>👤 Client Information & Document Details</h3>
                         <div class="form-grid">
                             <div class="form-group full-width">
                                 <label for="client-name">Client / Company Name</label>
@@ -165,13 +190,7 @@
                                 <label for="client-contact">Contact No</label>
                                 <input type="text" id="client-contact" placeholder="e.g. +971 50 123 4567" oninput="updatePreview()">
                             </div>
-                        </div>
-                    </div>
 
-                    <!-- Section 2: Document Metadata -->
-                    <div class="form-section-card">
-                        <h3>Document Metadata</h3>
-                        <div class="form-grid">
                             <!-- Report Subtype Selector (Visible when Report is selected) -->
                             <div class="form-group full-width" id="report-subtype-group" style="display: none;">
                                 <label for="doc-report-subtype" style="color: var(--accent); font-weight: 700;">📋 Select Report Subtype</label>
@@ -247,10 +266,75 @@
                         </div>
                     </div>
 
-                    <!-- Section 3: Technician Auto-Report Helper & Work Scope -->
-                    <div class="form-section-card" id="form-card-scope">
+                    <!-- Section 2: Line Items Table & Row Color Customizer -->
+                    <div class="form-section-card" id="form-card-pricing">
                         <div class="section-title-action">
-                            <h3>🤖 Technician Auto-Report Assistant</h3>
+                            <h3>💵 Line Items & Pricing Table</h3>
+                            <button type="button" class="btn-action-small" onclick="addItemRow()">+ Add Item</button>
+                        </div>
+                        <p class="subtitle" style="font-size: 0.85rem; margin-bottom: 12px; color: var(--text-muted);">Customize row background color (Grey header style or Blue banner style) for full-row category shading.</p>
+                        
+                        <div class="items-list-container">
+                            <table class="form-items-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 42%;">Description</th>
+                                        <th style="width: 18%;">Qty</th>
+                                        <th style="width: 18%;">Amount (AED)</th>
+                                        <th style="width: 14%;">Row Color</th>
+                                        <th style="width: 8%;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="items-tbody">
+                                    <!-- Row will be added dynamically by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="lumpsum-override-card" style="margin-top: 18px; padding: 16px; background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-dark); border-radius: 12px; box-shadow: var(--shadow-sm);">
+                            <div class="form-group full-width" style="margin-bottom: 0;">
+                                <label for="doc-custom-total" style="color: var(--accent); font-weight: 700; font-size: 0.92rem; display: flex; align-items: center; gap: 8px;">
+                                    <span>💰</span> Total Price / Lump Sum Override (AED)
+                                </label>
+                                <input type="number" step="0.01" id="doc-custom-total" placeholder="Auto-calculated from items, or enter lump sum total (e.g. 4200.00)" oninput="updatePreview()" style="margin-top: 8px; width: 100%;">
+                                <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; display: block; line-height: 1.4;">💡 Leave individual item prices blank to display a single lump sum total on the document.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Terms, Bank & Footer Settings -->
+                    <div class="form-section-card">
+                        <h3>📝 Terms, Bank Account & Footer Settings</h3>
+                        <div class="form-grid">
+                            <div class="form-group full-width" id="form-group-terms">
+                                <label for="doc-terms">Payment Terms & Conditions</label>
+                                <textarea id="doc-terms" rows="3" placeholder="Enter payment terms..." oninput="updatePreview()"></textarea>
+                            </div>
+                            <div class="form-group full-width" id="form-group-account">
+                                <label for="doc-account">Bank Account Details</label>
+                                <textarea id="doc-account" rows="4" placeholder="Enter bank account details..." oninput="updatePreview()"></textarea>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="doc-footer-text">Footer Banner Text</label>
+                                <input type="text" id="doc-footer-text" placeholder="Thanks and Regards: ..." oninput="updatePreview()">
+                            </div>
+                            <div class="form-group">
+                                <label for="doc-footer-color">Footer Banner Color</label>
+                                <div class="color-picker-wrapper">
+                                    <input type="color" id="doc-footer-color" value="#0d05fa" oninput="updatePreview()">
+                                    <span id="color-hex-val">#0d05fa</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- OPTIONAL EXPANDABLE SECTIONS (Hidden by default for Quotation, Invoice, Receipt) -->
+
+                    <!-- Optional Section A: Technician Auto-Report Helper & Work Scope -->
+                    <div class="form-section-card optional-card" id="form-card-scope" style="display: none;">
+                        <div class="section-title-action">
+                            <h3>🤖 Technician Auto-Report Assistant & Scope</h3>
+                            <button type="button" class="btn-remove-section" onclick="toggleOptionalSection('scope')">✕ Hide</button>
                         </div>
                         <p class="subtitle" style="font-size: 0.85rem; margin-bottom: 12px; color: var(--text-muted);">Select a standard work service below to automatically generate formal English report details, pricing, and bullet points.</p>
                         
@@ -294,11 +378,14 @@
                         </div>
                     </div>
 
-                    <!-- Section 4: Site Photos Attachment -->
-                    <div class="form-section-card" id="form-card-photos">
+                    <!-- Optional Section B: Site Photos Attachment -->
+                    <div class="form-section-card optional-card" id="form-card-photos" style="display: none;">
                         <div class="section-title-action">
                             <h3>📸 Site Photos Attachment</h3>
-                            <button type="button" class="btn-action-small" onclick="document.getElementById('photo-upload-input').click()">+ Add Photos</button>
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" class="btn-action-small" onclick="document.getElementById('photo-upload-input').click()">+ Add Photos</button>
+                                <button type="button" class="btn-remove-section" onclick="toggleOptionalSection('photos')">✕ Hide</button>
+                            </div>
                         </div>
                         <p class="subtitle" style="font-size: 0.85rem; margin-bottom: 12px; color: var(--text-muted);">Attach site inspection or completed work photos from Mobile Camera or PC. Add captions for each image.</p>
                         
@@ -315,46 +402,11 @@
                         </div>
                     </div>
 
-                    <!-- Section 5: Line Items Table & Row Color Customizer -->
-                    <div class="form-section-card" id="form-card-pricing">
-                        <div class="section-title-action">
-                            <h3>Line Items (Pricing Table & Row Color Shading)</h3>
-                            <button type="button" class="btn-action-small" onclick="addItemRow()">+ Add Item</button>
-                        </div>
-                        <p class="subtitle" style="font-size: 0.85rem; margin-bottom: 12px; color: var(--text-muted);">Customize row background color (Grey header style or Blue banner style) for full-row category shading.</p>
-                        
-                        <div class="items-list-container">
-                            <table class="form-items-table">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 42%;">Description</th>
-                                        <th style="width: 18%;">Qty</th>
-                                        <th style="width: 18%;">Amount (AED)</th>
-                                        <th style="width: 14%;">Row Color</th>
-                                        <th style="width: 8%;">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="items-tbody">
-                                    <!-- Row will be added dynamically by JS -->
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="lumpsum-override-card" style="margin-top: 18px; padding: 16px; background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-dark); border-radius: 12px; box-shadow: var(--shadow-sm);">
-                            <div class="form-group full-width" style="margin-bottom: 0;">
-                                <label for="doc-custom-total" style="color: var(--accent); font-weight: 700; font-size: 0.92rem; display: flex; align-items: center; gap: 8px;">
-                                    <span>💰</span> Total Price / Lump Sum Override (AED)
-                                </label>
-                                <input type="number" step="0.01" id="doc-custom-total" placeholder="Auto-calculated from items, or enter lump sum total (e.g. 4200.00)" oninput="updatePreview()" style="margin-top: 8px; width: 100%;">
-                                <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; display: block; line-height: 1.4;">💡 Leave individual item prices blank to display a single lump sum total on the document.</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Section 5B: Short Note & Scope Limitations (Renders Under Price Table) -->
-                    <div class="form-section-card" id="form-card-note" style="display: none;">
+                    <!-- Optional Section C: Short Note & Scope Limitations -->
+                    <div class="form-section-card optional-card" id="form-card-note" style="display: none;">
                         <div class="section-title-action">
                             <h3>📌 Short Note & Scope Terms (Under Price Table)</h3>
+                            <button type="button" class="btn-remove-section" onclick="toggleOptionalSection('note')">✕ Hide</button>
                         </div>
                         <p class="subtitle" style="font-size: 0.85rem; margin-bottom: 12px; color: var(--text-muted);">
                             Add automated scope limitation notes, quotation responsibility disclaimers, or equipment warranty terms under the pricing table. Renders in blue banner theme.
@@ -383,9 +435,12 @@
                         </div>
                     </div>
 
-                    <!-- Section 6: Advance & Remaining Payment Breakdown -->
-                    <div class="form-section-card" id="form-card-advance" style="display: none;">
-                        <h3>Advance & Remaining Payment Breakdown</h3>
+                    <!-- Optional Section D: Advance & Remaining Payment Breakdown -->
+                    <div class="form-section-card optional-card" id="form-card-advance" style="display: none;">
+                        <div class="section-title-action">
+                            <h3>💰 Advance & Remaining Payment Breakdown</h3>
+                            <button type="button" class="btn-remove-section" onclick="toggleOptionalSection('advance')">✕ Hide</button>
+                        </div>
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="doc-advance-amount">Advance Payment Received (AED)</label>
@@ -394,32 +449,6 @@
                             <div class="form-group">
                                 <label for="doc-remaining-amount">Remaining Payment Balance (AED)</label>
                                 <input type="number" step="0.01" id="doc-remaining-amount" placeholder="e.g. 4475.00" oninput="updatePreview()">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Section 7: Terms, Bank & Footer Settings -->
-                    <div class="form-section-card">
-                        <h3>Terms, Account & Footer Settings</h3>
-                        <div class="form-grid">
-                            <div class="form-group full-width" id="form-group-terms">
-                                <label for="doc-terms">Payment Terms & Conditions</label>
-                                <textarea id="doc-terms" rows="3" placeholder="Enter payment terms..." oninput="updatePreview()"></textarea>
-                            </div>
-                            <div class="form-group full-width" id="form-group-account">
-                                <label for="doc-account">Bank Account Details</label>
-                                <textarea id="doc-account" rows="4" placeholder="Enter bank account details..." oninput="updatePreview()"></textarea>
-                            </div>
-                            <div class="form-group full-width">
-                                <label for="doc-footer-text">Footer Banner Text</label>
-                                <input type="text" id="doc-footer-text" placeholder="Thanks and Regards: ..." oninput="updatePreview()">
-                            </div>
-                            <div class="form-group">
-                                <label for="doc-footer-color">Footer Banner Color</label>
-                                <div class="color-picker-wrapper">
-                                    <input type="color" id="doc-footer-color" value="#0d05fa" oninput="updatePreview()">
-                                    <span id="color-hex-val">#0d05fa</span>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -601,7 +630,7 @@
                             </div>
                         </div>
 
-                        <!-- Advance & Remaining Payment Section -->
+                        <!-- Advance & Remaining Payment Breakdown -->
                         <div class="preview-advance-remaining-section" id="prev-advance-remaining-section" style="display: none;">
                             <div class="advance-highlight-box">
                                 <p><strong>Advance Payment Received:</strong> <span id="prev-advance-val">0.00 AED</span></p>
